@@ -42,6 +42,12 @@
     button:active, [role="button"]:active { transform: scale(.97); }
     .nav-scroll::-webkit-scrollbar { width: 4px; }
     .nav-scroll::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 10px; }
+    .nav-item.is-selected,
+    .nav-item.is-selected:hover {
+      color: #171717;
+      background: #ebebeb;
+      font-weight: 700;
+    }
     .agent-card:hover {
       border-color: #b9bbf6;
       box-shadow: 0 7px 20px rgba(91, 95, 229, .10);
@@ -108,7 +114,7 @@
     <div class="flex h-[calc(100%-45px)]">
       <aside id="sidebar" class="w-[205px] shrink-0 bg-[#fafafa] border-r border-[#e9ecef] flex flex-col px-[9px] py-[14px] pb-[15px]">
         <nav class="nav-scroll flex-1 overflow-y-auto">
-          <button data-nav class="nav-item active w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] bg-[#ebebeb] text-left font-semibold hover:bg-[#eeeefe] hover:text-brand">
+          <button data-nav class="nav-item is-selected w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
             <i data-lucide="command" class="w-[13px] h-[13px]"></i><span>办公写作Agent</span>
           </button>
           <div class="space-y-[1px] mt-[5px]">
@@ -354,8 +360,8 @@
     }));
 
     $$("[data-nav]").forEach(button => button.addEventListener("click", () => {
-      $$(".nav-item").forEach(item => item.classList.remove("bg-[#ededed]", "font-semibold"));
-      button.classList.add("bg-[#ededed]", "font-semibold");
+      $$(".nav-item").forEach(item => item.classList.remove("is-selected"));
+      button.classList.add("is-selected");
       if (!button.textContent.includes("办公写作Agent")) showToast(button.textContent.trim() + " 功能即将打开");
     }));
 
