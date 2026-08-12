@@ -565,6 +565,12 @@
         submit.textContent = "登录";
       }, 480);
     });
+    $("#loginForm").addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && event.target.matches("input")) {
+        event.preventDefault();
+        event.currentTarget.requestSubmit();
+      }
+    });
 
     function showToast(message) {
       const toast = $("#toast");
