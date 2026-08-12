@@ -48,6 +48,26 @@
       background: #ebebeb;
       font-weight: 700;
     }
+    .nav-item:hover {
+      color: #171717 !important;
+      background: #f1f1f1 !important;
+    }
+    .recent-row {
+      position: relative;
+      border-radius: 8px;
+    }
+    .recent-row:hover { background: #f1f1f1; }
+    .recent-row .delete-conversation {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(3px);
+    }
+    .recent-row:hover .delete-conversation,
+    .recent-row:focus-within .delete-conversation {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateX(0);
+    }
     .agent-card:hover {
       border-color: #b9bbf6;
       box-shadow: 0 7px 20px rgba(91, 95, 229, .10);
@@ -144,9 +164,24 @@
               <button id="viewAll" aria-label="查看全部对话" class="text-[#8b8f95] hover:text-brand hover:bg-indigo-50 rounded p-1"><i data-lucide="chevron-right" class="w-[11px] h-[11px]"></i></button>
             </div>
             <div id="recentList" class="mt-[4px] space-y-[1px]">
-              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请将以上文档内容整合，并整...</button>
-              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请根据最近中式婚礼潮流，生...</button>
-              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请生成一份中式，大约预算5W...</button>
+              <div class="recent-row group flex items-center">
+                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请将以上文档内容整合，并整...</button>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
+                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                </button>
+              </div>
+              <div class="recent-row group flex items-center">
+                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请根据最近中式婚礼潮流，生...</button>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
+                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                </button>
+              </div>
+              <div class="recent-row group flex items-center">
+                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请生成一份中式，大约预算5W...</button>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
+                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                </button>
+              </div>
             </div>
           </div>
         </nav>
@@ -365,6 +400,26 @@
       if (!button.textContent.includes("办公写作Agent")) showToast(button.textContent.trim() + " 功能即将打开");
     }));
 
+    $("#recentList").addEventListener("click", (event) => {
+      const deleteButton = event.target.closest(".delete-conversation");
+      if (!deleteButton) return;
+      event.stopPropagation();
+      deleteButton.closest(".recent-row").remove();
+      showToast("对话已删除");
+    });
+
+    function createRecentRow(text) {
+      const row = document.createElement("div");
+      row.className = "recent-row group flex items-center";
+      row.innerHTML = `
+        <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]"></button>
+        <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
+          <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+        </button>`;
+      row.querySelector("button").textContent = text;
+      return row;
+    }
+
     function submitPrompt() {
       const text = promptBox.value.trim();
       if (!text) {
@@ -372,10 +427,8 @@
         showToast("请先输入要交代的任务");
         return;
       }
-      const item = document.createElement("button");
-      item.className = "w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#e8f7fe] hover:text-brand";
-      item.textContent = text;
-      $("#recentList").prepend(item);
+      $("#recentList").prepend(createRecentRow(text));
+      lucide.createIcons();
       promptBox.value = "";
       showToast("任务已提交，智能体团队正在协作");
     }
