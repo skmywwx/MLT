@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI智能体 首页｜模力通</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308a5ec'/%3E%3Cpath d='M8 10h16v9H14l-5 4 1-4H8z' fill='white'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
@@ -12,10 +15,10 @@
     tailwind.config = {
       theme: {
         extend: {
-          colors: { brand: "#08a5ec", navy: "#143c78" },
+          colors: { brand: "#5B5FE5", navy: "#143c78" },
           boxShadow: {
-            composer: "0 7px 20px rgba(31, 46, 71, .10)",
-            card: "0 1px 4px rgba(31, 46, 71, .07)"
+            composer: "0 8px 22px rgba(30, 35, 55, .08)",
+            card: "0 1px 3px rgba(31, 46, 71, .05)"
           }
         }
       }
@@ -27,10 +30,9 @@
     body {
       margin: 0;
       color: #30343b;
-      background: #3e3e3e;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-        "Microsoft YaHei", Arial, sans-serif;
-      font-size: 13px;
+      background: #f3f4f6;
+      font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 12px;
       overflow: hidden;
     }
     button, a, [role="button"] {
@@ -41,8 +43,8 @@
     .nav-scroll::-webkit-scrollbar { width: 4px; }
     .nav-scroll::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 10px; }
     .agent-card:hover {
-      border-color: #a9dcf7;
-      box-shadow: 0 7px 20px rgba(19, 124, 184, .10);
+      border-color: #b9bbf6;
+      box-shadow: 0 7px 20px rgba(91, 95, 229, .10);
       transform: translateY(-2px);
     }
     .avatar-art {
@@ -64,83 +66,87 @@
     .speech-logo {
       filter: drop-shadow(0 5px 9px rgba(8, 165, 236, .18));
     }
+    .app-shell {
+      width: calc(100vw - 4px);
+      height: calc(100vh - 4px);
+      min-height: 560px;
+      margin: 2px;
+      border-radius: 6px;
+    }
+    .main-stage { min-width: 650px; }
     .toast { animation: toastIn .25s ease-out; }
     @keyframes toastIn {
       from { opacity: 0; transform: translate(-50%, -8px); }
       to { opacity: 1; transform: translate(-50%, 0); }
     }
     @media (max-width: 760px) {
-      #sidebar { width: 156px; }
-      .hero-inner { width: min(92%, 570px); }
+      #sidebar { width: 176px; }
+      .hero-inner { width: min(92%, 563px); }
       .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .hero-title { font-size: 27px; }
     }
   </style>
 </head>
 <body>
-  <div class="h-[34px] flex items-center px-[7px] text-[16px] text-[#a5a5a5] bg-[#3e3e3e]">
-    AI智能体&nbsp; 首页
-  </div>
-
-  <div class="mx-[5px] mb-[5px] h-[calc(100vh-39px)] min-h-[580px] overflow-hidden bg-white border border-[#b9b9b9]">
-    <header class="h-[34px] border-b border-[#eceff2] flex items-center justify-between px-[14px] bg-white">
+  <div class="app-shell overflow-hidden bg-white border border-[#d4d6da]">
+    <header class="h-[45px] border-b border-[#eceff2] flex items-center justify-between px-[21px] bg-white">
       <button class="flex items-center gap-[6px] group" title="返回模力通首页">
-        <span class="text-[20px] leading-none italic font-extrabold tracking-[-1.5px] text-[#0da3df] group-hover:text-[#087eb0]">midu</span>
-        <span class="h-[17px] border-l border-[#a6a6a6]"></span>
-        <span class="font-semibold text-[12px] text-[#323232] group-hover:text-brand">模力通</span>
+        <span class="text-[25px] leading-none italic font-extrabold tracking-[-2px] text-[#08a5ec] group-hover:text-brand">midu</span>
+        <span class="h-[20px] border-l border-[#a6a6a6]"></span>
+        <span class="font-semibold text-[16px] text-[#323232] group-hover:text-brand">模力通</span>
       </button>
-      <div class="flex items-center gap-[16px] text-[#5e6266]">
-        <button class="hover:text-brand hover:bg-sky-50 rounded p-1" title="产品中心"><i data-lucide="layers-3" class="w-[14px] h-[14px]"></i></button>
-        <button class="hover:text-brand hover:bg-sky-50 rounded p-1" title="任务中心"><i data-lucide="notebook-tabs" class="w-[14px] h-[14px]"></i></button>
-        <button class="hover:text-brand hover:bg-sky-50 rounded p-1" title="工作台"><i data-lucide="panel-top" class="w-[14px] h-[14px]"></i></button>
-        <button class="w-[20px] h-[20px] rounded-full bg-brand text-white grid place-items-center hover:bg-[#087fb7] hover:shadow-md" title="应用菜单">
-          <i data-lucide="grip" class="w-[12px] h-[12px]"></i>
+      <div class="flex items-center gap-[17px] text-[#53575c]">
+        <button class="hover:text-brand hover:bg-indigo-50 rounded p-1.5" title="任务中心"><i data-lucide="notebook-pen" class="w-[16px] h-[16px]"></i></button>
+        <button class="hover:text-brand hover:bg-indigo-50 rounded p-1.5" title="产品中心"><i data-lucide="layers-3" class="w-[16px] h-[16px]"></i></button>
+        <button class="w-[27px] h-[27px] rounded-full bg-[#0b9ed6] text-white grid place-items-center hover:bg-brand hover:shadow-md" title="应用菜单">
+          <i data-lucide="grip" class="w-[15px] h-[15px]"></i>
         </button>
-        <button class="w-[20px] h-[20px] rounded-full bg-[#1596ca] text-white text-[10px] font-semibold hover:bg-[#087fb7] hover:shadow-md" title="个人中心">h</button>
+        <button class="w-[27px] h-[27px] rounded-full bg-[#1596ca] text-white text-[12px] font-semibold hover:bg-brand hover:shadow-md" title="个人中心">蜜</button>
       </div>
     </header>
 
-    <div class="flex h-[calc(100%-34px)]">
-      <aside id="sidebar" class="w-[180px] shrink-0 bg-[#fafafa] border-r border-[#e9ecef] flex flex-col p-[8px] pb-[9px]">
+    <div class="flex h-[calc(100%-45px)]">
+      <aside id="sidebar" class="w-[205px] shrink-0 bg-[#fafafa] border-r border-[#e9ecef] flex flex-col px-[9px] py-[14px] pb-[15px]">
         <nav class="nav-scroll flex-1 overflow-y-auto">
-          <button data-nav class="nav-item active w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] bg-[#ededed] text-left font-semibold hover:bg-[#e3f5fd] hover:text-[#078dcb]">
-            <i data-lucide="command" class="w-[13px] h-[13px]"></i><span>办公智能体</span>
+          <button data-nav class="nav-item active w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] bg-[#ebebeb] text-left font-semibold hover:bg-[#eeeefe] hover:text-brand">
+            <i data-lucide="command" class="w-[13px] h-[13px]"></i><span>办公写作Agent</span>
           </button>
           <div class="space-y-[1px] mt-[5px]">
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="file-text" class="w-[13px] h-[13px]"></i><span>AI公文写作</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="files" class="w-[13px] h-[13px]"></i><span>AI内容审核</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="shield-check" class="w-[13px] h-[13px]"></i><span>AI公文校对</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="clipboard-pen-line" class="w-[13px] h-[13px]"></i><span>AI会议纪要</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="message-circle-question" class="w-[13px] h-[13px]"></i><span>AI知识问答</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#e8f7fe] hover:text-[#078dcb]">
+            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="library" class="w-[13px] h-[13px]"></i><span>资料库</span>
             </button>
           </div>
 
-          <div class="mt-[5px]">
+          <div class="mt-[10px]">
             <div class="flex items-center justify-between px-[9px] text-[#999] text-[10px]">
               <span>最近对话</span>
-              <button id="viewAll" class="text-[#757575] hover:text-brand hover:bg-sky-50 rounded px-1 py-0.5">查看全部</button>
+              <button id="viewAll" aria-label="查看全部对话" class="text-[#8b8f95] hover:text-brand hover:bg-indigo-50 rounded p-1"><i data-lucide="chevron-right" class="w-[11px] h-[11px]"></i></button>
             </div>
-            <div id="recentList" class="mt-[5px] space-y-[2px]">
-              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#e8f7fe] hover:text-brand">2025年终总结报告撰写</button>
-              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#e8f7fe] hover:text-brand">十五五会议的重点有哪些？</button>
+            <div id="recentList" class="mt-[4px] space-y-[1px]">
+              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请将以上文档内容整合，并整...</button>
+              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请根据最近中式婚礼潮流，生...</button>
+              <button class="w-full text-left truncate px-[9px] h-[25px] rounded hover:bg-[#eeeefe] hover:text-brand">请生成一份中式，大约预算5W...</button>
             </div>
           </div>
         </nav>
 
         <div class="h-[35px] rounded-[8px] bg-[#f5f5f5] grid grid-cols-2 p-[3px]">
-          <button class="flex items-center justify-center gap-[5px] rounded-[6px] text-[#686d72] hover:bg-white hover:text-brand hover:shadow-sm">
+          <button class="relative flex items-center justify-center gap-[5px] rounded-[6px] text-[#686d72] hover:bg-white hover:text-brand hover:shadow-sm after:absolute after:right-0 after:h-[13px] after:border-r after:border-[#dedede]">
             <i data-lucide="book-open" class="w-[12px] h-[12px]"></i>知识库
           </button>
           <button class="flex items-center justify-center gap-[5px] rounded-[6px] text-[#686d72] hover:bg-white hover:text-brand hover:shadow-sm">
@@ -149,13 +155,13 @@
         </div>
       </aside>
 
-      <main class="relative flex-1 bg-white overflow-y-auto overflow-x-hidden">
-        <button id="benefits" class="absolute top-[9px] right-[9px] h-[22px] px-[8px] rounded-full flex items-center gap-[4px] text-[#079cde] bg-[#f4fbff] hover:bg-[#dff4ff] hover:shadow-sm">
+      <main class="main-stage relative flex-1 bg-white overflow-y-auto overflow-x-hidden">
+        <button id="benefits" class="absolute top-[9px] right-[9px] h-[22px] px-[8px] rounded-full flex items-center gap-[4px] text-[#159bd2] bg-[#f2fbff] hover:bg-[#eeeeff] hover:text-brand hover:shadow-sm">
           <i data-lucide="badge-check" class="w-[12px] h-[12px]"></i>权益详情
         </button>
 
-        <section class="hero-inner w-[535px] mx-auto pt-[111px] pb-[26px]">
-          <div class="hero-title h-[68px] flex justify-center items-center gap-[18px] text-[31px] text-[#163c77] font-serif tracking-[1px]">
+        <section class="hero-inner w-[563px] mx-auto pt-[57px] pb-[26px]">
+          <div class="hero-title h-[74px] flex justify-center items-center gap-[18px] text-[31px] text-[#12366d] font-serif tracking-[1px]">
             <span>一句话交代</span>
             <div class="speech-logo relative w-[49px] h-[49px]">
               <div class="absolute right-0 top-0 w-[38px] h-[38px] rounded-full border-[6px] border-[#dff3ff] border-b-[#72c9f6] rotate-[-23deg]"></div>
@@ -169,21 +175,18 @@
             <span>一整套交付</span>
           </div>
 
-          <div class="mt-[4px] h-[91px] rounded-[11px] border border-[#e8e8e8] bg-white shadow-composer p-[10px]">
-            <textarea id="prompt" class="w-full h-[36px] resize-none outline-none text-[12px] placeholder:text-[#aaa]" placeholder="请输入内容开始写作"></textarea>
+          <div class="mt-[13px] h-[97px] rounded-[11px] border border-[#e6e7ea] bg-white shadow-composer p-[10px]">
+            <textarea id="prompt" class="w-full h-[43px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-[5px]">
-                <button id="attach" class="w-[29px] h-[29px] rounded-full border border-[#e4e8eb] grid place-items-center hover:bg-sky-50 hover:text-brand hover:border-sky-200" title="添加附件">
+                <button id="attach" class="w-[29px] h-[29px] rounded-full border border-[#e4e8eb] grid place-items-center hover:bg-indigo-50 hover:text-brand hover:border-indigo-200" title="添加附件">
                   <i data-lucide="plus" class="w-[16px] h-[16px]"></i>
                 </button>
-                <button class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#bfe6fa] bg-[#eaf8ff] text-[#099edc] hover:bg-[#d5f1ff] hover:border-[#8bd3f5]">
-                  <i data-lucide="command" class="w-[13px] h-[13px]"></i>智能体
+                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-indigo-50 hover:text-brand hover:border-indigo-200">
+                  <i data-lucide="command" class="w-[13px] h-[13px]"></i><span id="modeText">智能体</span>
                 </button>
-                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[4px] rounded-[8px] border border-[#eceff2] bg-white hover:bg-[#f6fbfe] hover:border-sky-200">
-                  <i data-lucide="zap" class="w-[13px] h-[13px]"></i><span id="modeText">快速模式</span><i data-lucide="chevron-down" class="w-[11px] h-[11px]"></i>
-                </button>
-                <button id="assistantButton" class="h-[29px] px-[9px] flex items-center gap-[4px] rounded-[8px] border border-[#eceff2] bg-white hover:bg-[#f6fbfe] hover:border-sky-200">
-                  文风助手<i data-lucide="chevron-down" class="w-[11px] h-[11px]"></i>
+                <button id="assistantButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-indigo-50 hover:text-brand hover:border-indigo-200">
+                  <i data-lucide="monitor" class="w-[12px] h-[12px]"></i>文风助手库
                 </button>
               </div>
               <button id="send" class="w-[28px] h-[28px] rounded-full bg-[#d8dadd] text-white grid place-items-center hover:bg-brand hover:shadow-md" title="发送">
@@ -192,62 +195,56 @@
             </div>
           </div>
 
-          <div class="mt-[22px] flex justify-center gap-[7px]">
-            <button data-suggestion="帮我写一份工作汇报" class="h-[31px] px-[11px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#8ed6f6] hover:bg-[#f0faff] hover:text-brand">
+          <div class="mt-[24px] flex justify-center gap-[7px]">
+            <button data-suggestion="帮我写一份工作汇报" class="h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#b9bbf6] hover:bg-[#f4f4ff] hover:text-brand">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47d632]"></i>写作
             </button>
-            <button data-suggestion="深度研究人工智能发展趋势" class="h-[31px] px-[11px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#8ed6f6] hover:bg-[#f0faff] hover:text-brand">
+            <button data-suggestion="深度研究人工智能发展趋势" class="h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#b9bbf6] hover:bg-[#f4f4ff] hover:text-brand">
               <i data-lucide="microscope" class="w-[13px] h-[13px] text-[#ff7259]"></i>深度研究
             </button>
-            <button data-suggestion="生成一份项目介绍PPT" class="h-[31px] px-[11px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#8ed6f6] hover:bg-[#f0faff] hover:text-brand">
+            <button data-suggestion="生成一份项目介绍PPT" class="h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#b9bbf6] hover:bg-[#f4f4ff] hover:text-brand">
               <i data-lucide="presentation" class="w-[13px] h-[13px] text-[#f07758]"></i>AI PPT
-            </button>
-            <button data-suggestion="整理今天的会议纪要" class="h-[31px] px-[11px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#8ed6f6] hover:bg-[#f0faff] hover:text-brand">
-              <i data-lucide="calendar-days" class="w-[13px] h-[13px] text-[#10aeee]"></i>会议纪要
-            </button>
-            <button data-suggestion="阅读并总结这份文档" class="h-[31px] px-[11px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px] hover:border-[#8ed6f6] hover:bg-[#f0faff] hover:text-brand">
-              <i data-lucide="book-open-text" class="w-[13px] h-[13px] text-[#8f73ee]"></i>阅读
             </button>
           </div>
 
-          <h2 class="mt-[20px] mb-[9px] text-center text-[10px] font-semibold text-[#555]">您的智能体团队</h2>
-          <div class="agent-grid grid grid-cols-3 gap-[9px]">
-            <button data-agent="写作达人" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+          <h2 class="mt-[23px] mb-[11px] text-center text-[11px] font-semibold text-[#222]">办公写作智能体：让写作专家团队，为您精修每一篇文章</h2>
+          <div class="agent-grid grid grid-cols-3 gap-x-[10px] gap-y-[17px]">
+            <button data-agent="写作达人" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">👩🏻</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">写作达人</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">专业文稿处理与知识提取助手</p></div>
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">大纲写作</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">极速写作</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">公文写作</span></div>
             </button>
-            <button data-agent="统筹专家" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+            <button data-agent="统筹专家" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">👨🏻‍💼</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">统筹专家</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">任务管理专家</p></div>
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">需求拆解</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">任务规划</span></div>
             </button>
-            <button data-agent="检索专家" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+            <button data-agent="检索专家" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">🧑🏻‍💻</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">检索专家</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">精准信息收集专家</p></div>
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">信息收集</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">自动刷剧</span></div>
             </button>
-            <button data-agent="文献阅读师" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+            <button data-agent="文献阅读师" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">🧑🏻‍🏫</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">文献阅读师</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">专业文献处理与知识提取助手</p></div>
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">信息收集</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">自动刷剧</span></div>
             </button>
-            <button data-agent="研究员" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+            <button data-agent="研究员" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">👨🏻‍🔬</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">研究员</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">深度研究专家</p></div>
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">深度研究</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">数据分析</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">图表生成</span></div>
             </button>
-            <button data-agent="资深编辑" class="agent-card h-[81px] rounded-[9px] border border-[#e5e8ea] p-[10px] text-left bg-white shadow-card">
+            <button data-agent="资深编辑" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
                 <div class="avatar-art w-[29px] h-[29px] shrink-0 rounded-[6px] grid place-items-center text-[18px]">👩🏻‍💼</div>
                 <div class="min-w-0"><h3 class="font-semibold text-[11px]">资深编辑</h3><p class="text-[8px] text-[#9a9a9a] mt-[2px] truncate">内容校对与风险把控专家</p></div>
@@ -261,9 +258,9 @@
   </div>
 
   <div id="menu" class="hidden fixed z-30 w-[128px] rounded-[8px] border border-[#e5e8eb] bg-white shadow-lg p-[5px] text-[12px]">
-    <button data-mode="快速模式" class="w-full p-[7px] rounded text-left hover:bg-sky-50 hover:text-brand">快速模式</button>
-    <button data-mode="深度思考" class="w-full p-[7px] rounded text-left hover:bg-sky-50 hover:text-brand">深度思考</button>
-    <button data-mode="专业模式" class="w-full p-[7px] rounded text-left hover:bg-sky-50 hover:text-brand">专业模式</button>
+    <button data-mode="智能体" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">智能体团队</button>
+    <button data-mode="自动编排" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">自动编排</button>
+    <button data-mode="指定专家" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">指定专家</button>
   </div>
 
   <div id="modal" class="hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] items-center justify-center">
@@ -275,7 +272,7 @@
       <div id="modalBody" class="mt-[14px] text-[#6a6f75] leading-7">
         当前为办公智能体体验版，已包含写作、研究、会议纪要和文档阅读能力。
       </div>
-      <button id="modalOkay" class="mt-[16px] w-full h-[36px] rounded-[8px] bg-brand text-white hover:bg-[#0787c1] hover:shadow-md">我知道了</button>
+      <button id="modalOkay" class="mt-[16px] w-full h-[36px] rounded-[8px] bg-brand text-white hover:bg-[#494dcc] hover:shadow-md">我知道了</button>
     </div>
   </div>
   <div id="toast" class="hidden toast fixed z-50 left-1/2 top-[60px] -translate-x-1/2 px-[16px] py-[9px] rounded-[8px] bg-[#263542] text-white shadow-xl text-[12px]"></div>
@@ -359,7 +356,7 @@
     $$("[data-nav]").forEach(button => button.addEventListener("click", () => {
       $$(".nav-item").forEach(item => item.classList.remove("bg-[#ededed]", "font-semibold"));
       button.classList.add("bg-[#ededed]", "font-semibold");
-      if (!button.textContent.includes("办公智能体")) showToast(button.textContent.trim() + " 功能即将打开");
+      if (!button.textContent.includes("办公写作Agent")) showToast(button.textContent.trim() + " 功能即将打开");
     }));
 
     function submitPrompt() {
