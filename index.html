@@ -178,9 +178,19 @@
       box-shadow: 0 23px 44px rgba(58, 61, 171, .30), inset 0 1px 0 rgba(255,255,255,.4);
     }
     .login-field:focus-within {
-      border-color: #5B5FE5;
-      box-shadow: 0 0 0 3px rgba(91, 95, 229, .10);
+      border-color: #00a0df;
+      box-shadow: 0 0 0 3px rgba(0, 160, 223, .11);
       background: #fff;
+    }
+    .work-mode-card.is-mode-selected {
+      color: #222;
+      background: #eaf7ff;
+      border-color: #87d5f7;
+    }
+    .work-mode-card.is-mode-selected .mode-card-icon { color: #00a0df; }
+    .work-mode-card:not(.is-mode-selected):hover {
+      background: #f5f5f5;
+      border-color: #e6e6e6;
     }
     @keyframes screenIn {
       from { opacity: 0; transform: scale(.995); }
@@ -239,13 +249,13 @@
         <div class="absolute -left-[130px] -bottom-[170px] w-[420px] h-[420px] rounded-full border border-white/[.07]"></div>
         <div class="absolute -left-[70px] -bottom-[110px] w-[300px] h-[300px] rounded-full border border-white/[.07]"></div>
         <button id="backToDesktop" class="relative self-start flex items-center gap-[9px] rounded-[9px] px-[7px] py-[5px] -ml-[7px] hover:bg-white/[.07]">
-          <span class="w-[28px] h-[28px] rounded-[8px] bg-brand grid place-items-center shadow-lg shadow-indigo-950/30">
+          <span class="w-[28px] h-[28px] rounded-[8px] bg-[#00a0df] grid place-items-center shadow-lg shadow-sky-950/30">
             <span class="text-[16px] font-bold italic">m</span>
           </span>
           <span class="font-semibold text-[14px]">模力通</span>
         </button>
         <div class="relative max-w-[330px]">
-          <p class="text-[11px] font-semibold tracking-[2px] text-[#a9aaf0]">INTELLIGENT WORKSPACE</p>
+          <p class="text-[11px] font-semibold tracking-[2px] text-[#68cdf5]">INTELLIGENT WORKSPACE</p>
           <h2 class="mt-[15px] text-[30px] leading-[1.28] font-semibold tracking-[-1px]">让每一次办公，<br>都有专业团队协作。</h2>
           <p class="mt-[17px] text-[13px] leading-6 text-white/55">从灵感到交付，让智能体团队完成繁琐工作。</p>
         </div>
@@ -254,7 +264,7 @@
       <main class="flex items-center justify-center px-[48px]">
         <div class="w-full max-w-[380px]">
           <div class="mb-[31px]">
-            <p class="text-[12px] font-medium text-brand">欢迎回来</p>
+            <p class="text-[12px] font-medium text-[#00a0df]">欢迎回来</p>
             <h1 class="mt-[8px] text-[28px] font-semibold tracking-[-.8px] text-[#202126]">登录模力通</h1>
             <p class="mt-[8px] text-[12px] text-[#85878d]">使用您的工作账号继续访问办公智能体</p>
           </div>
@@ -280,9 +290,9 @@
             </div>
             <div class="mt-[13px] h-[18px] flex items-center justify-between">
               <p id="loginError" class="text-[11px] text-[#d14848]"></p>
-              <button type="button" class="ml-auto text-[11px] text-[#73757b] hover:text-brand">忘记密码？</button>
+              <button type="button" class="ml-auto text-[11px] text-[#73757b] hover:text-[#00a0df]">忘记密码？</button>
             </div>
-            <button type="submit" class="mt-[12px] w-full h-[46px] rounded-[10px] bg-brand text-white text-[13px] font-semibold hover:bg-[#4c50d2] hover:shadow-[0_8px_20px_rgba(91,95,229,.22)]">
+            <button type="submit" class="mt-[12px] w-full h-[46px] rounded-[10px] bg-[#00a0df] text-white text-[13px] font-semibold hover:bg-[#008fc8] hover:shadow-[0_8px_20px_rgba(0,160,223,.22)]">
               登录
             </button>
           </form>
@@ -394,7 +404,7 @@
             <span>一整套交付</span>
           </div>
 
-          <div class="mt-[13px] h-[97px] rounded-[11px] border border-[#e6e7ea] bg-white shadow-composer p-[10px]">
+          <div id="composerBox" class="mt-[13px] min-h-[97px] rounded-[11px] border border-[#e6e7ea] bg-white shadow-composer p-[10px]">
             <textarea id="prompt" class="w-full h-[43px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-[5px]">
@@ -411,15 +421,32 @@
                     </button>
                   </div>
                 </div>
-                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-indigo-50 hover:text-brand hover:border-indigo-200">
+                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#91dafa] bg-[#e9f8ff] text-[#00a0df] hover:bg-[#dff4ff] hover:border-[#67c9f1]">
                   <i data-lucide="command" class="w-[13px] h-[13px]"></i><span id="modeText">智能体</span>
                 </button>
-                <button id="assistantButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-indigo-50 hover:text-brand hover:border-indigo-200">
+                <button id="speedModeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#e9f8ff] hover:text-[#00a0df] hover:border-[#91dafa]" aria-expanded="false">
+                  <i data-lucide="zap" class="w-[13px] h-[13px]"></i><span id="speedModeText">快速模式</span><i data-lucide="chevron-down" class="w-[11px] h-[11px]"></i>
+                </button>
+                <button id="assistantButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#f2f2f2] hover:text-[#333] hover:border-[#d7d7d7]">
                   <i data-lucide="monitor" class="w-[12px] h-[12px]"></i>文风助手库
                 </button>
               </div>
               <button id="send" class="w-[28px] h-[28px] rounded-full bg-[#d8dadd] text-white grid place-items-center hover:bg-brand hover:shadow-md" title="发送">
                 <i data-lucide="arrow-up" class="w-[15px] h-[15px]"></i>
+              </button>
+            </div>
+            <div id="workModePanel" class="hidden -mx-[10px] -mb-[10px] mt-[10px] border-t border-[#e8e8e8] px-[12px] py-[13px] grid grid-cols-2 gap-[9px]">
+              <button data-work-mode="快速模式" class="work-mode-card is-mode-selected min-h-[78px] rounded-[10px] border border-transparent px-[11px] py-[10px] text-left">
+                <span class="flex items-center gap-[7px] text-[13px] font-semibold">
+                  <i data-lucide="zap" class="mode-card-icon w-[16px] h-[16px]"></i>快速模式
+                </span>
+                <span class="block mt-[7px] text-[11px] leading-[1.45] font-normal text-[#6f7479]">简化交互流程，人工介入少，结果交付速度快，适合任务简单、需要快速反馈的场景</span>
+              </button>
+              <button data-work-mode="交互模式" class="work-mode-card min-h-[78px] rounded-[10px] border border-transparent bg-[#f8f8f8] px-[11px] py-[10px] text-left">
+                <span class="flex items-center gap-[7px] text-[13px] font-semibold">
+                  <i data-lucide="atom" class="mode-card-icon w-[16px] h-[16px]"></i>交互模式
+                </span>
+                <span class="block mt-[7px] text-[11px] leading-[1.45] font-normal text-[#6f7479]">交互流程更细化，与人交互多，内容更详细模式和任务复杂，设计分析研究的场景</span>
               </button>
             </div>
           </div>
@@ -612,6 +639,23 @@
     document.addEventListener("click", (event) => {
       if (!menu.contains(event.target) && !$("#modeButton").contains(event.target)) menu.classList.add("hidden");
     });
+
+    $("#speedModeButton").addEventListener("click", () => {
+      const panel = $("#workModePanel");
+      const opening = panel.classList.contains("hidden");
+      panel.classList.toggle("hidden");
+      $("#speedModeButton").setAttribute("aria-expanded", String(opening));
+      $("#speedModeButton").classList.toggle("border-[#91dafa]", opening);
+      $("#speedModeButton").classList.toggle("bg-[#e9f8ff]", opening);
+      $("#speedModeButton").classList.toggle("text-[#00a0df]", opening);
+    });
+
+    $$("[data-work-mode]").forEach(button => button.addEventListener("click", () => {
+      $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+      button.classList.add("is-mode-selected");
+      $("#speedModeText").textContent = button.dataset.workMode;
+      showToast("已选择" + button.dataset.workMode);
+    }));
 
     $("#assistantButton").addEventListener("click", () => openModal("文风助手",
       "<div class='grid grid-cols-2 gap-2'>" +
