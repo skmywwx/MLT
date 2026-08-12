@@ -68,6 +68,24 @@
       pointer-events: auto;
       transform: translateX(0);
     }
+    .attach-menu {
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-5px);
+      transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+    }
+    .attach-menu-wrap:hover .attach-menu,
+    .attach-menu-wrap:focus-within .attach-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .attach-menu-wrap:hover #attach,
+    .attach-menu-wrap:focus-within #attach {
+      color: #303030;
+      background: #f0f0f0;
+      border-color: #c9c9c9;
+    }
     .agent-card:hover {
       border-color: #b9bbf6;
       box-shadow: 0 7px 20px rgba(91, 95, 229, .10);
@@ -166,20 +184,20 @@
             <div id="recentList" class="mt-[4px] space-y-[1px]">
               <div class="recent-row group flex items-center">
                 <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请将以上文档内容整合，并整...</button>
-                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
-                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
+                  <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
               <div class="recent-row group flex items-center">
                 <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请根据最近中式婚礼潮流，生...</button>
-                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
-                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
+                  <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
               <div class="recent-row group flex items-center">
                 <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请生成一份中式，大约预算5W...</button>
-                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
-                  <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+                <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
+                  <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
             </div>
@@ -220,9 +238,19 @@
             <textarea id="prompt" class="w-full h-[43px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-[5px]">
-                <button id="attach" class="w-[29px] h-[29px] rounded-full border border-[#e4e8eb] grid place-items-center hover:bg-indigo-50 hover:text-brand hover:border-indigo-200" title="添加附件">
-                  <i data-lucide="plus" class="w-[16px] h-[16px]"></i>
-                </button>
+                <div class="attach-menu-wrap relative">
+                  <button id="attach" class="w-[29px] h-[29px] rounded-full border border-[#e1e2e5] grid place-items-center text-[#555] hover:text-[#303030] hover:bg-[#f0f0f0] hover:border-[#c9c9c9]" title="添加内容" aria-haspopup="menu">
+                    <i data-lucide="plus" class="w-[17px] h-[17px]"></i>
+                  </button>
+                  <div class="attach-menu absolute z-30 left-0 top-[36px] w-[145px] rounded-[14px] border border-[#ededed] bg-white p-[7px] shadow-[0_10px_28px_rgba(30,30,30,.15)]" role="menu">
+                    <button id="myKnowledge" class="w-full h-[39px] px-[9px] rounded-[9px] flex items-center gap-[12px] text-[13px] text-[#272727] hover:bg-[#f2f2f2]" role="menuitem">
+                      <i data-lucide="archive" class="w-[17px] h-[17px]"></i><span>我的知识库</span>
+                    </button>
+                    <button id="uploadLocal" class="w-full h-[39px] px-[9px] rounded-[9px] flex items-center gap-[12px] text-[13px] text-[#272727] hover:bg-[#f2f2f2]" role="menuitem">
+                      <i data-lucide="upload" class="w-[18px] h-[18px]"></i><span>上传本地文件</span>
+                    </button>
+                  </div>
+                </div>
                 <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-indigo-50 hover:text-brand hover:border-indigo-200">
                   <i data-lucide="command" class="w-[13px] h-[13px]"></i><span id="modeText">智能体</span>
                 </button>
@@ -376,7 +404,8 @@
       ).join("") + "</div>"));
     window.selectStyle = (style) => { closeModal(); showToast("已选择“" + style + "”文风"); };
 
-    $("#attach").addEventListener("click", () => showToast("已打开文件选择器（原型演示）"));
+    $("#myKnowledge").addEventListener("click", () => showToast("已打开我的知识库"));
+    $("#uploadLocal").addEventListener("click", () => showToast("已打开本地文件选择器（原型演示）"));
     $("#viewAll").addEventListener("click", () => openModal("全部对话",
       "<div class='space-y-2'>" +
       ["2025年终总结报告撰写", "十五五会议的重点有哪些？", "季度工作计划优化", "项目会议纪要整理"].map(x =>
@@ -413,8 +442,8 @@
       row.className = "recent-row group flex items-center";
       row.innerHTML = `
         <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]"></button>
-        <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:bg-[#e3e3e3] hover:text-[#222]" aria-label="删除对话" title="删除">
-          <i data-lucide="trash-2" class="w-[14px] h-[14px]"></i>
+        <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
+          <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
         </button>`;
       row.querySelector("button").textContent = text;
       return row;
