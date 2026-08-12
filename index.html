@@ -149,6 +149,43 @@
       margin: 2px;
       border-radius: 6px;
     }
+    .entry-screen {
+      position: fixed;
+      inset: 0;
+      animation: screenIn .32s cubic-bezier(.22, 1, .36, 1);
+    }
+    .desktop-surface {
+      background:
+        radial-gradient(circle at 50% 42%, rgba(91, 95, 229, .09), transparent 30%),
+        linear-gradient(135deg, #f7f7f5 0%, #eeefed 100%);
+    }
+    .desktop-surface::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: .32;
+      background-image: radial-gradient(#a9aaa7 0.6px, transparent 0.6px);
+      background-size: 18px 18px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      pointer-events: none;
+    }
+    .midu-app-icon {
+      background: linear-gradient(145deg, #777af0 0%, #5B5FE5 52%, #4043ba 100%);
+      box-shadow: 0 18px 38px rgba(58, 61, 171, .24), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .desktop-logo-button:hover .midu-app-icon {
+      transform: translateY(-4px);
+      box-shadow: 0 23px 44px rgba(58, 61, 171, .30), inset 0 1px 0 rgba(255,255,255,.4);
+    }
+    .login-field:focus-within {
+      border-color: #5B5FE5;
+      box-shadow: 0 0 0 3px rgba(91, 95, 229, .10);
+      background: #fff;
+    }
+    @keyframes screenIn {
+      from { opacity: 0; transform: scale(.995); }
+      to { opacity: 1; transform: scale(1); }
+    }
     .main-stage { min-width: 650px; }
     .toast { animation: toastIn .25s ease-out; }
     @keyframes toastIn {
@@ -164,7 +201,98 @@
   </style>
 </head>
 <body>
-  <div class="app-shell overflow-hidden bg-white border border-[#d4d6da]">
+  <section id="desktopView" class="entry-screen desktop-surface z-[60] flex flex-col text-[#202124]">
+    <header class="relative z-10 h-[52px] px-[26px] flex items-center justify-between border-b border-black/[.05] bg-white/45 backdrop-blur-md">
+      <div class="flex items-center gap-[9px]">
+        <span class="w-[9px] h-[9px] rounded-full bg-brand"></span>
+        <span class="text-[13px] font-semibold tracking-[-.1px]">模力通桌面端</span>
+      </div>
+      <div class="flex items-center gap-[18px] text-[12px] text-[#6f7177]">
+        <span id="desktopDate"></span>
+        <button class="w-[29px] h-[29px] grid place-items-center rounded-[8px] hover:bg-black/[.05] hover:text-[#25262a]" title="系统设置">
+          <i data-lucide="settings-2" class="w-[15px] h-[15px]"></i>
+        </button>
+      </div>
+    </header>
+    <main class="relative z-10 flex-1 grid place-items-center pb-[52px]">
+      <button id="desktopLogo" class="desktop-logo-button group flex flex-col items-center gap-[16px]" aria-label="打开模力通">
+        <span class="midu-app-icon w-[96px] h-[96px] rounded-[25px] grid place-items-center transition-all duration-200">
+          <svg viewBox="0 0 96 96" class="w-[67px] h-[67px]" aria-hidden="true">
+            <path d="M20 56V35c0-5 3-8 8-8h4c5 0 8 3 8 8v21" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+            <path d="M40 56V39c0-5 3-8 8-8h3c5 0 8 3 8 8v17" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+            <path d="M59 56V43c0-5 3-8 8-8s9 3 9 8v13" fill="none" stroke="white" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="75" cy="24" r="4" fill="#dfe0ff"/>
+            <path d="M23 68h50" stroke="#dfe0ff" stroke-width="5" stroke-linecap="round" opacity=".85"/>
+          </svg>
+        </span>
+        <span class="text-[15px] font-semibold tracking-[-.2px] text-[#25262a] group-hover:text-brand">模力通</span>
+      </button>
+    </main>
+    <footer class="relative z-10 h-[43px] flex items-center justify-center text-[10px] tracking-[.5px] text-[#96989e]">
+      MIDU INTELLIGENT WORKSPACE
+    </footer>
+  </section>
+
+  <section id="loginView" class="entry-screen z-[55] hidden bg-[#f5f5f3]">
+    <div class="h-full grid grid-cols-[42%_58%]">
+      <aside class="relative overflow-hidden bg-[#1f2028] text-white px-[48px] py-[42px] flex flex-col justify-between">
+        <div class="absolute -left-[130px] -bottom-[170px] w-[420px] h-[420px] rounded-full border border-white/[.07]"></div>
+        <div class="absolute -left-[70px] -bottom-[110px] w-[300px] h-[300px] rounded-full border border-white/[.07]"></div>
+        <button id="backToDesktop" class="relative self-start flex items-center gap-[9px] rounded-[9px] px-[7px] py-[5px] -ml-[7px] hover:bg-white/[.07]">
+          <span class="w-[28px] h-[28px] rounded-[8px] bg-brand grid place-items-center shadow-lg shadow-indigo-950/30">
+            <span class="text-[16px] font-bold italic">m</span>
+          </span>
+          <span class="font-semibold text-[14px]">模力通</span>
+        </button>
+        <div class="relative max-w-[330px]">
+          <p class="text-[11px] font-semibold tracking-[2px] text-[#a9aaf0]">INTELLIGENT WORKSPACE</p>
+          <h2 class="mt-[15px] text-[30px] leading-[1.28] font-semibold tracking-[-1px]">让每一次办公，<br>都有专业团队协作。</h2>
+          <p class="mt-[17px] text-[13px] leading-6 text-white/55">从灵感到交付，让智能体团队完成繁琐工作。</p>
+        </div>
+        <p class="relative text-[10px] text-white/30">© 2026 MIDU · 模力通</p>
+      </aside>
+      <main class="flex items-center justify-center px-[48px]">
+        <div class="w-full max-w-[380px]">
+          <div class="mb-[31px]">
+            <p class="text-[12px] font-medium text-brand">欢迎回来</p>
+            <h1 class="mt-[8px] text-[28px] font-semibold tracking-[-.8px] text-[#202126]">登录模力通</h1>
+            <p class="mt-[8px] text-[12px] text-[#85878d]">使用您的工作账号继续访问办公智能体</p>
+          </div>
+          <form id="loginForm" novalidate>
+            <div class="space-y-[17px]">
+              <label class="block">
+                <span class="block mb-[7px] text-[12px] font-semibold text-[#404147]">用户名</span>
+                <span class="login-field h-[46px] px-[13px] rounded-[10px] border border-[#dcdddf] bg-white/75 flex items-center gap-[10px] transition">
+                  <i data-lucide="user-round" class="w-[16px] h-[16px] text-[#8d8f96]"></i>
+                  <input id="username" type="text" autocomplete="username" class="flex-1 min-w-0 bg-transparent outline-none text-[13px] placeholder:text-[#aaa]" placeholder="请输入用户名" />
+                </span>
+              </label>
+              <label class="block">
+                <span class="block mb-[7px] text-[12px] font-semibold text-[#404147]">密码</span>
+                <span class="login-field h-[46px] px-[13px] rounded-[10px] border border-[#dcdddf] bg-white/75 flex items-center gap-[10px] transition">
+                  <i data-lucide="lock-keyhole" class="w-[16px] h-[16px] text-[#8d8f96]"></i>
+                  <input id="password" type="password" autocomplete="current-password" class="flex-1 min-w-0 bg-transparent outline-none text-[13px] placeholder:text-[#aaa]" placeholder="请输入密码" />
+                  <button id="togglePassword" type="button" class="w-[27px] h-[27px] rounded-[7px] grid place-items-center text-[#8d8f96] hover:bg-[#efeff1] hover:text-[#45464b]" aria-label="显示密码">
+                    <i data-lucide="eye" class="w-[15px] h-[15px]"></i>
+                  </button>
+                </span>
+              </label>
+            </div>
+            <div class="mt-[13px] h-[18px] flex items-center justify-between">
+              <p id="loginError" class="text-[11px] text-[#d14848]"></p>
+              <button type="button" class="ml-auto text-[11px] text-[#73757b] hover:text-brand">忘记密码？</button>
+            </div>
+            <button type="submit" class="mt-[12px] w-full h-[46px] rounded-[10px] bg-brand text-white text-[13px] font-semibold hover:bg-[#4c50d2] hover:shadow-[0_8px_20px_rgba(91,95,229,.22)]">
+              登录
+            </button>
+          </form>
+          <p class="mt-[24px] text-center text-[10px] text-[#a0a1a6]">安全登录 · 数据全程加密保护</p>
+        </div>
+      </main>
+    </div>
+  </section>
+
+  <div id="agentApp" class="app-shell hidden overflow-hidden bg-white border border-[#d4d6da]">
     <header class="h-[45px] border-b border-[#eceff2] flex items-center justify-between px-[21px] bg-white">
       <button class="flex items-center gap-[6px] group" title="返回模力通首页">
         <span class="text-[25px] leading-none italic font-extrabold tracking-[-2px] text-[#08a5ec] group-hover:text-brand">midu</span>
@@ -387,6 +515,56 @@
     const menu = $("#menu");
     const modal = $("#modal");
     let toastTimer;
+
+    const desktopView = $("#desktopView");
+    const loginView = $("#loginView");
+    const agentApp = $("#agentApp");
+
+    $("#desktopDate").textContent = new Intl.DateTimeFormat("zh-CN", {
+      month: "long", day: "numeric", weekday: "short"
+    }).format(new Date());
+
+    $("#desktopLogo").addEventListener("click", () => {
+      desktopView.classList.add("hidden");
+      loginView.classList.remove("hidden");
+      window.setTimeout(() => $("#username").focus(), 180);
+    });
+
+    $("#backToDesktop").addEventListener("click", () => {
+      loginView.classList.add("hidden");
+      desktopView.classList.remove("hidden");
+      $("#loginError").textContent = "";
+    });
+
+    $("#togglePassword").addEventListener("click", () => {
+      const password = $("#password");
+      const showing = password.type === "text";
+      password.type = showing ? "password" : "text";
+      $("#togglePassword").innerHTML = `<i data-lucide="${showing ? "eye" : "eye-off"}" class="w-[15px] h-[15px]"></i>`;
+      $("#togglePassword").setAttribute("aria-label", showing ? "显示密码" : "隐藏密码");
+      lucide.createIcons();
+    });
+
+    $("#loginForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const username = $("#username").value.trim();
+      const password = $("#password").value;
+      if (!username || !password) {
+        $("#loginError").textContent = "请输入用户名和密码";
+        (!username ? $("#username") : $("#password")).focus();
+        return;
+      }
+      $("#loginError").textContent = "";
+      const submit = event.currentTarget.querySelector('[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = "正在进入...";
+      window.setTimeout(() => {
+        loginView.classList.add("hidden");
+        agentApp.classList.remove("hidden");
+        submit.disabled = false;
+        submit.textContent = "登录";
+      }, 480);
+    });
 
     function showToast(message) {
       const toast = $("#toast");
