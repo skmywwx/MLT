@@ -1168,6 +1168,116 @@
     setChatBookmarkOpen(!bookmark.classList.contains("is-open"));
   }
 
+  let activeConversationId = null;
+
+  function generateConversationId() {
+    return `conv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+  }
+
+  function snapshotStorageKey(id) {
+    return `mlt:conv:${id}`;
+  }
+
+  function saveActiveConversation() {
+    if (!activeConversationId || !els.chatThread?.innerHTML?.trim()) return;
+    const snap = {
+      id: activeConversationId,
+      title: chatSession.initialPrompt || chatSession.userTurns?.[0]?.text || "",
+      chatThreadHtml: els.chatThread.innerHTML,
+      statusBarHtml: els.workflowStatusBar?.innerHTML || "",
+      chatSession: {
+        ...chatSession,
+        userTurns: (chatSession.userTurns || []).map(({ index, text }) => ({ index, text })),
+      },
+      flowContext: { ...flowContext },
+      progressPercent,
+      currentTodoIndex,
+      scrollTop: els.workflowChat?.scrollTop || 0,
+      updatedAt: Date.now(),
+    };
+    try {
+      sessionStorage.setItem(snapshotStorageKey(activeConversationId), JSON.stringify(snap));
+    } catch (_) { /* storage full */ }
+  }
+
+  function loadConversationSnapshot(id) {
+    try {
+      return JSON.parse(sessionStorage.getItem(snapshotStorageKey(id)) || "null");
+    } catch {
+      return null;
+    }
+  }
+
+  function deleteConversationSnapshot(id) {
+    sessionStorage.removeItem(snapshotStorageKey(id));
+  }
+
+  function rebuildUserTurnElements() {
+    const nodes = els.chatThread?.querySelectorAll("[data-user-turn]") || [];
+    chatSession.userTurns = [...nodes].map((node, index) => ({
+      index: index + 1,
+      text: node.textContent?.trim() || chatSession.userTurns?.[index]?.text || "",
+      element: node.closest(".wf-msg") || node,
+    }));
+    chatSession.currentTurnIndex = chatSession.userTurns.length || chatSession.currentTurnIndex;
+  }
+
+  function rebindConversationInteractions() {
+    if (!els.chatThread) return;
+    bindFollowUpButtons(els.chatThread);
+    els.chatThread.querySelectorAll(".wf-stars").forEach((starsWrap) => {
+      const wrap = starsWrap.closest(".wf-msg");
+      if (!wrap) return;
+      starsWrap.querySelectorAll("[data-star]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = +btn.dataset.star;
+          starsWrap.querySelectorAll("[data-star]").forEach((b) => {
+            b.style.color = +b.dataset.star <= val ? "#ffb800" : "#ddd";
+          });
+          if (val <= 3) toggleModal("feedbackModal", true);
+          else window.showToast?.("感谢您的评价！");
+        });
+      });
+      wrap.querySelector("#openAllFiles")?.addEventListener("click", () => showFilesModal());
+    });
+  }
+
+  function restoreConversation(id) {
+    const snap = loadConversationSnapshot(id);
+    if (!snap?.chatThreadHtml) return false;
+
+    saveActiveConversation();
+    abortToken++;
+    running = false;
+    activeConversationId = id;
+
+    resetChatSession();
+    Object.assign(chatSession, snap.chatSession || {});
+    chatSession.userTurns = snap.chatSession?.userTurns || [];
+    flowContext.isResearch = !!snap.flowContext?.isResearch;
+    flowContext.quickMode = snap.flowContext?.quickMode ?? null;
+    progressPercent = snap.progressPercent || 0;
+    currentTodoIndex = snap.currentTodoIndex || 0;
+
+    els.homeView?.classList.add("hidden");
+    els.workflowView?.classList.remove("hidden");
+    els.mainStage?.classList.add("is-chat-mode");
+    document.getElementById("benefits")?.classList.add("hidden");
+
+    if (els.workflowStatusBar) els.workflowStatusBar.innerHTML = snap.statusBarHtml || "";
+    if (els.chatThread) els.chatThread.innerHTML = snap.chatThreadHtml;
+
+    todoPanelEl = els.chatThread?.querySelector(".todo-panel")?.closest(".wf-msg") || null;
+    rebuildUserTurnElements();
+    rebindConversationInteractions();
+    window.lucide?.createIcons();
+
+    if (els.workflowChat) els.workflowChat.scrollTop = snap.scrollTop || 0;
+    updateChatBookmark();
+    syncChatBookmarkPosition();
+    return true;
+  }
+
   function finalizeChatSession(promptText, deliverable, workMode) {
     chatSession.initialPrompt = promptText;
     chatSession.workMode = workMode;
@@ -1356,6 +1466,7 @@
     agentMessage(agent, generateFollowUpReply(question));
     appendFollowUpSuggestions(question);
     chatSession.turnCount += 1;
+    saveActiveConversation();
     scrollChat();
   }
 
@@ -1700,6 +1811,11 @@
     });
 
     window.startWorkflowSimulation = startWorkflowSimulation;
+    window.generateConversationId = generateConversationId;
+    window.setActiveConversationId = (id) => { activeConversationId = id; };
+    window.saveActiveConversation = saveActiveConversation;
+    window.restoreConversation = restoreConversation;
+    window.deleteConversationSnapshot = deleteConversationSnapshot;
   }
 
   function submitChatFollowUp() {
@@ -1721,6 +1837,7 @@
   }
 
   function stopAndGoHome() {
+    saveActiveConversation();
     abortToken++;
     running = false;
     els.workflowView?.classList.add("hidden");
@@ -2675,6 +2792,7 @@
     workflowCarousel();
     ratingAndQuestions();
     scrollChat();
+    saveActiveConversation();
   }
 
   async function runInteractiveFlow(promptText, token) {
@@ -2821,6 +2939,7 @@
     workflowCarousel();
     ratingAndQuestions();
     scrollChat();
+    saveActiveConversation();
   }
 
   async function runQuickFlow(promptText, token) {
@@ -2856,9 +2975,12 @@
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · ${isPpt ? "1.2 MB" : "420 KB"}`, deliverable.icon);
     finalizeChatSession(promptText, deliverable, modeLabel);
     ratingAndQuestions();
+    saveActiveConversation();
   }
 
-  async function startWorkflowSimulation(promptText, mode, quickMode) {
+  async function startWorkflowSimulation(promptText, mode, quickMode, options = {}) {
+    if (options.conversationId) activeConversationId = options.conversationId;
+    else if (!activeConversationId) activeConversationId = generateConversationId();
     if (running) abortToken++;
     const token = ++abortToken;
     running = true;
@@ -3249,21 +3371,31 @@
       const deleteButton = event.target.closest(".delete-conversation");
       if (deleteButton) {
         event.stopPropagation();
-        deleteButton.closest(".recent-row").remove();
+        const row = deleteButton.closest(".recent-row");
+        const convId = row?.dataset.conversationId;
+        if (convId) window.deleteConversationSnapshot?.(convId);
+        row?.remove();
         showToast("对话已删除");
         return;
       }
       const rowButton = event.target.closest(".recent-row button:first-child");
       if (!rowButton) return;
+      const row = rowButton.closest(".recent-row");
+      const convId = row?.dataset.conversationId;
+      if (convId && window.restoreConversation?.(convId)) {
+        showToast("已恢复对话记录");
+        return;
+      }
       const text = rowButton.textContent.trim();
       if (!text) return;
       promptBox.value = text;
       submitPrompt({ skipRecent: true });
     });
 
-    function createRecentRow(text) {
+    function createRecentRow(text, id) {
       const row = document.createElement("div");
       row.className = "recent-row group flex items-center";
+      if (id) row.dataset.conversationId = id;
       row.innerHTML = `
         <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]"></button>
         <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
@@ -3316,13 +3448,16 @@
         $("#speedModeText").textContent = "快速模式";
         mode = "快速模式";
       }
+      window.saveActiveConversation?.();
+      const convId = window.generateConversationId?.() || `conv_${Date.now()}`;
+      window.setActiveConversationId?.(convId);
       if (!options?.skipRecent) {
-        $("#recentList").prepend(createRecentRow(text));
+        $("#recentList").prepend(createRecentRow(text, convId));
         lucide.createIcons();
       }
       promptBox.value = "";
       if (typeof window.startWorkflowSimulation === "function") {
-        window.startWorkflowSimulation(text, mode, quickMode);
+        window.startWorkflowSimulation(text, mode, quickMode, { conversationId: convId });
       } else {
         showToast("任务已提交，智能体团队正在协作");
       }
