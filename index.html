@@ -477,10 +477,10 @@
                     </button>
                   </div>
                 </div>
-                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#91dafa] bg-[#e9f8ff] text-[#00a0df] hover:bg-[#dff4ff] hover:border-[#67c9f1]">
+                <button id="modeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#e9f8ff] hover:text-[#00a0df] hover:border-[#91dafa]" aria-pressed="false">
                   <i data-lucide="command" class="w-[13px] h-[13px]"></i><span id="modeText">智能体</span>
                 </button>
-                <button id="speedModeButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#e9f8ff] hover:text-[#00a0df] hover:border-[#91dafa]" aria-expanded="false">
+                <button id="speedModeButton" class="hidden h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#e9f8ff] hover:text-[#00a0df] hover:border-[#91dafa]" aria-expanded="false">
                   <i data-lucide="zap" class="w-[13px] h-[13px]"></i><span id="speedModeText">快速模式</span><i data-lucide="chevron-down" class="w-[11px] h-[11px]"></i>
                 </button>
                 <button id="assistantButton" class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#e6e7ea] bg-white hover:bg-[#f2f2f2] hover:text-[#333] hover:border-[#d7d7d7]">
@@ -666,12 +666,6 @@
         </div>
       </section>
     </aside>
-  </div>
-
-  <div id="menu" class="hidden fixed z-30 w-[128px] rounded-[8px] border border-[#e5e8eb] bg-white shadow-lg p-[5px] text-[12px]">
-    <button data-mode="智能体" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">智能体团队</button>
-    <button data-mode="自动编排" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">自动编排</button>
-    <button data-mode="指定专家" class="w-full p-[7px] rounded text-left hover:bg-indigo-50 hover:text-brand">指定专家</button>
   </div>
 
   <div id="modal" class="hidden fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] items-center justify-center">
@@ -1449,7 +1443,6 @@
     const $ = (selector) => document.querySelector(selector);
     const $$ = (selector) => [...document.querySelectorAll(selector)];
     const promptBox = $("#prompt");
-    const menu = $("#menu");
     const modal = $("#modal");
     let toastTimer;
 
@@ -1567,19 +1560,29 @@
     $("#modalOkay").addEventListener("click", closeModal);
     modal.addEventListener("click", (event) => { if (event.target === modal) closeModal(); });
 
-    $("#modeButton").addEventListener("click", (event) => {
-      const rect = event.currentTarget.getBoundingClientRect();
-      menu.style.left = rect.left + "px";
-      menu.style.top = rect.bottom + 5 + "px";
-      menu.classList.toggle("hidden");
-    });
-    $$("[data-mode]").forEach(button => button.addEventListener("click", () => {
-      $("#modeText").textContent = button.dataset.mode;
-      menu.classList.add("hidden");
-      showToast("已切换为" + button.dataset.mode);
-    }));
-    document.addEventListener("click", (event) => {
-      if (!menu.contains(event.target) && !$("#modeButton").contains(event.target)) menu.classList.add("hidden");
+    const modeButtonActiveClasses = ["border-[#91dafa]", "bg-[#e9f8ff]", "text-[#00a0df]"];
+    const modeButtonInactiveClasses = ["border-[#e6e7ea]", "bg-white"];
+
+    function resetSpeedModePanel() {
+      const panel = $("#workModePanel");
+      const speedBtn = $("#speedModeButton");
+      panel.classList.add("hidden");
+      speedBtn.setAttribute("aria-expanded", "false");
+      speedBtn.classList.remove("border-[#91dafa]", "bg-[#e9f8ff]", "text-[#00a0df]");
+    }
+
+    function setAgentModeActive(active) {
+      const modeBtn = $("#modeButton");
+      const speedBtn = $("#speedModeButton");
+      modeBtn.setAttribute("aria-pressed", String(active));
+      modeButtonActiveClasses.forEach(cls => modeBtn.classList.toggle(cls, active));
+      modeButtonInactiveClasses.forEach(cls => modeBtn.classList.toggle(cls, !active));
+      speedBtn.classList.toggle("hidden", !active);
+      if (!active) resetSpeedModePanel();
+    }
+
+    $("#modeButton").addEventListener("click", () => {
+      setAgentModeActive($("#modeButton").getAttribute("aria-pressed") !== "true");
     });
 
     $("#speedModeButton").addEventListener("click", () => {
@@ -1617,6 +1620,7 @@
     $$("[data-suggestion]").forEach(button => button.addEventListener("click", () => {
       promptBox.value = button.dataset.suggestion;
       if (button.classList.contains("quick-research") || button.classList.contains("quick-writing")) {
+        setAgentModeActive(true);
         $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
         const interactive = document.querySelector('[data-work-mode="交互模式"]');
         interactive?.classList.add("is-mode-selected");
