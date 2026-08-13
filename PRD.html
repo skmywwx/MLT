@@ -24,41 +24,46 @@
       min-height: 520px;
       margin: 32px auto;
       display: grid;
-      grid-template-columns: 268px minmax(0, 1fr);
+      grid-template-columns: 248px minmax(0, 1fr);
       gap: 28px;
       align-items: stretch;
     }
     .scroll-pane {
+      height: 100%;
       overflow-y: scroll;
-      scrollbar-gutter: stable;
+      overflow-x: hidden;
+      scrollbar-gutter: stable both-edges;
       scrollbar-width: thin;
-      scrollbar-color: #c8c9cc transparent;
+      scrollbar-color: #b8b9bd #ececed;
     }
-    .scroll-pane::-webkit-scrollbar { width: 8px; }
-    .scroll-pane::-webkit-scrollbar-track { background: transparent; }
+    .scroll-pane::-webkit-scrollbar { width: 10px; }
+    .scroll-pane::-webkit-scrollbar-track {
+      background: #ececed;
+      border-radius: 0;
+    }
     .scroll-pane::-webkit-scrollbar-thumb {
-      min-height: 42px;
-      border: 2px solid transparent;
+      min-height: 48px;
+      border: 2px solid #ececed;
       border-radius: 999px;
-      background: #c8c9cc;
-      background-clip: padding-box;
+      background: #b8b9bd;
     }
-    .scroll-pane::-webkit-scrollbar-thumb:hover { background-color: #aeb0b4; }
+    .scroll-pane::-webkit-scrollbar-thumb:hover { background: #9ea0a5; }
     .panel {
+      height: 100%;
+      min-height: 0;
       border: 1px solid #e6e6e6;
       border-radius: 4px;
       background: #fff;
       box-shadow: 0 10px 34px rgba(30, 32, 38, .06);
     }
-    #tocPane { padding: 28px 16px 34px 20px; }
+    #tocPane { padding: 0; }
     .toc-brand {
       position: sticky;
       z-index: 3;
-      top: -28px;
-      margin: -28px -16px 19px -20px;
-      padding: 24px 20px 15px;
+      top: 0;
+      padding: 24px 18px 14px;
       border-bottom: 1px solid #ececef;
-      background: rgba(255, 255, 255, .96);
+      background: rgba(255, 255, 255, .98);
       backdrop-filter: blur(8px);
     }
     .toc-brand small {
@@ -72,6 +77,9 @@
     .toc-brand strong {
       font-size: 15px;
       letter-spacing: -.2px;
+    }
+    #toc {
+      padding: 14px 12px 28px 16px;
     }
     #toc a {
       position: relative;
@@ -236,6 +244,7 @@
   <script>
     const content = document.querySelector("#content");
     const contentPane = document.querySelector("#contentPane");
+    const tocPane = document.querySelector("#tocPane");
     const toc = document.querySelector("#toc");
 
     function slugify(text) {
@@ -253,8 +262,8 @@
         if (!response.ok) throw new Error("PRD.md 加载失败");
         let markdown = await response.text();
 
-        // 双栏阅读版使用独立目录，正文中移除 Markdown 自带目录。
         markdown = markdown.replace(/\n## 目录[\s\S]*?(?=\n## 0\. 文档信息)/, "");
+        markdown = markdown.replace(/^> \[打开双栏独立滚动阅读版\]\(\.\/PRD\.html\)[^\n]*\n\n/, "");
         content.classList.remove("loading");
         content.innerHTML = marked.parse(markdown);
 
@@ -289,7 +298,7 @@
             link.getAttribute("href") === `#${visible.target.id}`
           ));
           const active = toc.querySelector("a.active");
-          if (active) active.scrollIntoView({ block: "nearest" });
+          if (active) active.scrollIntoView({ block: "nearest", behavior: "smooth" });
         }, { root: contentPane, rootMargin: "-5% 0px -82% 0px", threshold: 0 });
         headings.forEach((heading) => observer.observe(heading));
 
@@ -302,6 +311,10 @@
         content.innerHTML = `<div><strong>无法加载 PRD.md</strong><p>${error.message}。请通过本地服务器打开此页面。</p></div>`;
       }
     }
+
+    [tocPane, contentPane].forEach((pane) => {
+      pane.addEventListener("wheel", (event) => event.stopPropagation(), { passive: true });
+    });
 
     loadDocument();
   </script>
