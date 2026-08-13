@@ -388,14 +388,12 @@
       border-radius: 999px;
     }
     .chat-bookmark {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 20;
+      position: fixed;
+      z-index: 40;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+      pointer-events: auto;
     }
     .chat-bookmark-tab {
       width: 32px;
@@ -870,8 +868,10 @@
 
         <section id="workflowView" class="hidden absolute inset-0 flex flex-col bg-[#f3f4f6]">
           <div id="workflowStatusBar" class="shrink-0 bg-white border-b border-[#ececef] px-4 py-2.5"></div>
-          <div id="workflowChat" class="relative flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-4">
-            <div id="chatThread" class="max-w-[680px] mx-auto w-full"></div>
+          <div id="workflowChatPane" class="relative flex-1 min-h-0">
+            <div id="workflowChat" class="h-full overflow-y-auto overflow-x-hidden px-4 py-4">
+              <div id="chatThread" class="max-w-[680px] mx-auto w-full"></div>
+            </div>
             <div id="chatBookmark" class="chat-bookmark hidden" aria-label="对话书签">
               <button id="chatBookmarkTab" type="button" class="chat-bookmark-tab" aria-expanded="false" aria-haspopup="true" title="跳转到用户问答">
                 <span class="chat-bookmark-current">1</span>
@@ -1055,6 +1055,7 @@
     turnCount: 0,
     userTurns: [],
     currentTurnIndex: 0,
+    askedQuestions: [],
   };
 
   function resetChatSession() {
@@ -1069,8 +1070,27 @@
     chatSession.turnCount = 0;
     chatSession.userTurns = [];
     chatSession.currentTurnIndex = 0;
+    chatSession.askedQuestions = [];
     setChatBookmarkOpen(false);
     updateChatBookmark();
+  }
+
+  function resetChatTurns() {
+    chatSession.userTurns = [];
+    chatSession.currentTurnIndex = 0;
+    updateChatBookmark();
+  }
+
+  function syncChatBookmarkPosition() {
+    const pane = document.getElementById("workflowChatPane");
+    const bookmark = document.getElementById("chatBookmark");
+    const workflowView = document.getElementById("workflowView");
+    if (!pane || !bookmark || !workflowView || workflowView.classList.contains("hidden")) return;
+    if (bookmark.classList.contains("hidden")) return;
+    const rect = pane.getBoundingClientRect();
+    bookmark.style.top = `${rect.top + rect.height / 2}px`;
+    bookmark.style.right = `${Math.max(10, window.innerWidth - rect.right + 10)}px`;
+    bookmark.style.transform = "translateY(-50%)";
   }
 
   function escapeBookmarkText(text) {
@@ -1104,6 +1124,7 @@
     bookmark.classList.remove("hidden");
     const currentEl = bookmark.querySelector(".chat-bookmark-current");
     if (currentEl) currentEl.textContent = String(chatSession.currentTurnIndex);
+    syncChatBookmarkPosition();
     const menu = bookmark.querySelector(".chat-bookmark-menu");
     if (!menu) return;
     menu.innerHTML = turns.map((turn) => `
@@ -1138,6 +1159,7 @@
     bookmark.classList.toggle("is-open", open);
     menu.classList.toggle("hidden", !open);
     tab.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) syncChatBookmarkPosition();
   }
 
   function toggleChatBookmark() {
@@ -1236,6 +1258,84 @@
     return `关于「${question.length > 28 ? question.slice(0, 28) + "…" : question}」，结合您此前的任务「${taskHint}」与已交付的<strong>${kindLabel}</strong>，我建议从现有结论延伸说明，或针对具体段落做定向修订。请告诉我希望深入的方向，我会基于同一对话上下文继续回答。`;
   }
 
+  function buildNextSuggestedQuestions(lastQuestion) {
+    const base = chatSession.suggestedQuestions?.length
+      ? [...chatSession.suggestedQuestions]
+      : [...SUGGESTED_QUESTIONS_DEFAULT];
+    const extras = [];
+    const q = lastQuestion || "";
+
+    if (/预算|分配|费用|成本|价格/.test(q)) {
+      extras.push("若整体预算需要下调，应优先保留哪些环节？");
+      extras.push("有没有更具性价比的替代方案？");
+    } else if (/风险|隐患|问题|局限/.test(q)) {
+      extras.push("针对这些风险，具体的应急预案是什么？");
+      extras.push("哪些指标可以用来监控风险是否加剧？");
+    } else if (/修改|调整|优化|改|修订/.test(q)) {
+      extras.push("修改后对其他章节或环节会有什么影响？");
+      extras.push("能否给出修改前后的对比要点？");
+    } else if (/喜好|偏好|环节|仪式|习俗/.test(q)) {
+      extras.push("这些环节里哪些可以进一步简化？");
+      extras.push("有没有类似案例可供参考？");
+    } else {
+      extras.push("还有哪些相关细节需要补充说明？");
+      extras.push("能否结合当前情况给出更具体的建议？");
+    }
+
+    const asked = new Set([
+      chatSession.initialPrompt,
+      ...(chatSession.askedQuestions || []),
+    ].map((s) => String(s).trim()).filter(Boolean));
+
+    const seen = new Set();
+    const result = [];
+    for (const item of [...extras, ...base]) {
+      const text = String(item).trim();
+      if (!text || asked.has(text) || seen.has(text)) continue;
+      seen.add(text);
+      result.push(text);
+      if (result.length >= 3) break;
+    }
+
+    const fallbacks = [
+      "能否进一步细化执行步骤？",
+      "还有哪些我没有考虑到的要点？",
+      "如果条件发生变化，方案应如何调整？",
+    ];
+    for (const fb of fallbacks) {
+      if (result.length >= 3) break;
+      if (!asked.has(fb) && !seen.has(fb)) {
+        seen.add(fb);
+        result.push(fb);
+      }
+    }
+    return result.slice(0, 3);
+  }
+
+  function bindFollowUpButtons(root) {
+    root.querySelectorAll(".wf-followup").forEach((btn) => {
+      btn.addEventListener("click", () => handleFollowUpQuestion(btn.textContent.trim()));
+    });
+  }
+
+  function appendFollowUpSuggestions(lastQuestion) {
+    const questions = buildNextSuggestedQuestions(lastQuestion);
+    if (!questions.length) return null;
+    const wrap = appendMessage(`
+      <div class="mb-5 max-w-[92%]">
+        <div class="rounded-xl border border-[#ececef] bg-[#fafafa] px-3.5 py-3">
+          <div class="text-[10px] text-[#888] mb-2">你可能想问</div>
+          <div class="space-y-1.5">
+            ${questions.map((item) =>
+              `<button type="button" class="wf-followup w-full text-left px-3 py-2 rounded-lg border border-[#e8e8eb] bg-white text-[11px] text-[#555] hover:border-[#91dafa] hover:text-[#00a0df]">${escapeBookmarkText(item)}</button>`
+            ).join("")}
+          </div>
+        </div>
+      </div>`);
+    bindFollowUpButtons(wrap);
+    return wrap;
+  }
+
   async function handleFollowUpQuestion(text) {
     const question = text?.trim();
     if (!question) return;
@@ -1246,12 +1346,15 @@
     }
 
     userMessage(question);
+    if (!chatSession.askedQuestions) chatSession.askedQuestions = [];
+    chatSession.askedQuestions.push(question);
     const agent = pickFollowUpAgent(question);
     const thinking = statusLine(`${agent.name}正在基于上下文组织回答…`, "info");
     await sleep(700);
     thinking?.remove();
 
     agentMessage(agent, generateFollowUpReply(question));
+    appendFollowUpSuggestions(question);
     chatSession.turnCount += 1;
     scrollChat();
   }
@@ -1556,6 +1659,12 @@
     els.feedbackModal = document.getElementById("feedbackModal");
 
     if (!els.workflowView) return;
+
+    window.addEventListener("resize", syncChatBookmarkPosition);
+    const chatPane = document.getElementById("workflowChatPane");
+    if (chatPane && typeof ResizeObserver !== "undefined") {
+      new ResizeObserver(() => syncChatBookmarkPosition()).observe(chatPane);
+    }
 
     document.getElementById("newChatBtn")?.addEventListener("click", stopAndGoHome);
     document.getElementById("appLogoHome")?.addEventListener("click", goHomeFromLogo);
@@ -2058,9 +2167,7 @@
       });
     });
     wrap.querySelector("#openAllFiles")?.addEventListener("click", () => showFilesModal());
-    wrap.querySelectorAll(".wf-followup").forEach((btn) => {
-      btn.addEventListener("click", () => handleFollowUpQuestion(btn.textContent.trim()));
-    });
+    bindFollowUpButtons(wrap);
     return wrap;
   }
 
@@ -2501,6 +2608,7 @@
 
   async function runResearchPaperFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
+    resetChatTurns();
     todoPanelEl = null;
     currentTodoIndex = 0;
     progressPercent = 0;
@@ -2571,6 +2679,7 @@
 
   async function runInteractiveFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
+    resetChatTurns();
     todoPanelEl = null;
     currentTodoIndex = 0;
     progressPercent = 0;
@@ -2716,6 +2825,7 @@
 
   async function runQuickFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
+    resetChatTurns();
     todoPanelEl = null;
     const deliverable = inferDeliverable(promptText, flowContext.quickMode);
     const isPpt = deliverable.outputKind === "ppt";
@@ -2764,6 +2874,7 @@
     els.mainStage?.classList.add("is-chat-mode");
     document.getElementById("benefits")?.classList.add("hidden");
     els.workflowChat.scrollTop = 0;
+    window.requestAnimationFrame(() => syncChatBookmarkPosition());
 
     try {
       if (flowContext.quickMode === "research") {
