@@ -253,9 +253,16 @@
       border-radius: 10px;
       background: #fafbfc;
       padding: 28px 16px;
-      text-align: center;
       cursor: pointer;
       transition: border-color .18s, background .18s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .style-upload-zone.is-dragover {
+      border-color: #00a0df;
+      background: #e9f8ff;
     }
     .style-upload-zone:hover {
       border-color: #91dafa;
@@ -335,6 +342,168 @@
       margin-bottom: 16px;
       color: #c5c8cc;
     }
+    .style-create-preview-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .style-file-list {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .style-file-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #ececef;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .style-file-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #e9f8ff;
+      color: #00a0df;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .style-file-meta { flex: 1; min-width: 0; }
+    .style-file-name {
+      font-size: 12px;
+      font-weight: 500;
+      color: #333;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .style-file-status { font-size: 10px; color: #aaa; margin-top: 2px; }
+    .style-file-action {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      color: #888;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .style-file-action:hover { background: #f3f4f6; color: #555; }
+    .style-form-footnote { margin-top: 12px; font-size: 10px; color: #aaa; line-height: 1.55; }
+    .style-preview-result {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .style-preview-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 16px 20px 0;
+      overflow-x: auto;
+      flex-shrink: 0;
+    }
+    .style-preview-tab {
+      flex-shrink: 0;
+      height: 30px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid #e0e2e6;
+      background: #fff;
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+    }
+    .style-preview-tab.is-active {
+      background: #00a0df;
+      border-color: #00a0df;
+      color: #fff;
+      font-weight: 600;
+    }
+    .style-preview-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px 0;
+      flex-shrink: 0;
+    }
+    .style-preview-badge {
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 4px;
+      background: #e9f8ff;
+      color: #00a0df;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .style-preview-status-text { font-size: 11px; color: #888; }
+    .style-preview-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 24px;
+    }
+    .style-preview-h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 14px;
+    }
+    .style-preview-block {
+      border-radius: 10px;
+      background: #eef4f8;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .style-preview-block p {
+      font-size: 12px;
+      line-height: 1.75;
+      color: #444;
+      margin: 0;
+    }
+    .style-preview-card {
+      border: 1px solid #e4e6ea;
+      border-radius: 10px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+    .style-preview-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 12px;
+    }
+    .style-preview-h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #00a0df;
+      margin: 10px 0 6px;
+    }
+    .style-preview-h3:first-child { margin-top: 0; }
+    .style-preview-card p {
+      font-size: 12px;
+      line-height: 1.7;
+      color: #555;
+      margin: 0 0 8px;
+    }
+    .style-preview-quote {
+      margin-top: 10px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #f7f9fb;
+      border-left: 3px solid #00a0df;
+    }
+    .style-preview-quote p {
+      font-size: 11px;
+      line-height: 1.65;
+      color: #555;
+      margin: 0 0 6px;
+    }
+    .style-preview-quote p:last-child { margin-bottom: 0; color: #888; font-size: 10px; }
     .recent-row:hover { background: #f1f1f1; }
     .recent-row.is-active {
       background: #d6d6d6;
@@ -1346,7 +1515,7 @@
         <button id="backStyleCreate" type="button" class="style-create-back" aria-label="返回">
           <i data-lucide="chevron-left" class="w-[18px] h-[18px]"></i>
         </button>
-        <h2 id="styleCreateTitle" class="text-[14px] font-semibold text-[#222]">文风助手库</h2>
+        <h2 id="styleCreateTitle" class="text-[14px] font-semibold text-[#222]">文风库</h2>
       </header>
       <div class="style-create-body">
         <aside class="style-create-form">
@@ -1370,43 +1539,58 @@
                 <i data-lucide="file-up" class="w-[20px] h-[20px]"></i>
               </div>
               <p class="text-[12px] font-medium text-[#444]">点击或拖拽文件，生成文风库</p>
-              <p class="mt-[8px] text-[10px] text-[#aaa] leading-relaxed px-2">支持 PDF、Word、TXT、wps 格式，每个文件不超过10MB，最多10个文件，最长总计4万字</p>
+              <p class="mt-[8px] text-[10px] text-[#aaa] leading-relaxed max-w-[280px]">支持 PDF、Word、TXT、wps 格式，每个文件不超过10MB，最多10个文件，最长总计4万字</p>
             </div>
             <input id="styleFileInput" type="file" class="hidden" multiple accept=".pdf,.doc,.docx,.txt,.wps" />
+            <div id="styleFileList" class="style-file-list hidden"></div>
           </div>
 
           <button id="submitStyleCreate" type="button" class="style-submit-btn">
-            <i data-lucide="plus" class="w-[16px] h-[16px]"></i>创建文风
+            <i id="submitStyleCreateIcon" data-lucide="plus" class="w-[16px] h-[16px]"></i>
+            <span id="submitStyleCreateText">创建文风</span>
           </button>
-          <p class="mt-[12px] text-[10px] text-[#aaa] leading-relaxed">上传后将自动生成，系统会基于参考资料提炼表达风格、常用句式和内容结构，右侧区域将展示生成结果。</p>
+          <p id="styleFormFootnote" class="style-form-footnote">上传后将自动生成，系统会基于参考资料提炼表达风格、常用句式和内容结构，右侧区域将展示生成结果。</p>
         </aside>
 
         <section class="style-create-preview">
-          <div class="style-create-preview-main">
-            <div class="text-center max-w-[320px]">
-              <svg class="style-preview-art mx-auto" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <rect x="18" y="12" width="44" height="56" rx="4" fill="#fff" stroke="#d8dce0" stroke-width="1.5"/>
-                <path d="M26 24h32M26 32h32M26 40h20" stroke="#d0d3d8" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-              <h3 class="text-[15px] font-semibold text-[#333]">开始创建文风库</h3>
-              <p class="mt-[10px] text-[12px] text-[#999] leading-relaxed">左侧完成基础信息和资料上传后，系统会在这里展示分析结果与生成内容。</p>
+          <div id="stylePreviewEmpty" class="style-create-preview-empty">
+            <div class="style-create-preview-main">
+              <div class="text-center max-w-[320px]">
+                <svg class="style-preview-art mx-auto" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="18" y="12" width="44" height="56" rx="4" fill="#fff" stroke="#d8dce0" stroke-width="1.5"/>
+                  <path d="M26 24h32M26 32h32M26 40h20" stroke="#d0d3d8" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <h3 class="text-[15px] font-semibold text-[#333]">开始创建文风库</h3>
+                <p class="mt-[10px] text-[12px] text-[#999] leading-relaxed">左侧完成基础信息和资料上传后，系统会在这里展示分析结果与生成内容。</p>
+              </div>
+            </div>
+            <div class="style-steps-bar">
+              <div class="style-step-item">
+                <span class="style-step-num">1</span>
+                <span class="style-step-title">填写文风名称</span>
+                <span class="style-step-desc">用于后续识别和管理该文风库。</span>
+              </div>
+              <div class="style-step-item">
+                <span class="style-step-num">2</span>
+                <span class="style-step-title">上传参考资料</span>
+                <span class="style-step-desc">支持 PDF、Word、TXT、wps 等常见格式。</span>
+              </div>
+              <div class="style-step-item">
+                <span class="style-step-num">3</span>
+                <span class="style-step-title">点击创建文风</span>
+                <span class="style-step-desc">系统将分析资料并生成对应内容。</span>
+              </div>
             </div>
           </div>
-          <div class="style-steps-bar">
-            <div class="style-step-item">
-              <span class="style-step-num">1</span>
-              <span class="style-step-title">填写文风名称</span>
-              <span class="style-step-desc">用于后续识别和管理该文风库。</span>
+
+          <div id="stylePreviewResult" class="style-preview-result hidden">
+            <div id="stylePreviewTabs" class="style-preview-tabs"></div>
+            <div class="style-preview-status">
+              <span class="style-preview-badge">解析完成</span>
+              <span id="stylePreviewStatusText" class="style-preview-status-text">由 1 个参考文件解析生成</span>
             </div>
-            <div class="style-step-item">
-              <span class="style-step-num">2</span>
-              <span class="style-step-title">上传参考资料</span>
-              <span class="style-step-desc">支持 PDF、Word、TXT、wps 等常见格式。</span>
-            </div>
-            <div class="style-step-item">
-              <span class="style-step-num">3</span>
-              <span class="style-step-title">点击创建文风</span>
-              <span class="style-step-desc">系统将分析资料并生成对应内容。</span>
+            <div id="stylePreviewScroll" class="style-preview-scroll">
+              <div id="stylePreviewContent"></div>
             </div>
           </div>
         </section>
@@ -3627,6 +3811,244 @@
       showToast("已选择" + button.dataset.workMode);
     }));
 
+    const styleLibraryState = {
+      files: [],
+      parsed: false,
+      activeTab: "method",
+    };
+
+    const STYLE_PREVIEW_TABS = [
+      { id: "overview", label: "风格概述" },
+      { id: "method", label: "创作思路与方法" },
+      { id: "content", label: "内容特点" },
+      { id: "language", label: "语言表达特点" },
+      { id: "structure", label: "文章结构" },
+      { id: "personal", label: "个人写作特色" },
+    ];
+
+    const STYLE_TAB_CONTENT = {
+      method: `
+        <h2 class="style-preview-h1">创作思路与方法</h2>
+        <div class="style-preview-block">
+          <p>创作过程通常遵循「宏观趋势 → 行业变化 → 竞争格局 → 趋势判断」的逻辑框架，先建立整体认知，再逐层下钻至可验证的细分结论，避免结论先行、论据不足。</p>
+        </div>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">写作思路总结</div>
+          <div class="style-preview-h3">选题思路</div>
+          <p>聚焦高增长、高确定性的行业赛道，优先选择有公开数据支撑、可横向对比的研究主题。</p>
+          <div class="style-preview-h3">切入方式</div>
+          <p>从宏观背景与政策环境入手，逐步过渡到具体市场规模、结构变化与代表案例。</p>
+          <div class="style-preview-h3">内容价值</div>
+          <p>通过结构化拆解降低读者理解成本，使复杂行业信息可快速被业务决策层吸收。</p>
+          <div class="style-preview-h3">原创例证 1</div>
+          <div class="style-preview-quote">
+            <p>「截至当前，中国人工智能核心产业规模同比增长……」</p>
+            <p>该表述以权威数据开篇，先给出量化结论再展开论证，体现「数据先行、观点跟进」的写作习惯。</p>
+          </div>
+        </div>`,
+      overview: `
+        <h2 class="style-preview-h1">风格概述</h2>
+        <div class="style-preview-block">
+          <p>整体文风偏<strong>研究报告型</strong>：客观、克制、重证据，适合行业分析、政策解读与深度调研类内容。语气正式但不晦涩，强调可读性与逻辑链条完整。</p>
+        </div>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">核心特征</div>
+          <div class="style-preview-h3">叙述基调</div>
+          <p>以第三人称为主，避免主观情绪化表达，结论均尽量对应数据来源。</p>
+          <div class="style-preview-h3">适用场景</div>
+          <p>行业白皮书、市场研究报告、政策影响评估、投研摘要等。</p>
+        </div>`,
+      content: `
+        <h2 class="style-preview-h1">内容特点</h2>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">内容组织偏好</div>
+          <div class="style-preview-h3">信息密度</div>
+          <p>段落信息密度较高，单段通常包含 1 个核心观点 + 1–2 条支撑信息。</p>
+          <div class="style-preview-h3">数据使用</div>
+          <p>偏好引用市场规模、增速、占比等量化指标，并标注时间范围与统计口径。</p>
+          <div class="style-preview-h3">案例呈现</div>
+          <p>案例多作为论据嵌入正文，而非独立故事线，服务于章节论点。</p>
+        </div>`,
+      language: `
+        <h2 class="style-preview-h1">语言表达特点</h2>
+        <div class="style-preview-block">
+          <p>常用「从…来看」「在此基础上」「综合来看」「值得注意的是」等过渡句式，段落之间衔接自然，减少跳跃感。</p>
+        </div>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">句式与词汇</div>
+          <div class="style-preview-h3">高频词汇</div>
+          <p>规模、增速、占比、格局、驱动因素、制约因素、趋势、机遇、挑战等。</p>
+          <div class="style-preview-h3">修辞倾向</div>
+          <p>少用手势化夸张修辞，倾向使用限定语（「一定程度上」「总体呈现」）以保证严谨性。</p>
+        </div>`,
+      structure: `
+        <h2 class="style-preview-h1">文章结构</h2>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">典型章节结构</div>
+          <div class="style-preview-h3">开篇</div>
+          <p>背景概述 + 研究范围界定 + 核心结论预告。</p>
+          <div class="style-preview-h3">主体</div>
+          <p>按「宏观—中观—微观」或「现状—驱动—趋势—建议」展开，层级清晰。</p>
+          <div class="style-preview-h3">结尾</div>
+          <p>归纳核心发现，给出可执行建议或后续研究方向，避免空泛总结。</p>
+        </div>`,
+      personal: `
+        <h2 class="style-preview-h1">个人写作特色</h2>
+        <div class="style-preview-block">
+          <p>善于在长篇分析中保持主线清晰，通过小标题与段首句提示读者当前讨论维度，降低长文阅读负担。</p>
+        </div>
+        <div class="style-preview-card">
+          <div class="style-preview-card-title">可复用习惯</div>
+          <div class="style-preview-h3">段首提示</div>
+          <p>段首 1 句概括本段要解决的问题，再展开论述。</p>
+          <div class="style-preview-h3">图表配合</div>
+          <p>关键数据点后常预留图表位，正文与视觉信息互补。</p>
+        </div>`,
+    };
+
+    function resetStyleLibraryForm() {
+      styleLibraryState.files = [];
+      styleLibraryState.parsed = false;
+      styleLibraryState.activeTab = "method";
+      const nameInput = $("#styleNameInput");
+      const introInput = $("#styleIntroInput");
+      const fileInput = $("#styleFileInput");
+      if (nameInput) nameInput.value = "";
+      if (introInput) introInput.value = "";
+      if (fileInput) fileInput.value = "";
+      renderStyleFileList();
+      updateStyleSubmitButton();
+      showStylePreviewEmpty();
+      const footnote = $("#styleFormFootnote");
+      if (footnote) {
+        footnote.textContent = "上传后将自动生成，系统会基于参考资料提炼表达风格、常用句式和内容结构，右侧区域将展示生成结果。";
+      }
+    }
+
+    function renderStyleFileList() {
+      const list = $("#styleFileList");
+      if (!list) return;
+      if (!styleLibraryState.files.length) {
+        list.classList.add("hidden");
+        list.innerHTML = "";
+        return;
+      }
+      list.classList.remove("hidden");
+      list.innerHTML = styleLibraryState.files.map((file) => `
+        <div class="style-file-item" data-file-id="${file.id}">
+          <div class="style-file-icon"><i data-lucide="file-text" class="w-[16px] h-[16px]"></i></div>
+          <div class="style-file-meta">
+            <div class="style-file-name">${file.name}</div>
+            <div class="style-file-status">${file.statusText}</div>
+          </div>
+          <button type="button" class="style-file-action" title="下载" data-file-id="${file.id}">
+            <i data-lucide="download" class="w-[14px] h-[14px]"></i>
+          </button>
+        </div>`).join("");
+      list.querySelectorAll(".style-file-action").forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const id = btn.dataset.fileId;
+          const file = styleLibraryState.files.find((f) => f.id === id);
+          showToast(file ? `下载「${file.name}」（原型演示）` : "下载文件");
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function updateStyleSubmitButton() {
+      const hasParsed = styleLibraryState.files.some((f) => f.parsed);
+      const textEl = $("#submitStyleCreateText");
+      const iconEl = $("#submitStyleCreateIcon");
+      if (textEl) textEl.textContent = hasParsed ? "更新文风" : "创建文风";
+      if (iconEl) {
+        iconEl.setAttribute("data-lucide", hasParsed ? "refresh-cw" : "plus");
+        lucide.createIcons();
+      }
+    }
+
+    function showStylePreviewEmpty() {
+      $("#stylePreviewEmpty")?.classList.remove("hidden");
+      $("#stylePreviewResult")?.classList.add("hidden");
+    }
+
+    function showStylePreviewResult() {
+      $("#stylePreviewEmpty")?.classList.add("hidden");
+      $("#stylePreviewResult")?.classList.remove("hidden");
+      renderStylePreviewTabs();
+      renderStylePreviewContent();
+      const parsedCount = styleLibraryState.files.filter((f) => f.parsed).length;
+      const statusText = $("#stylePreviewStatusText");
+      if (statusText) {
+        statusText.textContent = `由 ${parsedCount} 个参考文件解析生成`;
+      }
+      const footnote = $("#styleFormFootnote");
+      if (footnote) {
+        footnote.textContent = "说明：右侧内容由 Markdown 自动解析为 H1 标签页、H2 分组、H3 小节与正文段落。";
+      }
+    }
+
+    function renderStylePreviewTabs() {
+      const tabsEl = $("#stylePreviewTabs");
+      if (!tabsEl) return;
+      tabsEl.innerHTML = STYLE_PREVIEW_TABS.map((tab) => `
+        <button type="button" class="style-preview-tab${tab.id === styleLibraryState.activeTab ? " is-active" : ""}" data-style-tab="${tab.id}">${tab.label}</button>
+      `).join("");
+      tabsEl.querySelectorAll("[data-style-tab]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          styleLibraryState.activeTab = btn.dataset.styleTab;
+          renderStylePreviewTabs();
+          renderStylePreviewContent();
+        });
+      });
+    }
+
+    function renderStylePreviewContent() {
+      const contentEl = $("#stylePreviewContent");
+      if (!contentEl) return;
+      contentEl.innerHTML = STYLE_TAB_CONTENT[styleLibraryState.activeTab] || STYLE_TAB_CONTENT.method;
+    }
+
+    function addStyleFiles(fileList) {
+      const incoming = [...(fileList || [])];
+      if (!incoming.length) return;
+      const maxFiles = 10;
+      incoming.slice(0, maxFiles - styleLibraryState.files.length).forEach((file) => {
+        const id = `sf_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        const entry = {
+          id,
+          name: file.name || "未命名文件",
+          parsed: false,
+          statusText: "已上传 · 解析中…",
+        };
+        styleLibraryState.files.push(entry);
+        renderStyleFileList();
+        window.setTimeout(() => {
+          entry.parsed = true;
+          entry.statusText = "已上传 · 解析完成";
+          styleLibraryState.parsed = styleLibraryState.files.every((f) => f.parsed);
+          renderStyleFileList();
+          updateStyleSubmitButton();
+          if ($("#styleNameInput")?.value.trim()) showStyleAnalysisResult(false);
+        }, 900);
+      });
+    }
+
+    function showStyleAnalysisResult(showToastMsg = true) {
+      const name = $("#styleNameInput")?.value.trim();
+      if (!name) {
+        showToast("请先填写文风名称");
+        $("#styleNameInput")?.focus();
+        return;
+      }
+      if (!styleLibraryState.files.some((f) => f.parsed)) {
+        showToast("请先上传并完成参考资料解析");
+        return;
+      }
+      showStylePreviewResult();
+      if (showToastMsg) showToast(`文风「${name}」已${styleLibraryState.parsed ? "更新" : "创建"}（原型演示）`);
+    }
+
     function openStyleLibraryModal() {
       $("#styleLibraryCreate")?.classList.add("hidden");
       const modal = $("#styleLibraryModal");
@@ -3643,6 +4065,7 @@
 
     function openStyleLibraryCreate() {
       closeStyleLibraryModal();
+      resetStyleLibraryForm();
       $("#styleLibraryCreate")?.classList.remove("hidden");
       lucide.createIcons();
       $("#styleNameInput")?.focus();
@@ -3664,26 +4087,35 @@
     });
     $("#openStyleCreate")?.addEventListener("click", openStyleLibraryCreate);
     $("#backStyleCreate")?.addEventListener("click", backFromStyleCreate);
-    $("#styleUploadZone")?.addEventListener("click", () => $("#styleFileInput")?.click());
-    $("#styleUploadZone")?.addEventListener("keydown", (event) => {
+
+    const styleUploadZone = $("#styleUploadZone");
+    styleUploadZone?.addEventListener("click", () => $("#styleFileInput")?.click());
+    styleUploadZone?.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
         $("#styleFileInput")?.click();
       }
     });
+    ["dragenter", "dragover"].forEach((type) => {
+      styleUploadZone?.addEventListener(type, (event) => {
+        event.preventDefault();
+        styleUploadZone.classList.add("is-dragover");
+      });
+    });
+    ["dragleave", "drop"].forEach((type) => {
+      styleUploadZone?.addEventListener(type, (event) => {
+        event.preventDefault();
+        styleUploadZone.classList.remove("is-dragover");
+        if (type === "drop" && event.dataTransfer?.files?.length) {
+          addStyleFiles(event.dataTransfer.files);
+        }
+      });
+    });
     $("#styleFileInput")?.addEventListener("change", (event) => {
-      const count = event.target.files?.length || 0;
-      if (count) showToast(`已选择 ${count} 个参考文件（原型演示）`);
+      addStyleFiles(event.target.files);
+      event.target.value = "";
     });
-    $("#submitStyleCreate")?.addEventListener("click", () => {
-      const name = $("#styleNameInput")?.value.trim();
-      if (!name) {
-        showToast("请先填写文风名称");
-        $("#styleNameInput")?.focus();
-        return;
-      }
-      showToast(`文风「${name}」创建任务已提交（原型演示）`);
-    });
+    $("#submitStyleCreate")?.addEventListener("click", () => showStyleAnalysisResult(true));
     document.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") return;
       if (!$("#styleLibraryCreate")?.classList.contains("hidden")) {
