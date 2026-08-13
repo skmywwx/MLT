@@ -139,15 +139,24 @@
       border-radius: 10px;
       background: #fafbfc;
       min-height: 320px;
-      display: grid;
-      place-items: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 32px 24px;
+    }
+    .style-library-empty-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
     }
     .style-library-empty-art {
       width: 120px;
       height: 120px;
       position: relative;
-      margin-bottom: 18px;
+      margin: 0 auto 18px;
+      flex-shrink: 0;
     }
     .style-library-empty-art::before {
       content: "";
@@ -1315,7 +1324,7 @@
         </button>
       </div>
       <div class="style-library-empty-wrap">
-        <div class="text-center">
+        <div class="style-library-empty-inner">
           <div class="style-library-empty-art" aria-hidden="true">
             <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="38" y="28" width="44" height="56" rx="4" fill="#fff" stroke="#b8e4f4" stroke-width="2"/>
@@ -1323,8 +1332,8 @@
               <path d="M52 78l8 8 16-20" stroke="#00a0df" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </div>
-          <p class="text-[14px] font-semibold text-[#333]">还没有文风助手</p>
-          <p class="mt-[8px] text-[12px] text-[#999] leading-relaxed">点击创建文风，生成你的第一个文风助手</p>
+          <p class="text-[14px] font-semibold text-[#333] leading-snug">还没有文风助手</p>
+          <p class="mt-[8px] text-[12px] text-[#999] leading-relaxed max-w-[260px]">点击创建文风，生成你的第一个文风助手</p>
         </div>
       </div>
     </div>
