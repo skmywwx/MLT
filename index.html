@@ -91,6 +91,241 @@
       text-overflow: ellipsis;
       white-space: nowrap;
     }
+    /* 文风助手库 */
+    .style-library-overlay {
+      background: rgba(0, 0, 0, .35);
+    }
+    .style-library-dialog {
+      width: min(520px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .12);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .style-library-dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px 12px;
+    }
+    .style-library-dialog-sub {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px 14px;
+    }
+    .style-library-create-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 6px;
+      border: 1px solid #91dafa;
+      background: #fff;
+      color: #00a0df;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .style-library-create-btn:hover {
+      background: #e9f8ff;
+    }
+    .style-library-empty-wrap {
+      margin: 0 18px 18px;
+      border: 1px solid #ececef;
+      border-radius: 10px;
+      background: #fafbfc;
+      min-height: 320px;
+      display: grid;
+      place-items: center;
+      padding: 32px 24px;
+    }
+    .style-library-empty-art {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      margin-bottom: 18px;
+    }
+    .style-library-empty-art::before {
+      content: "";
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, #e8f6fc 0%, #f3fbff 100%);
+    }
+    .style-library-empty-art svg {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+    }
+    .style-create-page {
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .style-create-topbar {
+      height: 48px;
+      border-bottom: 1px solid #ececef;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      flex-shrink: 0;
+    }
+    .style-create-back {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: #555;
+    }
+    .style-create-back:hover { background: #f3f4f6; }
+    .style-create-body {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+    .style-create-form {
+      width: 400px;
+      flex-shrink: 0;
+      border-right: 1px solid #ececef;
+      padding: 20px 22px 24px;
+      overflow-y: auto;
+    }
+    .style-create-preview {
+      flex: 1;
+      background: #f3f4f6;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .style-create-preview-main {
+      flex: 1;
+      display: grid;
+      place-items: center;
+      padding: 40px 32px;
+    }
+    .style-field-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+    .style-field-label .req { color: #e95f32; margin-right: 2px; }
+    .style-field-input {
+      width: 100%;
+      height: 36px;
+      border: 1px solid #e4e6ea;
+      border-radius: 8px;
+      padding: 0 12px;
+      font-size: 12px;
+      outline: none;
+    }
+    .style-field-input:focus { border-color: #91dafa; box-shadow: 0 0 0 2px rgba(0, 160, 223, .12); }
+    .style-field-textarea {
+      width: 100%;
+      height: 88px;
+      border: 1px solid #e4e6ea;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      outline: none;
+      resize: none;
+    }
+    .style-field-textarea:focus { border-color: #91dafa; box-shadow: 0 0 0 2px rgba(0, 160, 223, .12); }
+    .style-upload-zone {
+      border: 1px dashed #d0d3d8;
+      border-radius: 10px;
+      background: #fafbfc;
+      padding: 28px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+    }
+    .style-upload-zone:hover {
+      border-color: #91dafa;
+      background: #f5fcff;
+    }
+    .style-upload-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 10px;
+      border-radius: 10px;
+      background: #e9f8ff;
+      color: #00a0df;
+      display: grid;
+      place-items: center;
+    }
+    .style-submit-btn {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+    }
+    .style-submit-btn:hover { background: #008fc8; }
+    .style-steps-bar {
+      margin: 0 24px 24px;
+      padding: 16px 20px;
+      border-radius: 10px;
+      background: #ececef;
+      display: flex;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .style-step-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+    .style-step-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 11px;
+      left: calc(50% + 14px);
+      width: calc(100% - 28px);
+      height: 2px;
+      background: #00a0df;
+      z-index: 0;
+    }
+    .style-step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #00a0df;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+    }
+    .style-step-title { font-size: 11px; font-weight: 600; color: #333; }
+    .style-step-desc { font-size: 9px; color: #888; margin-top: 4px; line-height: 1.45; max-width: 140px; }
+    .style-preview-art {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 16px;
+      color: #c5c8cc;
+    }
     .recent-row:hover { background: #f1f1f1; }
     .recent-row.is-active {
       background: #d6d6d6;
@@ -1060,6 +1295,112 @@
       <div class="mt-4 flex justify-end gap-2">
         <button id="closeFeedbackModal" class="h-[32px] px-4 rounded-lg border border-[#e4e6ea] text-[12px] hover:bg-[#f5f5f5]">取消</button>
         <button id="submitFeedback" class="h-[32px] px-4 rounded-lg bg-[#5B5FE5] text-white text-[12px] hover:bg-[#494dcc]">提交</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文风助手库 · 图1 列表弹窗 -->
+  <div id="styleLibraryModal" class="style-library-overlay hidden fixed inset-0 z-[86] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="styleLibraryTitle">
+    <div class="style-library-dialog">
+      <div class="style-library-dialog-head">
+        <h2 id="styleLibraryTitle" class="text-[15px] font-semibold text-[#222]">文风助手库</h2>
+        <button id="closeStyleLibraryModal" type="button" class="w-[28px] h-[28px] rounded-full grid place-items-center text-[#666] hover:bg-[#f0f0f0]" aria-label="关闭">
+          <i data-lucide="x" class="w-[16px] h-[16px]"></i>
+        </button>
+      </div>
+      <div class="style-library-dialog-sub">
+        <span class="text-[13px] font-medium text-[#333]">我的文风助手</span>
+        <button id="openStyleCreate" type="button" class="style-library-create-btn">
+          <i data-lucide="file-plus-2" class="w-[14px] h-[14px]"></i>创建文风
+        </button>
+      </div>
+      <div class="style-library-empty-wrap">
+        <div class="text-center">
+          <div class="style-library-empty-art" aria-hidden="true">
+            <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="38" y="28" width="44" height="56" rx="4" fill="#fff" stroke="#b8e4f4" stroke-width="2"/>
+              <path d="M46 40h28M46 48h28M46 56h18" stroke="#91dafa" stroke-width="2" stroke-linecap="round"/>
+              <path d="M52 78l8 8 16-20" stroke="#00a0df" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <p class="text-[14px] font-semibold text-[#333]">还没有文风助手</p>
+          <p class="mt-[8px] text-[12px] text-[#999] leading-relaxed">点击创建文风，生成你的第一个文风助手</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 文风助手库 · 图2 创建页 -->
+  <div id="styleLibraryCreate" class="hidden fixed inset-0 z-[87] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="styleCreateTitle">
+    <div class="style-create-page">
+      <header class="style-create-topbar">
+        <button id="backStyleCreate" type="button" class="style-create-back" aria-label="返回">
+          <i data-lucide="chevron-left" class="w-[18px] h-[18px]"></i>
+        </button>
+        <h2 id="styleCreateTitle" class="text-[14px] font-semibold text-[#222]">文风助手库</h2>
+      </header>
+      <div class="style-create-body">
+        <aside class="style-create-form">
+          <h3 class="text-[14px] font-semibold text-[#222]">基本信息</h3>
+          <p class="mt-[6px] text-[11px] text-[#888] leading-relaxed">上传参考资料，快速生成可复用的专属文风库。</p>
+
+          <div class="mt-[20px]">
+            <label class="style-field-label" for="styleNameInput"><span class="req">*</span>文风名称</label>
+            <input id="styleNameInput" type="text" class="style-field-input" placeholder="请输入名称" />
+          </div>
+
+          <div class="mt-[16px]">
+            <label class="style-field-label" for="styleIntroInput">文风介绍</label>
+            <textarea id="styleIntroInput" class="style-field-textarea" placeholder="请输入文风介绍"></textarea>
+          </div>
+
+          <div class="mt-[16px]">
+            <label class="style-field-label"><span class="req">*</span>参考资料</label>
+            <div id="styleUploadZone" class="style-upload-zone" role="button" tabindex="0">
+              <div class="style-upload-icon">
+                <i data-lucide="file-up" class="w-[20px] h-[20px]"></i>
+              </div>
+              <p class="text-[12px] font-medium text-[#444]">点击或拖拽文件，生成文风库</p>
+              <p class="mt-[8px] text-[10px] text-[#aaa] leading-relaxed px-2">支持 PDF、Word、TXT、wps 格式，每个文件不超过10MB，最多10个文件，最长总计4万字</p>
+            </div>
+            <input id="styleFileInput" type="file" class="hidden" multiple accept=".pdf,.doc,.docx,.txt,.wps" />
+          </div>
+
+          <button id="submitStyleCreate" type="button" class="style-submit-btn">
+            <i data-lucide="plus" class="w-[16px] h-[16px]"></i>创建文风
+          </button>
+          <p class="mt-[12px] text-[10px] text-[#aaa] leading-relaxed">上传后将自动生成，系统会基于参考资料提炼表达风格、常用句式和内容结构，右侧区域将展示生成结果。</p>
+        </aside>
+
+        <section class="style-create-preview">
+          <div class="style-create-preview-main">
+            <div class="text-center max-w-[320px]">
+              <svg class="style-preview-art mx-auto" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="18" y="12" width="44" height="56" rx="4" fill="#fff" stroke="#d8dce0" stroke-width="1.5"/>
+                <path d="M26 24h32M26 32h32M26 40h20" stroke="#d0d3d8" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <h3 class="text-[15px] font-semibold text-[#333]">开始创建文风库</h3>
+              <p class="mt-[10px] text-[12px] text-[#999] leading-relaxed">左侧完成基础信息和资料上传后，系统会在这里展示分析结果与生成内容。</p>
+            </div>
+          </div>
+          <div class="style-steps-bar">
+            <div class="style-step-item">
+              <span class="style-step-num">1</span>
+              <span class="style-step-title">填写文风名称</span>
+              <span class="style-step-desc">用于后续识别和管理该文风库。</span>
+            </div>
+            <div class="style-step-item">
+              <span class="style-step-num">2</span>
+              <span class="style-step-title">上传参考资料</span>
+              <span class="style-step-desc">支持 PDF、Word、TXT、wps 等常见格式。</span>
+            </div>
+            <div class="style-step-item">
+              <span class="style-step-num">3</span>
+              <span class="style-step-title">点击创建文风</span>
+              <span class="style-step-desc">系统将分析资料并生成对应内容。</span>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   </div>
@@ -3277,12 +3618,71 @@
       showToast("已选择" + button.dataset.workMode);
     }));
 
-    $("#assistantButton").addEventListener("click", () => openModal("文风助手",
-      "<div class='grid grid-cols-2 gap-2'>" +
-      ["正式严谨", "简洁清晰", "亲切自然", "创意生动"].map(x =>
-        `<button onclick="selectStyle('${x}')" class="border border-[#e4e8eb] rounded-lg py-2 hover:border-sky-300 hover:bg-sky-50 hover:text-brand">${x}</button>`
-      ).join("") + "</div>"));
-    window.selectStyle = (style) => { closeModal(); showToast("已选择“" + style + "”文风"); };
+    function openStyleLibraryModal() {
+      $("#styleLibraryCreate")?.classList.add("hidden");
+      const modal = $("#styleLibraryModal");
+      modal?.classList.remove("hidden");
+      modal?.classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeStyleLibraryModal() {
+      const modal = $("#styleLibraryModal");
+      modal?.classList.add("hidden");
+      modal?.classList.remove("flex");
+    }
+
+    function openStyleLibraryCreate() {
+      closeStyleLibraryModal();
+      $("#styleLibraryCreate")?.classList.remove("hidden");
+      lucide.createIcons();
+      $("#styleNameInput")?.focus();
+    }
+
+    function closeStyleLibraryCreate() {
+      $("#styleLibraryCreate")?.classList.add("hidden");
+    }
+
+    function backFromStyleCreate() {
+      closeStyleLibraryCreate();
+      openStyleLibraryModal();
+    }
+
+    $("#assistantButton").addEventListener("click", openStyleLibraryModal);
+    $("#closeStyleLibraryModal")?.addEventListener("click", closeStyleLibraryModal);
+    $("#styleLibraryModal")?.addEventListener("click", (event) => {
+      if (event.target === $("#styleLibraryModal")) closeStyleLibraryModal();
+    });
+    $("#openStyleCreate")?.addEventListener("click", openStyleLibraryCreate);
+    $("#backStyleCreate")?.addEventListener("click", backFromStyleCreate);
+    $("#styleUploadZone")?.addEventListener("click", () => $("#styleFileInput")?.click());
+    $("#styleUploadZone")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        $("#styleFileInput")?.click();
+      }
+    });
+    $("#styleFileInput")?.addEventListener("change", (event) => {
+      const count = event.target.files?.length || 0;
+      if (count) showToast(`已选择 ${count} 个参考文件（原型演示）`);
+    });
+    $("#submitStyleCreate")?.addEventListener("click", () => {
+      const name = $("#styleNameInput")?.value.trim();
+      if (!name) {
+        showToast("请先填写文风名称");
+        $("#styleNameInput")?.focus();
+        return;
+      }
+      showToast(`文风「${name}」创建任务已提交（原型演示）`);
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      if (!$("#styleLibraryCreate")?.classList.contains("hidden")) {
+        backFromStyleCreate();
+        return;
+      }
+      if (!$("#styleLibraryModal")?.classList.contains("hidden")) closeStyleLibraryModal();
+    });
 
     $("#myKnowledge").addEventListener("click", () => showToast("已打开我的知识库"));
     $("#uploadLocal").addEventListener("click", () => showToast("已打开本地文件选择器（原型演示）"));
