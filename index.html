@@ -144,11 +144,25 @@
       align-items: center;
       gap: 4px;
       height: 22px;
-      padding: 0 8px;
+      padding: 0 6px 0 8px;
       border-radius: 6px;
       font-size: 11px;
       font-weight: 600;
       margin-bottom: 6px;
+    }
+    .quick-mode-tag .quick-tag-remove {
+      display: grid;
+      place-items: center;
+      width: 16px;
+      height: 16px;
+      margin-left: 2px;
+      border-radius: 4px;
+      color: inherit;
+      opacity: .65;
+    }
+    .quick-mode-tag .quick-tag-remove:hover {
+      opacity: 1;
+      background: rgba(0, 0, 0, .06);
     }
     .quick-mode-tag.tag-writing { color: #35a92f; background: #f3fff1; border: 1px solid #57c94d; }
     .quick-mode-tag.tag-research { color: #e95f32; background: #fff6f1; border: 1px solid #ff7a45; }
@@ -590,6 +604,9 @@
             <div id="quickModeTag" class="quick-mode-tag tag-writing hidden">
               <i data-lucide="feather" class="w-[11px] h-[11px] quick-tag-icon"></i>
               <span id="quickModeTagText">写作</span>
+              <button type="button" id="quickModeTagRemove" class="quick-tag-remove" aria-label="移除模式标签" title="移除">
+                <i data-lucide="x" class="w-[11px] h-[11px]"></i>
+              </button>
             </div>
             <textarea id="prompt" class="w-full h-[43px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
             <div class="flex items-center justify-between">
@@ -638,7 +655,7 @@
           </div>
 
           <div id="quickModeBar" class="mt-[24px] flex justify-center gap-[7px] flex-wrap">
-            <button type="button" data-quick-mode="writing" data-suggestion="请帮我撰写一份部门年度工作总结，包含工作回顾、数据亮点与改进计划" class="quick-writing is-quick-selected h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button type="button" data-quick-mode="writing" data-suggestion="请帮我撰写一份部门年度工作总结，包含工作回顾、数据亮点与改进计划" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47b83f]"></i>写作
             </button>
             <button type="button" data-quick-mode="research" data-suggestion="深度研究人工智能发展趋势并生成行业分析论文" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
@@ -887,7 +904,7 @@
     editor: { name: "资深编辑", emoji: "👩🏻‍💼", tag: "质量校验" },
   };
 
-  let flowContext = { isResearch: false, quickMode: "writing" };
+  let flowContext = { isResearch: false, quickMode: null };
 
   const WRITING_TEMPLATES = {
     推荐: [
@@ -2000,7 +2017,8 @@
         `<button class="w-full text-left px-3 py-2 rounded bg-[#f7f8f9] hover:bg-sky-50 hover:text-brand">${x}</button>`
       ).join("") + "</div>"));
 
-    let activeQuickMode = "writing";
+    let activeQuickMode = null;
+    const DEFAULT_PLACEHOLDER = "请输入内容开始写作";
     const QUICK_MODE_META = {
       writing: { label: "写作", icon: "feather", tagClass: "tag-writing", placeholder: "请输入写作需求，或选择下方文档模板" },
       research: { label: "深度研究", icon: "microscope", tagClass: "tag-research", placeholder: "请输入研究主题，将按论文流程生成学术论文" },
@@ -2052,6 +2070,38 @@
       });
     }
 
+    function showQuickModeTag(mode) {
+      const meta = QUICK_MODE_META[mode];
+      const tag = $("#quickModeTag");
+      tag.classList.remove("hidden", "tag-writing", "tag-research", "tag-ppt");
+      tag.classList.add(meta.tagClass);
+      $("#quickModeTagText").textContent = meta.label;
+      const tagIcon = tag.querySelector(".quick-tag-icon");
+      if (tagIcon) tagIcon.setAttribute("data-lucide", meta.icon);
+      lucide.createIcons();
+    }
+
+    function hideQuickModeTag() {
+      $("#quickModeTag").classList.add("hidden");
+    }
+
+    function switchQuickModePanel(mode) {
+      $$("[data-panel]").forEach(panel => {
+        panel.classList.toggle("hidden", panel.dataset.panel !== mode);
+      });
+    }
+
+    function clearQuickMode(options) {
+      options = options || {};
+      activeQuickMode = null;
+      flowContext.quickMode = null;
+      $$("[data-quick-mode]").forEach(btn => btn.classList.remove("is-quick-selected"));
+      hideQuickModeTag();
+      promptBox.placeholder = DEFAULT_PLACEHOLDER;
+      if (!options.keepPanel) switchQuickModePanel("writing");
+      if (!options.keepPrompt) promptBox.value = "";
+    }
+
     function applyQuickModeWorkMode(mode) {
       setAgentModeActive(true);
       $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
@@ -2073,19 +2123,11 @@
       $$("[data-quick-mode]").forEach(btn => {
         btn.classList.toggle("is-quick-selected", btn.dataset.quickMode === mode);
       });
-      $$("[data-panel]").forEach(panel => {
-        panel.classList.toggle("hidden", panel.dataset.panel !== mode);
-      });
+      switchQuickModePanel(mode);
 
       const meta = QUICK_MODE_META[mode];
-      const tag = $("#quickModeTag");
-      tag.classList.remove("hidden", "tag-writing", "tag-research", "tag-ppt");
-      tag.classList.add(meta.tagClass);
-      $("#quickModeTagText").textContent = meta.label;
-      const tagIcon = tag.querySelector(".quick-tag-icon");
-      if (tagIcon) tagIcon.setAttribute("data-lucide", meta.icon);
+      showQuickModeTag(mode);
       promptBox.placeholder = meta.placeholder;
-      lucide.createIcons();
 
       applyQuickModeWorkMode(mode);
 
@@ -2096,6 +2138,12 @@
       }
       if (!options.skipFocus) promptBox.focus();
     }
+
+    $("#quickModeTagRemove").addEventListener("click", (event) => {
+      event.stopPropagation();
+      clearQuickMode();
+      promptBox.focus();
+    });
 
     $$("[data-quick-mode]").forEach(button => {
       button.addEventListener("click", () => selectQuickMode(button.dataset.quickMode));
@@ -2112,8 +2160,9 @@
     renderWritingTemplates("推荐");
     renderResearchCases();
     renderPptCases();
-    selectQuickMode("writing", { skipFocus: true, keepPrompt: true });
-    $("#quickModeTag").classList.remove("hidden");
+    switchQuickModePanel("writing");
+    hideQuickModeTag();
+    promptBox.placeholder = DEFAULT_PLACEHOLDER;
 
     $$("[data-agent]").forEach(button => button.addEventListener("click", () => {
       promptBox.value = "请让" + button.dataset.agent + "帮我完成：";
@@ -2168,9 +2217,17 @@
       return selected?.dataset.workMode || "快速模式";
     }
 
+    function resolveQuickMode(text) {
+      if (activeQuickMode) return activeQuickMode;
+      if (/ppt|PPT|演示|幻灯片/.test(text)) return "ppt";
+      if (/深度研究|论文|研究报告|行业分析/.test(text)) return "research";
+      return "writing";
+    }
+
     function detectRecommendedMode(text, quickMode) {
-      if (quickMode === "research") return "交互模式";
-      if (quickMode === "ppt") return "快速模式";
+      const mode = quickMode || resolveQuickMode(text);
+      if (mode === "research") return "交互模式";
+      if (mode === "ppt") return "快速模式";
       return /整合|分析|研究|报告|论证|对比|规划|上传|文档|文件|深度/.test(text) ? "交互模式" : "快速模式";
     }
 
@@ -2181,16 +2238,18 @@
         showToast("请先输入要交代的任务");
         return;
       }
+      const quickMode = resolveQuickMode(text);
+      flowContext.quickMode = quickMode;
       let mode = getWorkMode();
-      const recommended = detectRecommendedMode(text, activeQuickMode);
+      const recommended = detectRecommendedMode(text, quickMode);
       if (recommended === "交互模式" && mode === "快速模式") {
         $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
         document.querySelector('[data-work-mode="交互模式"]')?.classList.add("is-mode-selected");
         $("#speedModeText").textContent = "交互模式";
         mode = "交互模式";
       }
-      if (activeQuickMode === "research") mode = "交互模式";
-      if (activeQuickMode === "ppt" && mode === "交互模式" && !/整合|上传|文件/.test(text)) {
+      if (quickMode === "research") mode = "交互模式";
+      if (quickMode === "ppt" && mode === "交互模式" && !/整合|上传|文件/.test(text)) {
         $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
         document.querySelector('[data-work-mode="快速模式"]')?.classList.add("is-mode-selected");
         $("#speedModeText").textContent = "快速模式";
@@ -2202,7 +2261,7 @@
       }
       promptBox.value = "";
       if (typeof window.startWorkflowSimulation === "function") {
-        window.startWorkflowSimulation(text, mode, activeQuickMode);
+        window.startWorkflowSimulation(text, mode, quickMode);
       } else {
         showToast("任务已提交，智能体团队正在协作");
       }
