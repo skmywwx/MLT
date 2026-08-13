@@ -965,6 +965,8 @@
     quickMode: null,
     deliverable: null,
     surveyAnswers: null,
+    promptContext: null,
+    suggestedQuestions: null,
     taskCompleted: false,
     turnCount: 0,
   };
@@ -975,6 +977,8 @@
     chatSession.quickMode = null;
     chatSession.deliverable = null;
     chatSession.surveyAnswers = null;
+    chatSession.promptContext = null;
+    chatSession.suggestedQuestions = null;
     chatSession.taskCompleted = false;
     chatSession.turnCount = 0;
   }
@@ -984,6 +988,8 @@
     chatSession.workMode = workMode;
     chatSession.quickMode = flowContext.quickMode;
     chatSession.deliverable = deliverable;
+    chatSession.promptContext = analyzePromptContext(promptText, flowContext.quickMode);
+    chatSession.suggestedQuestions = buildSuggestedQuestions(chatSession.promptContext, deliverable);
     chatSession.taskCompleted = true;
     chatSession.turnCount = 0;
   }
@@ -1000,12 +1006,44 @@
     const title = chatSession.deliverable?.title || "本次交付内容";
     const kind = chatSession.deliverable?.outputKind || "document";
     const kindLabel = chatSession.deliverable?.typeLabel || "交付文件";
+    const ctx = chatSession.promptContext || analyzePromptContext(chatSession.initialPrompt, chatSession.quickMode);
     const taskHint = chatSession.initialPrompt.length > 36
       ? chatSession.initialPrompt.slice(0, 36) + "…"
       : chatSession.initialPrompt;
+    const budget = ctx.budgetLabel || "当前预算";
+
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "western") {
+      if (/预算|分配|价格|费用|成本/.test(question)) {
+        return `结合<strong>西式婚礼</strong>与${budget}约束，建议预算结构：场地与仪式约 35%、餐饮宴席约 30%、摄影摄像约 15%、布置与花艺约 12%、其余为应急与管理费。若偏好「${chatSession.surveyAnswers?.preference?.value || "浪漫简约"}」风格，可适当提高布置与摄影占比。`;
+      }
+      if (/喜好|偏好|环节|仪式/.test(question)) {
+        return `根据您确认的偏好，建议在<strong>证婚仪式</strong>保留核心环节（入场、誓言、交换戒指），在<strong>晚宴</strong>侧重互动与氛围（first dance、祝酒、抛花球等）。可在方案中标注「高投入」与「可简化」环节清单供新人选择。`;
+      }
+      if (/习俗|家庭|沟通|中西/.test(question)) {
+        return `西式流程中与家庭习俗可能冲突的节点包括：仪式时长、敬酒形式、长辈发言顺序等。建议提前与双方家长确认「必须保留」与「可以简化」清单，并在策划案中单列「家庭协调事项」。`;
+      }
+    }
+
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "chinese") {
+      if (/预算|分配|价格|宴席/.test(question)) {
+        return `在${budget}与${chatSession.surveyAnswers?.tables?.value || "当前桌数"}条件下，中式婚礼建议：宴席餐饮约占 45–55%，场布与礼仪约占 20–25%，四大金刚约占 15–20%。若侧重「${chatSession.surveyAnswers?.budget?.value || "均衡分配"}」，可据此微调比例。`;
+      }
+      if (/习俗|礼仪|传统/.test(question)) {
+        return `可在方案中补充：迎亲、敬茶、拜堂/合卺等核心礼仪的时间安排与人员分工，并标注哪些环节可根据地域习俗调整，避免与新人偏好冲突。`;
+      }
+    }
+
+    if (ctx.topic === "research") {
+      if (/风险|局限/.test(question)) {
+        return `「${title}」的主要局限包括：部分数据来源时效性、样本覆盖范围及外部政策变动不确定性。建议在应用结论前结合最新数据复核，并关注${chatSession.surveyAnswers?.dimension?.value || "核心维度"}中的敏感假设。`;
+      }
+    }
 
     if (/差异|部门|不一致|分歧/.test(question)) {
-      return `结合「${title}」的调研结论，不同部门对核心指标的理解存在两点差异：① 财务侧更关注成本归集口径；② 业务侧强调交付节奏与节点。若需消除分歧，建议在后续版本增加「跨部门对齐说明」小节，并标注统一口径。`;
+      if (ctx.topic === "report") {
+        return `结合「${title}」，不同部门对核心指标的理解可能存在差异：财务侧关注成本归集，业务侧强调交付节奏。建议在修订版增加「跨部门对齐说明」。`;
+      }
+      return `结合「${title}」的结论，不同视角下的侧重点可能不一致。我可以按部门或角色分别提炼要点，便于对齐。`;
     }
     if (/风险|执行风险|隐患/.test(question)) {
       return `基于当前${kindLabel}，主要执行风险包括：信息源时效性不足、跨团队协同周期偏长、以及部分关键假设尚未验证。对应缓释措施已整理为三项：补充数据源、设置阶段检查点、明确责任人与截止时间。`;
@@ -1149,11 +1187,100 @@
     { name: "成本统计图表.png", type: "img", size: "89 KB", date: "2026-02-09" },
   ];
 
-  const SUGGESTED_QUESTIONS = [
-    "这份报告的核心结论在不同部门间是否存在差异？",
+  const SUGGESTED_QUESTIONS_DEFAULT = [
+    "这份文档的核心结论是否需要进一步展开说明？",
     "当前方案最大的执行风险是什么？",
-    "如何把研究结果转化为下季度行动计划？",
+    "如何把结果转化为下一步行动计划？",
   ];
+
+  function analyzePromptContext(promptText, quickMode) {
+    const p = promptText || "";
+    const ctx = {
+      quickMode: quickMode || flowContext.quickMode || "writing",
+      isWedding: /婚礼|婚庆|结婚|婚宴/.test(p),
+      weddingStyle: null,
+      budget: null,
+      budgetLabel: "",
+      topic: "general",
+      rawPrompt: p,
+    };
+
+    if (/西式|教堂|white wedding|欧美风|西式婚礼/.test(p)) ctx.weddingStyle = "western";
+    else if (/中式|传统中式|汉服婚礼|三书六礼|中式婚礼/.test(p)) ctx.weddingStyle = "chinese";
+    else if (ctx.isWedding) ctx.weddingStyle = "general";
+
+    const budgetW = p.match(/(\d+(?:\.\d+)?)\s*[wW万]/);
+    const budgetNum = p.match(/预算\s*(\d+(?:\.\d+)?)\s*万?/);
+    if (budgetW) {
+      ctx.budget = parseFloat(budgetW[1]);
+      ctx.budgetLabel = "约 " + budgetW[1] + " 万";
+    } else if (budgetNum) {
+      ctx.budget = parseFloat(budgetNum[1]);
+      ctx.budgetLabel = "约 " + budgetNum[1] + " 万";
+    }
+
+    if (ctx.quickMode === "research" || /深度研究|论文|研究报告/.test(p)) ctx.topic = "research";
+    else if (ctx.quickMode === "ppt" || /ppt|PPT|演示|幻灯片/.test(p)) ctx.topic = "ppt";
+    else if (ctx.isWedding) ctx.topic = "wedding";
+    else if (/总结|汇报|年度报告|工作总结/.test(p)) ctx.topic = "report";
+    else if (/策划|方案/.test(p)) ctx.topic = "proposal";
+
+    return ctx;
+  }
+
+  function buildSuggestedQuestions(ctx, deliverable) {
+    const budget = ctx.budgetLabel || "当前预算";
+    const title = deliverable?.title || "本次交付内容";
+
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "western") {
+      return [
+        `${budget}下，西式婚礼的场地、餐饮与布置应如何分配更合理？`,
+        "仪式与晚宴中，哪些环节最符合新人喜好、值得重点投入？",
+        "若双方家庭习俗不同，西式流程中哪些节点需要提前沟通确认？",
+      ];
+    }
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "chinese") {
+      return [
+        `${budget}内，中式婚礼的布置与宴席预算占比应该如何调整？`,
+        "不同宾客规模下，哪些传统礼仪环节可以适度简化？",
+        "中式婚礼中还有哪些文化习俗需要补充进策划方案？",
+      ];
+    }
+    if (ctx.topic === "wedding") {
+      return [
+        `${budget}下，婚礼各环节（场地、宴席、摄影）的优先级如何排序？`,
+        "新人偏好与传统习俗之间如何平衡？",
+        "策划方案中还有哪些细节需要进一步细化？",
+      ];
+    }
+    if (ctx.topic === "research") {
+      const subject = title.replace(/研究报告$/, "") || "该主题";
+      return [
+        `「${subject}」的核心论点是否还有需要补充的维度？`,
+        "研究结论在实际应用中可能面临哪些风险或局限？",
+        "如何将研究成果转化为可执行的行动建议？",
+      ];
+    }
+    if (ctx.topic === "ppt") {
+      return [
+        "演示文稿的页序与节奏是否需要调整？",
+        "哪些页面适合增加数据图表或视觉强化？",
+        "针对目标听众，还有哪些要点需要补充进 PPT？",
+      ];
+    }
+    if (ctx.topic === "report") {
+      return [
+        "报告核心结论在不同部门视角下是否存在差异？",
+        "当前方案最大的执行风险是什么？",
+        "如何把报告结果转化为下阶段工作计划？",
+      ];
+    }
+    return [
+      `「${title}」中哪些部分需要进一步展开？`,
+      "当前方案最大的执行风险是什么？",
+      "如何把交付结果转化为下一步行动计划？",
+    ];
+  }
 
   function inferDeliverable(promptText, quickMode) {
     const p = promptText;
@@ -1199,22 +1326,35 @@
       };
     }
 
-    if (/婚礼|策划|中式/.test(p)) {
+    if (/婚礼|策划|中式|西式|婚庆/.test(p)) {
+      const isWestern = /西式|教堂|white wedding|欧美/.test(p);
+      const isChinese = /中式|传统中式|汉服|三书六礼/.test(p);
+      const weddingTitle = isWestern ? "西式婚礼策划方案" : isChinese ? "中式婚礼策划方案" : "婚礼策划方案";
+      const budgetW = p.match(/(\d+(?:\.\d+)?)\s*[wW万]/);
+      const budgetVal = budgetW ? budgetW[1] + " 万" : "约定";
+      const previewBody = isWestern
+        ? `本次西式婚礼以浪漫仪式与精致晚宴为核心，拟定于 2026 年秋举行。整体以白绿色系与自然花艺为主调，涵盖教堂/户外证婚、鸡尾酒会与晚宴舞会等环节，预算控制在 ${budgetVal} 以内。`
+        : isChinese
+        ? `本次中式婚礼旨在传承传统文化，融合现代时尚元素。拟定于 2026 年 8 月举行，地点选用中式园林风格宴会厅，整体装饰以金红配色为主，预算控制在 ${budgetVal} 以内。`
+        : `本次婚礼策划涵盖仪式、宴席与现场布置等环节，兼顾新人偏好与预算 ${budgetVal}，为新人打造完整可执行的庆典方案。`;
       return {
         ext: "docx",
         icon: "file-text",
         typeLabel: "Word 文档",
-        title: "中式婚礼策划方案",
-        finalName: "中式婚礼策划方案（最终结果）.docx",
-        draftName: "中式婚礼策划方案（初稿）.docx",
+        title: weddingTitle,
+        finalName: weddingTitle + "（最终结果）.docx",
+        draftName: weddingTitle + "（初稿）.docx",
         preview: {
           sections: [
-            { heading: "（一）活动目的与时间地点", body: "本次中式婚礼旨在传承传统文化，融合现代时尚元素，为新人打造一场庄重而温馨的记忆盛典。拟定于 2026 年 8 月 18 日举行，地点选用具有中式园林风格的宴会厅，整体装饰以金红配色为主。" },
-            { heading: "（二）参与对象与预估达成效果", body: "预计参与宾客约 150 人，涵盖双方亲属、同事及好友。通过精心设计的仪式环节与场景布置，预期达成情感共鸣与品牌口碑双重效果，预算控制在约 5 万元以内。" },
+            { heading: "（一）活动目的与时间地点", body: previewBody },
+            { heading: "（二）预算结构与执行要点", body: isWestern
+              ? "预算优先保障仪式体验与摄影记录，餐饮与场布按新人偏好动态调整；含备用金比例与供应商对接清单。"
+              : "预算覆盖场布、宴席、四大金刚与礼仪物料；含分项报价表与可调整项说明。" },
           ],
         },
-        searchQuery: "中式婚礼 预算 策划流程",
+        searchQuery: (isWestern ? "西式" : isChinese ? "中式" : "") + "婚礼 预算 策划流程",
         outputKind: "document",
+        weddingStyle: isWestern ? "western" : isChinese ? "chinese" : "general",
       };
     }
     return {
@@ -1713,6 +1853,9 @@
   }
 
   function ratingAndQuestions() {
+    const questions = chatSession.suggestedQuestions?.length
+      ? chatSession.suggestedQuestions
+      : SUGGESTED_QUESTIONS_DEFAULT;
     const wrap = appendMessage(`
       <div class="mb-6 rounded-xl border border-[#ececef] bg-[#fafafa] p-4">
         <div class="text-[11px] font-medium mb-2">您对本次结果满意吗？</div>
@@ -1722,7 +1865,7 @@
         </div>
         <div class="text-[10px] text-[#888] mb-2">你可能想问</div>
         <div class="space-y-1.5">
-          ${SUGGESTED_QUESTIONS.map((q) =>
+          ${questions.map((q) =>
             `<button class="wf-followup w-full text-left px-3 py-2 rounded-lg border border-[#e8e8eb] bg-white text-[11px] text-[#555] hover:border-[#91dafa] hover:text-[#00a0df]">${q}</button>`).join("")}
         </div>
         <button id="openAllFiles" class="mt-3 h-[30px] px-3 rounded-lg border border-[#e4e6ea] text-[11px] text-[#555] hover:bg-white flex items-center gap-1.5">
@@ -1766,8 +1909,54 @@
 
   function buildInteractiveSurvey(promptText, quickMode) {
     const intro = "我先了解您的具体需求，再给出有针对性的方案。";
+    const ctx = analyzePromptContext(promptText, quickMode);
+    const budgetLabel = ctx.budgetLabel || "您的预算";
 
-    if (/婚礼|中式|策划/.test(promptText)) {
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "western") {
+      return {
+        intro,
+        questions: [
+          {
+            id: "city",
+            label: "婚礼举办城市是哪里？这直接影响场地、人员与供应商的报价区间。",
+            options: ["一线城市（北上广深）", "新一线/省会城市", "二三线城市", "县城/乡镇"],
+            defaultIndex: 1,
+          },
+          {
+            id: "scale",
+            label: "预计宾客规模大约多少人？这决定宴席规模与场地选择。",
+            options: ["80 人以内（私密小型）", "80–150 人（标准规模）", "150–250 人（中型）", "250 人以上（大型）"],
+            defaultIndex: 1,
+          },
+          {
+            id: "venue",
+            label: "偏好的西式婚礼场地类型？",
+            options: ["教堂/仪式堂", "户外花园/草坪", "酒店宴会厅", "目的地/特色场地"],
+            defaultIndex: 2,
+          },
+          {
+            id: "preference",
+            label: "新人整体喜好与氛围偏好？",
+            options: ["浪漫简约（白绿自然风）", "奢华隆重（水晶灯光）", "个性主题（复古/波西米亚等）", "轻松派对（互动游戏）"],
+            defaultIndex: 0,
+          },
+          {
+            id: "customs",
+            label: "希望保留哪些西式文化习俗环节？",
+            options: ["经典证婚（誓言+交换戒指）", "晚宴舞会（first dance 等）", "抛花球/切蛋糕等传统", "希望简化仅保留核心仪式"],
+            defaultIndex: 0,
+          },
+          {
+            id: "budget",
+            label: `${budgetLabel}的分配优先级？`,
+            options: ["仪式场地与布置优先", "餐饮与酒水优先", "摄影摄像与影像优先", "均衡分配各项"],
+            defaultIndex: 3,
+          },
+        ],
+      };
+    }
+
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "chinese") {
       return {
         intro,
         questions: [
@@ -1790,8 +1979,20 @@
             defaultIndex: 1,
           },
           {
+            id: "customs",
+            label: "必须保留的传统习俗环节？",
+            options: ["迎亲+敬茶+拜堂全流程", "以敬茶认亲为主", "侧重宴席与场布", "按地域习俗灵活定制"],
+            defaultIndex: 0,
+          },
+          {
+            id: "preference",
+            label: "新人对现场氛围的偏好？",
+            options: ["庄重典雅", "热闹喜庆", "简约温馨", "创意互动"],
+            defaultIndex: 1,
+          },
+          {
             id: "budget",
-            label: "约 5 万预算的分配优先级？",
+            label: `${budgetLabel}的分配优先级？`,
             options: ["场地布置优先", "宴席餐饮优先", "摄影摄像优先", "四大金刚均衡分配"],
             defaultIndex: 3,
           },
@@ -1799,13 +2000,55 @@
       };
     }
 
-    if (quickMode === "research" || /深度研究|论文|研究报告/.test(promptText)) {
+    if (ctx.topic === "wedding") {
+      return {
+        intro,
+        questions: [
+          {
+            id: "city",
+            label: "婚礼举办城市是哪里？",
+            options: ["一线城市", "新一线/省会", "二三线城市", "其他"],
+            defaultIndex: 1,
+          },
+          {
+            id: "scale",
+            label: "预计宾客规模？",
+            options: ["小型（80 人内）", "中型（80–150 人）", "大型（150 人以上）", "尚不确定"],
+            defaultIndex: 1,
+          },
+          {
+            id: "style",
+            label: "婚礼风格倾向？",
+            options: ["中式传统", "西式浪漫", "中西合璧", "主题定制"],
+            defaultIndex: 2,
+          },
+          {
+            id: "preference",
+            label: "新人喜好重点？",
+            options: ["仪式体验", "宴席品质", "摄影记录", "现场布置"],
+            defaultIndex: 0,
+          },
+          {
+            id: "budget",
+            label: `${budgetLabel}分配优先级？`,
+            options: ["场布布置", "餐饮宴席", "摄影团队", "均衡分配"],
+            defaultIndex: 3,
+          },
+        ],
+      };
+    }
+
+    if (ctx.topic === "research" || quickMode === "research" || /深度研究|论文|研究报告/.test(promptText)) {
+      const topicHint = /航空/.test(promptText) ? "航空经济"
+        : /人工智能|AI|政务/.test(promptText) ? "人工智能应用"
+        : /绿色能源|能源/.test(promptText) ? "绿色能源"
+        : "该研究主题";
       return {
         intro: "我先明确研究范围与输出要求，再组织智能体团队开展深度研究。",
         questions: [
           {
             id: "depth",
-            label: "研究深度与篇幅要求？",
+            label: `关于「${topicHint}」，研究深度与篇幅要求？`,
             options: ["简要分析报告（5–8 页）", "标准学术论文（8–15 页）", "深度研究报告（15 页以上）", "仅要核心结论摘要"],
             defaultIndex: 1,
           },
@@ -1822,9 +2065,47 @@
             defaultIndex: 3,
           },
           {
+            id: "price",
+            label: "对研究成本/数据获取方式的偏好？",
+            options: ["优先使用公开免费资料", "可接受付费行业报告", "需国内外对比数据", "按推荐即可"],
+            defaultIndex: 0,
+          },
+          {
             id: "chart",
             label: "是否需要数据图表？",
             options: ["不需要", "少量关键图表", "多组对比图表", "完整数据可视化"],
+            defaultIndex: 1,
+          },
+        ],
+      };
+    }
+
+    if (ctx.topic === "ppt") {
+      return {
+        intro: "我先确认演示场景与版式偏好，再为您生成 PPT。",
+        questions: [
+          {
+            id: "scene",
+            label: "PPT 主要演示场景？",
+            options: ["内部汇报", "客户提案", "公开路演", "培训分享"],
+            defaultIndex: 0,
+          },
+          {
+            id: "pages",
+            label: "期望页数规模？",
+            options: ["10 页以内（精简）", "10–20 页（标准）", "20–40 页（详细）", "40 页以上"],
+            defaultIndex: 1,
+          },
+          {
+            id: "style",
+            label: "视觉风格偏好？",
+            options: ["商务简约", "科技感", "创意活泼", "沉稳正式"],
+            defaultIndex: 0,
+          },
+          {
+            id: "preference",
+            label: "内容侧重新点？",
+            options: ["背景与问题", "方案与亮点", "数据与论证", "计划与总结"],
             defaultIndex: 1,
           },
         ],
@@ -1939,19 +2220,43 @@
 
   function buildAgentTasksFromSurvey(promptText, answers, quickMode) {
     const a = (id) => answers[id]?.value || "";
+    const ctx = analyzePromptContext(promptText, quickMode);
+    const budget = ctx.budgetLabel || "约定预算";
 
-    if (/婚礼|中式|策划/.test(promptText)) {
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "western") {
       return [
-        { agent: AGENTS.planner, task: `制定 ${a("city")}、${a("tables")} 规模下的约 5 万预算分配与执行计划（侧重：${a("budget")}）` },
-        { agent: AGENTS.search, task: `检索 ${a("city")} 婚庆场地、四大金刚及${a("style")}风格布置的市场报价` },
-        { agent: AGENTS.reader, task: "研读中式婚礼流程规范与礼仪要点，提取可落地的仪式环节" },
-        { agent: AGENTS.researcher, task: `分析同价位（约 5W）婚礼案例，对比 ${a("tables")} 规模下的成本结构` },
-        { agent: AGENTS.writer, task: `撰写完整中式婚礼策划方案（${a("style")}，含流程、物料与预算明细）` },
-        { agent: AGENTS.editor, task: "校对策划方案中的预算条目、礼仪描述与风险表述" },
+        { agent: AGENTS.planner, task: `制定 ${a("city")}、${a("scale")} 规模下的${budget}分配方案（侧重：${a("budget")}）` },
+        { agent: AGENTS.search, task: `检索 ${a("city")} ${a("venue")} 类型场地及西式婚礼供应商报价` },
+        { agent: AGENTS.reader, task: `研读西式婚礼流程与${a("customs")}相关礼仪规范` },
+        { agent: AGENTS.researcher, task: `对比同价位西式婚礼案例，分析${a("preference")}风格下的成本结构` },
+        { agent: AGENTS.writer, task: `撰写西式婚礼策划案（${a("preference")}，含仪式、晚宴流程与预算明细）` },
+        { agent: AGENTS.editor, task: "校对西式设计要素、预算条目与习俗描述准确性" },
       ];
     }
 
-    if (quickMode === "research" || /深度研究|论文/.test(promptText)) {
+    if (ctx.topic === "wedding" && ctx.weddingStyle === "chinese") {
+      return [
+        { agent: AGENTS.planner, task: `制定 ${a("city")}、${a("tables")} 规模下的${budget}分配（侧重：${a("budget")}）` },
+        { agent: AGENTS.search, task: `检索 ${a("city")} 中式婚庆场地、四大金刚及${a("style")}布置报价` },
+        { agent: AGENTS.reader, task: `研读${a("customs")}相关中式礼仪与流程规范` },
+        { agent: AGENTS.researcher, task: `分析同价位中式婚礼案例，对比 ${a("tables")} 规模成本结构` },
+        { agent: AGENTS.writer, task: `撰写中式婚礼策划方案（${a("style")}，${a("preference")}氛围，含流程与预算）` },
+        { agent: AGENTS.editor, task: "校对中式礼仪描述、预算条目与习俗表述" },
+      ];
+    }
+
+    if (ctx.topic === "wedding") {
+      return [
+        { agent: AGENTS.planner, task: `制定 ${a("city")}、${a("scale")} 的${budget}婚礼统筹方案` },
+        { agent: AGENTS.search, task: `检索 ${a("style")} 风格婚礼场地与服务商报价` },
+        { agent: AGENTS.reader, task: "研读相关礼仪与流程参考资料" },
+        { agent: AGENTS.researcher, task: `分析${a("preference")}偏好下的案例与成本` },
+        { agent: AGENTS.writer, task: `撰写婚礼策划方案（${a("style")}，含${a("budget")}分配）` },
+        { agent: AGENTS.editor, task: "校对策划案细节与预算准确性" },
+      ];
+    }
+
+    if (ctx.topic === "research" || quickMode === "research" || /深度研究|论文/.test(promptText)) {
       return [
         { agent: AGENTS.planner, task: `确定研究范围：${a("depth")}，维度覆盖「${a("dimension")}」` },
         { agent: AGENTS.search, task: `按「${a("source")}」偏好检索文献与行业资料` },
@@ -2000,6 +2305,7 @@
     await sleep(500, token);
     const answers = await waitForSurveyConfirmation(survey, token);
     chatSession.surveyAnswers = answers;
+    chatSession.promptContext = analyzePromptContext(promptText, flowContext.quickMode);
     const tasks = buildAgentTasksFromSurvey(promptText, answers, flowContext.quickMode);
     agentMessage(AGENTS.planner, "已收到补充信息，现将需求拆分至各智能体并开始协作：");
     agentTaskSplitCard(tasks);
@@ -2265,6 +2571,7 @@
     chatSession.initialPrompt = promptText;
     chatSession.workMode = mode;
     chatSession.quickMode = quickMode || flowContext.quickMode;
+    chatSession.promptContext = analyzePromptContext(promptText, chatSession.quickMode);
 
     els.homeView?.classList.add("hidden");
     els.workflowView?.classList.remove("hidden");
