@@ -58,6 +58,17 @@
       background: #ebebeb;
       font-weight: 700;
     }
+    .nav-item.is-selected::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      bottom: 7px;
+      width: 3px;
+      border-radius: 2px;
+      background: #00a0df;
+    }
+    .nav-item { position: relative; }
     .nav-item:hover {
       color: #171717 !important;
       background: #f1f1f1 !important;
@@ -504,6 +515,358 @@
       margin: 0 0 6px;
     }
     .style-preview-quote p:last-child { margin-bottom: 0; color: #888; font-size: 10px; }
+    /* AI 内容审校 */
+    #contentReviewView {
+      background: #f3f4f6;
+    }
+    .cr-editor-wrap {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-right: 1px solid #e5e7eb;
+    }
+    .cr-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-bottom: 1px solid #ececef;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .cr-btn-primary {
+      height: 32px;
+      padding: 0 14px;
+      border-radius: 6px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cr-btn-primary:hover { background: #008fc8; }
+    .cr-btn-outline {
+      height: 32px;
+      padding: 0 12px;
+      border-radius: 6px;
+      border: 1px solid #e0e2e6;
+      background: #fff;
+      color: #444;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cr-btn-outline:hover { border-color: #c8cad0; background: #fafafa; }
+    .cr-stats {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: #eef8fd;
+      font-size: 11px;
+      color: #555;
+      flex-wrap: wrap;
+    }
+    .cr-stats-upgrade {
+      color: #00a0df;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .cr-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 12px;
+      border-bottom: 1px solid #f0f1f3;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .cr-tool-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      color: #666;
+      display: grid;
+      place-items: center;
+    }
+    .cr-tool-btn:hover { background: #f3f4f6; color: #333; }
+    .cr-tool-sep { width: 1px; height: 16px; background: #e8e8eb; margin: 0 4px; }
+    .cr-tool-select {
+      height: 28px;
+      padding: 0 8px;
+      border: 1px solid #e8e8eb;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #555;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cr-editor-area {
+      flex: 1;
+      min-height: 0;
+      padding: 16px 18px;
+      overflow-y: auto;
+    }
+    .cr-editor-textarea {
+      width: 100%;
+      height: 100%;
+      min-height: 280px;
+      border: none;
+      outline: none;
+      resize: none;
+      font-size: 13px;
+      line-height: 1.75;
+      color: #333;
+    }
+    .cr-bottombar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-top: 1px solid #ececef;
+      flex-shrink: 0;
+    }
+    .cr-bottom-left { display: flex; gap: 14px; }
+    .cr-link-btn {
+      font-size: 11px;
+      color: #666;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cr-link-btn:hover { color: #00a0df; }
+    .cr-bottom-right { display: flex; gap: 8px; }
+    .cr-btn-proofread {
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 6px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cr-btn-proofread:hover { background: #008fc8; }
+    .cr-right-panel {
+      width: 360px;
+      flex-shrink: 0;
+      display: flex;
+      min-height: 0;
+      background: #fff;
+    }
+    .cr-result-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #ececef;
+    }
+    .cr-result-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      text-align: center;
+    }
+    .cr-result-empty-art {
+      width: 140px;
+      height: 120px;
+      margin-bottom: 16px;
+      color: #b8c4d0;
+    }
+    .cr-result-strip {
+      width: 108px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 8px;
+      font-size: 11px;
+    }
+    .cr-result-strip-title {
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      padding-left: 4px;
+    }
+    .cr-result-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding: 7px 4px;
+      color: #555;
+      border-radius: 4px;
+    }
+    .cr-result-item:hover { background: #f7f8f9; }
+    .cr-result-badge {
+      min-width: 20px;
+      height: 20px;
+      padding: 0 5px;
+      border-radius: 999px;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+    }
+    .cr-result-badge.all { background: #e85d5d; }
+    .cr-result-badge.severe { background: #f08a3a; }
+    .cr-result-badge.general { background: #f5b942; }
+    .cr-result-badge.suspect { background: #4da3ff; }
+    .cr-result-badge.custom { background: #9b8cf5; }
+    .cr-result-badge.risk { background: #f07ab8; }
+    .cr-result-badge.record { background: #5ec269; }
+    .cr-result-errata {
+      margin-top: auto;
+      padding-top: 10px;
+      text-align: center;
+      font-size: 10px;
+      color: #00a0df;
+    }
+    .cr-footer-note {
+      flex-shrink: 0;
+      padding: 8px 14px;
+      text-align: center;
+      font-size: 10px;
+      color: #b0b2b8;
+      background: #f9fafb;
+      border-top: 1px solid #ececef;
+    }
+    .cr-resize-handle {
+      width: 6px;
+      cursor: col-resize;
+      background: #f3f4f6;
+      border-left: 1px solid #e5e7eb;
+      border-right: 1px solid #e5e7eb;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .cr-resize-dots {
+      width: 4px;
+      height: 24px;
+      background: radial-gradient(circle, #c0c4c9 1px, transparent 1px);
+      background-size: 4px 4px;
+    }
+    .proofread-modal-overlay {
+      background: rgba(0, 0, 0, .35);
+    }
+    .proofread-modal {
+      width: min(760px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .proofread-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px 10px;
+    }
+    .proofread-modal-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 12px;
+    }
+    .proofread-select-all {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #444;
+    }
+    .proofread-special {
+      font-size: 12px;
+      color: #666;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .proofread-modal-body {
+      overflow-y: auto;
+      padding: 0 20px 16px;
+      flex: 1;
+    }
+    .proofread-category { margin-bottom: 14px; }
+    .proofread-category-head {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #ffb347, #ffcc66);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .proofread-item-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px 12px;
+    }
+    .proofread-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #444;
+      cursor: pointer;
+    }
+    .proofread-item input {
+      width: 14px;
+      height: 14px;
+      accent-color: #00a0df;
+      flex-shrink: 0;
+    }
+    .proofread-modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 12px 20px 16px;
+      border-top: 1px solid #ececef;
+    }
+    .proofread-btn-cancel {
+      height: 34px;
+      padding: 0 20px;
+      border-radius: 6px;
+      border: 1px solid #e0e2e6;
+      background: #fff;
+      font-size: 12px;
+      color: #555;
+    }
+    .proofread-btn-ok {
+      height: 34px;
+      padding: 0 24px;
+      border-radius: 6px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .proofread-btn-ok:hover { background: #008fc8; }
+    @media (max-width: 900px) {
+      .proofread-item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cr-right-panel { width: 300px; }
+    }
     .recent-row:hover { background: #f1f1f1; }
     .recent-row.is-active {
       background: #d6d6d6;
@@ -1087,15 +1450,15 @@
     <div class="flex h-[calc(100%-45px)]">
       <aside id="sidebar" class="w-[259px] shrink-0 bg-[#fafafa] border-r border-[#e9ecef] flex flex-col px-[10px] py-[14px] pb-[15px]">
         <nav class="nav-scroll flex-1 overflow-y-auto">
-          <button data-nav class="nav-item is-selected w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
+          <button data-nav data-nav-target="agent" class="nav-item is-selected w-full h-[28px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
             <i data-lucide="command" class="w-[13px] h-[13px]"></i><span>办公写作Agent</span>
           </button>
           <div class="space-y-[1px] mt-[5px]">
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
+            <button data-nav data-nav-target="doc-writing" class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="file-text" class="w-[13px] h-[13px]"></i><span>AI公文写作</span>
             </button>
-            <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
-              <i data-lucide="files" class="w-[13px] h-[13px]"></i><span>AI内容审核</span>
+            <button data-nav data-nav-target="content-review" class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
+              <i data-lucide="scan-text" class="w-[13px] h-[13px]"></i><span>AI内容审校</span>
             </button>
             <button data-nav class="nav-item w-full h-[31px] px-[9px] rounded-[7px] flex items-center gap-[9px] text-left hover:bg-[#eeeefe] hover:text-brand">
               <i data-lucide="shield-check" class="w-[13px] h-[13px]"></i><span>AI公文校对</span>
@@ -1353,7 +1716,117 @@
             </div>
           </div>
         </section>
+
+        <section id="contentReviewView" class="hidden absolute inset-0 flex flex-col">
+          <div class="flex flex-1 min-h-0">
+            <div class="cr-editor-wrap">
+              <div class="cr-topbar">
+                <button type="button" id="crUploadDoc" class="cr-btn-primary">
+                  <i data-lucide="plus" class="w-[14px] h-[14px]"></i>上传文档
+                </button>
+                <button type="button" id="crSelectProofType" class="cr-btn-outline">
+                  选择校对类型<i data-lucide="chevron-down" class="w-[12px] h-[12px]"></i>
+                </button>
+                <button type="button" id="crCustomLexicon" class="cr-btn-outline">自定义词库</button>
+                <div class="cr-stats">
+                  <span>今日检测字数：<strong>0</strong>字 / 1.00亿字</span>
+                  <span>单次检测字数：10.00万字</span>
+                  <button type="button" class="cr-stats-upgrade"><i data-lucide="arrow-up-circle" class="w-[13px] h-[13px]"></i>升级</button>
+                </div>
+              </div>
+              <div class="cr-toolbar">
+                <button type="button" class="cr-tool-btn" title="撤销"><i data-lucide="undo-2" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="重做"><i data-lucide="redo-2" class="w-[14px] h-[14px]"></i></button>
+                <span class="cr-tool-sep"></span>
+                <button type="button" class="cr-tool-btn" title="清除格式"><i data-lucide="remove-formatting" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="格式刷"><i data-lucide="paintbrush" class="w-[14px] h-[14px]"></i></button>
+                <span class="cr-tool-sep"></span>
+                <span class="cr-tool-select">字体<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
+                <span class="cr-tool-select">字号<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
+                <span class="cr-tool-sep"></span>
+                <button type="button" class="cr-tool-btn" title="文字颜色"><i data-lucide="baseline" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="加粗"><i data-lucide="bold" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="斜体"><i data-lucide="italic" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="下划线"><i data-lucide="underline" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="删除线"><i data-lucide="strikethrough" class="w-[14px] h-[14px]"></i></button>
+                <span class="cr-tool-sep"></span>
+                <button type="button" class="cr-tool-btn" title="代码"><i data-lucide="code" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="左对齐"><i data-lucide="align-left" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="居中"><i data-lucide="align-center" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="右对齐"><i data-lucide="align-right" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="无序列表"><i data-lucide="list" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="cr-tool-btn" title="有序列表"><i data-lucide="list-ordered" class="w-[14px] h-[14px]"></i></button>
+                <button type="button" class="ml-auto text-[11px] text-[#00a0df] hover:underline">查看示例</button>
+              </div>
+              <div class="cr-editor-area">
+                <textarea id="crEditorText" class="cr-editor-textarea" placeholder=""></textarea>
+              </div>
+              <div class="cr-bottombar">
+                <div class="cr-bottom-left">
+                  <button type="button" id="crCopyText" class="cr-link-btn"><i data-lucide="copy" class="w-[13px] h-[13px]"></i>复制</button>
+                  <button type="button" id="crClearText" class="cr-link-btn"><i data-lucide="eraser" class="w-[13px] h-[13px]"></i>清空内容</button>
+                </div>
+                <div class="cr-bottom-right">
+                  <button type="button" id="crExportDoc" class="cr-btn-outline"><i data-lucide="file-output" class="w-[14px] h-[14px]"></i>导出文档</button>
+                  <button type="button" id="crSmartProofread" class="cr-btn-proofread"><i data-lucide="spell-check" class="w-[15px] h-[15px]"></i>智能校对</button>
+                </div>
+              </div>
+            </div>
+            <div class="cr-resize-handle" aria-hidden="true"><div class="cr-resize-dots"></div></div>
+            <div class="cr-right-panel">
+              <div class="cr-result-main">
+                <div class="cr-result-empty">
+                  <svg class="cr-result-empty-art" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <ellipse cx="80" cy="108" rx="52" ry="8" fill="#e8ecf0"/>
+                    <rect x="48" y="28" width="64" height="48" rx="6" fill="#eef4f8" stroke="#c5d4de" stroke-width="1.5"/>
+                    <circle cx="80" cy="52" r="14" fill="#fff" stroke="#b8c9d4" stroke-width="1.5"/>
+                    <path d="M68 78h24" stroke="#c5d4de" stroke-width="2" stroke-linecap="round"/>
+                    <rect x="98" y="18" width="28" height="36" rx="4" fill="#fff" stroke="#91dafa" stroke-width="1.5"/>
+                    <path d="M104 28h16M104 34h12" stroke="#91dafa" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  <p class="text-[12px] text-[#888] leading-relaxed max-w-[200px]">请在左侧输入或粘贴(Ctrl+V)您的文本或上传文档</p>
+                </div>
+              </div>
+              <aside class="cr-result-strip">
+                <div class="cr-result-strip-title">校对结果</div>
+                <div class="cr-result-item"><span>全部错误</span><span class="cr-result-badge all">0</span></div>
+                <div class="cr-result-item"><span>严重错误</span><span class="cr-result-badge severe">0</span></div>
+                <div class="cr-result-item"><span>一般错误</span><span class="cr-result-badge general">0</span></div>
+                <div class="cr-result-item"><span>疑似错误</span><span class="cr-result-badge suspect">0</span></div>
+                <div class="cr-result-item"><span>自定义错误</span><span class="cr-result-badge custom">0</span></div>
+                <div class="cr-result-item"><span>风险提示</span><span class="cr-result-badge risk">0</span></div>
+                <div class="cr-result-item"><span>修改记录</span><span class="cr-result-badge record">0</span></div>
+                <button type="button" class="cr-result-errata hover:underline">查看勘误表</button>
+              </aside>
+            </div>
+          </div>
+          <p class="cr-footer-note">内容由 AI 生成，生成内容仅供参考，用户需对内容自行进行检查和评估</p>
+        </section>
       </main>
+    </div>
+  </div>
+
+  <!-- 选择校对项弹窗 -->
+  <div id="proofreadTypeModal" class="proofread-modal-overlay hidden fixed inset-0 z-[88] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="proofreadModalTitle">
+    <div class="proofread-modal">
+      <div class="proofread-modal-head">
+        <h2 id="proofreadModalTitle" class="text-[15px] font-bold text-[#222]">选择校对项</h2>
+        <button type="button" id="closeProofreadModal" class="w-[28px] h-[28px] rounded-full grid place-items-center text-[#666] hover:bg-[#f0f0f0]" aria-label="关闭">
+          <i data-lucide="x" class="w-[16px] h-[16px]"></i>
+        </button>
+      </div>
+      <div class="proofread-modal-toolbar">
+        <label class="proofread-select-all">
+          <input type="checkbox" id="proofreadSelectAll" checked />
+          <span>全选</span>
+        </label>
+        <button type="button" class="proofread-special"><i data-lucide="sliders-horizontal" class="w-[14px] h-[14px]"></i>专项设置</button>
+      </div>
+      <div id="proofreadModalBody" class="proofread-modal-body"></div>
+      <div class="proofread-modal-foot">
+        <button type="button" id="proofreadCancel" class="proofread-btn-cancel">取消</button>
+        <button type="button" id="proofreadConfirm" class="proofread-btn-ok">确定</button>
+      </div>
     </div>
   </div>
 
@@ -2475,6 +2948,7 @@
     document.getElementById("benefits")?.classList.remove("hidden");
     if (els.workflowStatusBar) els.workflowStatusBar.innerHTML = "";
     if (els.chatThread) els.chatThread.innerHTML = "";
+    document.getElementById("contentReviewView")?.classList.add("hidden");
     todoPanelEl = null;
     progressPercent = 0;
     flowContext.isResearch = false;
@@ -2483,6 +2957,16 @@
   }
 
   function goHomeFromLogo() {
+    const contentReviewVisible = !document.getElementById("contentReviewView")?.classList.contains("hidden");
+    if (contentReviewVisible) {
+      document.getElementById("contentReviewView")?.classList.add("hidden");
+      els.homeView?.classList.remove("hidden");
+      document.getElementById("benefits")?.classList.remove("hidden");
+      document.querySelectorAll(".nav-item").forEach((item) => item.classList.remove("is-selected"));
+      document.querySelector('[data-nav-target="agent"]')?.classList.add("is-selected");
+      document.getElementById("prompt")?.focus();
+      return;
+    }
     if (!els.workflowView || els.workflowView.classList.contains("hidden")) {
       document.getElementById("prompt")?.focus();
       return;
@@ -4299,7 +4783,13 @@
     $$("[data-nav]").forEach(button => button.addEventListener("click", () => {
       $$(".nav-item").forEach(item => item.classList.remove("is-selected"));
       button.classList.add("is-selected");
-      if (button.textContent.includes("办公写作Agent")) {
+      const target = button.dataset.navTarget;
+      if (target === "content-review") {
+        showContentReviewView();
+        return;
+      }
+      if (target === "agent" || button.textContent.includes("办公写作Agent")) {
+        showAgentHomeView();
         if (!document.getElementById("workflowView")?.classList.contains("hidden")) {
           stopAndGoHome();
         } else {
@@ -4307,8 +4797,131 @@
         }
         return;
       }
+      showAgentHomeView();
       showToast(button.textContent.trim() + " 功能即将打开");
     }));
+
+    const PROOFREAD_CATEGORIES = [
+      {
+        title: "文字标点差错校对",
+        items: ["错别字、词", "多字错误", "少字错误", "语义重复", "量和单位差错", "数字差错", "序号检查", "标点符号差错", "大段内容查重", "空格检查", "电头格式"],
+      },
+      {
+        title: "知识性差错校对",
+        items: ["重要讲话引用", "姓名和职务信息", "机构名称", "时政重点词", "法律法规名称", "事实性差错", "党内法规", "译名检查", "媒体报道禁用词和慎用词"],
+      },
+      {
+        title: "内容导向风险识别",
+        items: ["涉民族宗教", "涉黄、暴、恐、赌、毒", "涉低俗辱骂", "涉违法违规", "涉国家统一、主权和领土完整", "其他敏感内容"],
+      },
+      {
+        title: "自定义词",
+        items: ["自定义禁用词", "自定义敏感词", "自定义正词", "自定义错词", "自定义重点词", "自定义领导人职务信息", "自定义领导人排序"],
+      },
+    ];
+
+    function renderProofreadModal() {
+      const body = $("#proofreadModalBody");
+      if (!body) return;
+      body.innerHTML = PROOFREAD_CATEGORIES.map((cat, ci) => `
+        <div class="proofread-category">
+          <div class="proofread-category-head">${cat.title}</div>
+          <div class="proofread-item-grid">
+            ${cat.items.map((item, ii) => {
+              const id = `pf_${ci}_${ii}`;
+              return `<label class="proofread-item" for="${id}"><input type="checkbox" id="${id}" class="proofread-item-cb" checked />${item}</label>`;
+            }).join("")}
+          </div>
+        </div>`).join("");
+    }
+
+    function openProofreadTypeModal() {
+      renderProofreadModal();
+      const modal = $("#proofreadTypeModal");
+      modal?.classList.remove("hidden");
+      modal?.classList.add("flex");
+      const selectAll = $("#proofreadSelectAll");
+      if (selectAll) selectAll.checked = true;
+      lucide.createIcons();
+    }
+
+    function closeProofreadTypeModal() {
+      const modal = $("#proofreadTypeModal");
+      modal?.classList.add("hidden");
+      modal?.classList.remove("flex");
+    }
+
+    function syncProofreadSelectAll() {
+      const allCbs = $$(".proofread-item-cb");
+      const selectAll = $("#proofreadSelectAll");
+      if (!selectAll || !allCbs.length) return;
+      selectAll.checked = allCbs.every((cb) => cb.checked);
+    }
+
+    function showContentReviewView() {
+      $("#homeView")?.classList.add("hidden");
+      $("#workflowView")?.classList.add("hidden");
+      $("#contentReviewView")?.classList.remove("hidden");
+      $("#benefits")?.classList.add("hidden");
+      document.querySelector(".main-stage")?.classList.remove("is-chat-mode");
+      lucide.createIcons();
+    }
+
+    function showAgentHomeView() {
+      $("#contentReviewView")?.classList.add("hidden");
+      if (!$("#workflowView") || $("#workflowView").classList.contains("hidden")) {
+        $("#homeView")?.classList.remove("hidden");
+        $("#benefits")?.classList.remove("hidden");
+      }
+    }
+
+    renderProofreadModal();
+    $("#crSelectProofType")?.addEventListener("click", openProofreadTypeModal);
+    $("#closeProofreadModal")?.addEventListener("click", closeProofreadTypeModal);
+    $("#proofreadCancel")?.addEventListener("click", closeProofreadTypeModal);
+    $("#proofreadTypeModal")?.addEventListener("click", (event) => {
+      if (event.target === $("#proofreadTypeModal")) closeProofreadTypeModal();
+    });
+    $("#proofreadConfirm")?.addEventListener("click", () => {
+      const count = $$(".proofread-item-cb:checked").length;
+      closeProofreadTypeModal();
+      showToast(`已选择 ${count} 项校对规则`);
+    });
+    $("#proofreadSelectAll")?.addEventListener("change", (event) => {
+      const checked = event.target.checked;
+      $$(".proofread-item-cb").forEach((cb) => { cb.checked = checked; });
+    });
+    document.addEventListener("change", (event) => {
+      if (event.target.classList?.contains("proofread-item-cb")) syncProofreadSelectAll();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !$("#proofreadTypeModal")?.classList.contains("hidden")) {
+        closeProofreadTypeModal();
+      }
+    });
+    $("#crUploadDoc")?.addEventListener("click", () => showToast("请选择要上传的文档（原型演示）"));
+    $("#crCustomLexicon")?.addEventListener("click", () => showToast("自定义词库（原型演示）"));
+    $("#crCopyText")?.addEventListener("click", async () => {
+      const text = $("#crEditorText")?.value || "";
+      if (!text) { showToast("暂无内容可复制"); return; }
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("已复制到剪贴板");
+      } catch {
+        showToast("复制失败");
+      }
+    });
+    $("#crClearText")?.addEventListener("click", () => {
+      const el = $("#crEditorText");
+      if (el) el.value = "";
+      showToast("已清空内容");
+    });
+    $("#crExportDoc")?.addEventListener("click", () => showToast("导出文档（原型演示）"));
+    $("#crSmartProofread")?.addEventListener("click", () => {
+      const text = $("#crEditorText")?.value.trim();
+      if (!text) showToast("请先输入或粘贴待校对文本");
+      else showToast("智能校对中（原型演示）");
+    });
 
     $("#recentList").addEventListener("click", (event) => {
       const deleteButton = event.target.closest(".delete-conversation");
