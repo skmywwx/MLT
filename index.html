@@ -486,7 +486,7 @@
             </div>
           </div>
 
-          <div class="mt-[24px] flex justify-center gap-[7px]">
+          <div class="mt-[24px] flex justify-center gap-[7px] flex-wrap">
             <button data-suggestion="请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47b83f]"></i>写作
             </button>
@@ -496,7 +496,13 @@
             <button data-suggestion="生成一份项目介绍PPT" class="quick-ppt h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="presentation" class="w-[13px] h-[13px] text-[#5B5FE5]"></i>AI PPT
             </button>
+            <button id="sandboxDemoBtn" type="button" class="h-[32px] px-[12px] rounded-[14px] border border-dashed border-[#b9bbf6] bg-[#f8f8ff] flex items-center gap-[6px] text-[#5B5FE5] hover:bg-[#f0f0ff] hover:border-[#5B5FE5]" title="一键进入任务处理沙盒演示">
+              <i data-lucide="flask-conical" class="w-[13px] h-[13px]"></i>沙盒演示
+            </button>
           </div>
+          <p id="sandboxHint" class="mt-3 text-center text-[10px] leading-relaxed text-[#9a9ca1]">
+            测试沙盒：输入需求并发送后，将自动进入「智能体工作区」模拟任务拆解与交付全流程（无需真实后端）。
+          </p>
 
           <h2 class="mt-[28px] mb-[11px] text-center text-[11px] font-semibold text-[#222]">办公写作智能体：让写作专家团队，为您精修每一篇文章</h2>
           <div class="agent-grid grid grid-cols-3 gap-x-[10px] gap-y-[17px]">
@@ -889,15 +895,33 @@
     $$("[data-nav]").forEach(button => button.addEventListener("click", () => {
       $$(".nav-item").forEach(item => item.classList.remove("is-selected"));
       button.classList.add("is-selected");
-      if (!button.textContent.includes("办公写作Agent")) showToast(button.textContent.trim() + " 功能即将打开");
+      if (button.textContent.includes("办公写作Agent")) {
+        if (!document.getElementById("workflowView")?.classList.contains("hidden")) {
+          window.MLTWorkflowSandbox?.stop?.();
+        }
+        document.getElementById("workflowView")?.classList.add("hidden");
+        document.getElementById("homeView")?.classList.remove("hidden");
+        document.getElementById("benefits")?.classList.remove("hidden");
+        promptBox.focus();
+        return;
+      }
+      showToast(button.textContent.trim() + " 功能即将打开");
     }));
 
     $("#recentList").addEventListener("click", (event) => {
       const deleteButton = event.target.closest(".delete-conversation");
-      if (!deleteButton) return;
-      event.stopPropagation();
-      deleteButton.closest(".recent-row").remove();
-      showToast("对话已删除");
+      if (deleteButton) {
+        event.stopPropagation();
+        deleteButton.closest(".recent-row").remove();
+        showToast("对话已删除");
+        return;
+      }
+      const rowButton = event.target.closest(".recent-row button:first-child");
+      if (!rowButton) return;
+      const text = rowButton.textContent.trim();
+      if (!text) return;
+      promptBox.value = text;
+      submitPrompt();
     });
 
     function createRecentRow(text) {
@@ -952,6 +976,36 @@
         submitPrompt();
       }
     });
+
+    const SANDBOX_DEMO_PROMPT = "请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告";
+
+    function startSandboxDemo(mode) {
+      $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+      const target = document.querySelector(`[data-work-mode="${mode || "交互模式"}"]`);
+      target?.classList.add("is-mode-selected");
+      $("#speedModeText").textContent = mode || "交互模式";
+      promptBox.value = SANDBOX_DEMO_PROMPT;
+      submitPrompt();
+    }
+
+    $("#sandboxDemoBtn")?.addEventListener("click", () => startSandboxDemo("交互模式"));
+    window.startSandboxDemo = startSandboxDemo;
+
+    function applySandboxUrlParams() {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("skipLogin") === "1") {
+        desktopView.classList.add("hidden");
+        loginView.classList.add("hidden");
+        agentApp.classList.remove("hidden");
+      }
+      const autoDemo = params.get("autoDemo");
+      if (autoDemo) {
+        window.setTimeout(() => {
+          startSandboxDemo(autoDemo === "quick" ? "快速模式" : "交互模式");
+        }, autoDemo === "quick" ? 400 : 600);
+      }
+    }
+    applySandboxUrlParams();
 
     // Chart.js is loaded per prototype requirements and ready for future data views.
     window.prototypeChartLibrary = Chart;

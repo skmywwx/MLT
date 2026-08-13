@@ -95,6 +95,16 @@
     document.getElementById("benefits")?.classList.remove("hidden");
   }
 
+  window.MLTWorkflowSandbox = {
+    start(promptText, mode) {
+      return startWorkflowSimulation(promptText || "请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告", mode || "交互模式");
+    },
+    stop: stopAndGoHome,
+    isRunning: () => running,
+    modes: ["快速模式", "交互模式"],
+    demoPrompt: "请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告",
+  };
+
   function sleep(ms, token) {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(resolve, ms);
