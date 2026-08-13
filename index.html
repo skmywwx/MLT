@@ -398,6 +398,59 @@
     .todo-panel { border: 1px solid #e8e8eb; border-radius: 10px; background: #fff; overflow: hidden; }
     .todo-panel summary { cursor: pointer; list-style: none; padding: 10px 12px; font-size: 12px; font-weight: 600; }
     .todo-panel summary::-webkit-details-marker { display: none; }
+    .survey-card {
+      border: 1px solid #e8e8eb;
+      border-radius: 14px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: 0 4px 18px rgba(30, 35, 55, .06);
+    }
+    .survey-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid #ececef;
+      background: #fafafa;
+      text-align: left;
+      font-size: 11px;
+      color: #444;
+      line-height: 1.45;
+      cursor: pointer;
+      transition: border-color .15s ease, background .15s ease;
+    }
+    .survey-option:hover { border-color: #91dafa; background: #f7fcff; }
+    .survey-option.is-selected {
+      border-color: #5B5FE5;
+      background: #f4f4ff;
+      color: #333;
+    }
+    .survey-option-mark {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid #ccc;
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: grid;
+      place-items: center;
+      background: #fff;
+    }
+    .survey-option.is-selected .survey-option-mark {
+      border-color: #5B5FE5;
+      background: #5B5FE5;
+      color: #fff;
+    }
+    .agent-task-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f2f2f2;
+      font-size: 11px;
+    }
+    .agent-task-row:last-child { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -911,6 +964,7 @@
     workMode: "",
     quickMode: null,
     deliverable: null,
+    surveyAnswers: null,
     taskCompleted: false,
     turnCount: 0,
   };
@@ -920,6 +974,7 @@
     chatSession.workMode = "";
     chatSession.quickMode = null;
     chatSession.deliverable = null;
+    chatSession.surveyAnswers = null;
     chatSession.taskCompleted = false;
     chatSession.turnCount = 0;
   }
@@ -1709,6 +1764,249 @@
     toggleModal("filesModal", true);
   }
 
+  function buildInteractiveSurvey(promptText, quickMode) {
+    const intro = "我先了解您的具体需求，再给出有针对性的方案。";
+
+    if (/婚礼|中式|策划/.test(promptText)) {
+      return {
+        intro,
+        questions: [
+          {
+            id: "city",
+            label: "婚礼举办城市是哪里？这直接影响场地、人员的报价差异。",
+            options: ["一线城市（北上广深）", "新一线/省会城市", "二三线城市", "县城/乡镇"],
+            defaultIndex: 1,
+          },
+          {
+            id: "tables",
+            label: "宾客规模大约多少桌？这决定了宴席、烟酒糖茶的预算占比。",
+            options: ["30 桌以内（亲友少）", "30–50 桌（中型）", "50–80 桌（大型）", "80 桌以上（超大型）"],
+            defaultIndex: 1,
+          },
+          {
+            id: "style",
+            label: "希望的中式婚礼风格侧重？",
+            options: ["传统中式（三书六礼）", "新中式融合", "民俗特色（地域风）", "简约现代中式"],
+            defaultIndex: 1,
+          },
+          {
+            id: "budget",
+            label: "约 5 万预算的分配优先级？",
+            options: ["场地布置优先", "宴席餐饮优先", "摄影摄像优先", "四大金刚均衡分配"],
+            defaultIndex: 3,
+          },
+        ],
+      };
+    }
+
+    if (quickMode === "research" || /深度研究|论文|研究报告/.test(promptText)) {
+      return {
+        intro: "我先明确研究范围与输出要求，再组织智能体团队开展深度研究。",
+        questions: [
+          {
+            id: "depth",
+            label: "研究深度与篇幅要求？",
+            options: ["简要分析报告（5–8 页）", "标准学术论文（8–15 页）", "深度研究报告（15 页以上）", "仅要核心结论摘要"],
+            defaultIndex: 1,
+          },
+          {
+            id: "dimension",
+            label: "希望重点分析哪些维度？",
+            options: ["政策与监管环境", "产业链与竞争格局", "技术路径与创新", "以上均需覆盖"],
+            defaultIndex: 3,
+          },
+          {
+            id: "source",
+            label: "资料来源偏好？",
+            options: ["学术论文与期刊", "行业报告与白皮书", "政策文件与新闻", "综合权威来源"],
+            defaultIndex: 3,
+          },
+          {
+            id: "chart",
+            label: "是否需要数据图表？",
+            options: ["不需要", "少量关键图表", "多组对比图表", "完整数据可视化"],
+            defaultIndex: 1,
+          },
+        ],
+      };
+    }
+
+    return {
+      intro,
+      questions: [
+        {
+          id: "purpose",
+          label: "这份文档的主要用途是？",
+          options: ["内部汇报", "对外发布", "会议材料", "存档备查"],
+          defaultIndex: 0,
+        },
+        {
+          id: "audience",
+          label: "目标读者是谁？",
+          options: ["公司管理层", "业务团队同事", "政府/合作方", "公众/媒体"],
+          defaultIndex: 0,
+        },
+        {
+          id: "length",
+          label: "期望篇幅大约多少？",
+          options: ["1–2 页（精简）", "3–5 页（标准）", "5–10 页（详细）", "10 页以上（长篇）"],
+          defaultIndex: 1,
+        },
+        {
+          id: "tone",
+          label: "文风偏好？",
+          options: ["正式严谨", "简洁清晰", "亲切自然", "创意生动"],
+          defaultIndex: 0,
+        },
+      ],
+    };
+  }
+
+  function waitForSurveyConfirmation(survey, token) {
+    return new Promise((resolve, reject) => {
+      if (token !== abortToken) {
+        reject(new Error("aborted"));
+        return;
+      }
+      const uid = "sv" + Date.now();
+      const questionsHtml = survey.questions.map((q, qi) => {
+        const opts = q.options.map((opt, oi) => `
+          <button type="button" class="survey-option ${oi === q.defaultIndex ? "is-selected" : ""}"
+            data-qidx="${qi}" data-oidx="${oi}">
+            <span class="survey-option-mark">${oi === q.defaultIndex ? "✓" : ""}</span>
+            <span>${opt}</span>
+          </button>`).join("");
+        return `<div class="mb-4" data-question="${q.id}">
+          <div class="text-[11px] font-medium text-[#333] mb-2 leading-relaxed">${q.label}</div>
+          <div class="space-y-2">${opts}</div>
+        </div>`;
+      }).join("");
+
+      const wrap = appendMessage(`
+        <div class="mb-5 max-w-[92%]">
+          <div class="survey-card">
+            <div class="px-4 pt-3.5 pb-2.5 border-b border-[#f0f0f0] flex items-center gap-2">
+              <span class="w-7 h-7 rounded-lg bg-[#f4f4ff] grid place-items-center text-[#5B5FE5]">
+                <i data-lucide="clipboard-list" class="w-3.5 h-3.5"></i>
+              </span>
+              <div>
+                <div class="text-[12px] font-semibold text-[#333]">补充信息</div>
+                <div class="text-[10px] text-[#888] mt-0.5">输入补充信息并确认，帮助智能体交付更符合您需求的内容</div>
+              </div>
+            </div>
+            <div class="px-4 py-3">${questionsHtml}</div>
+            <div class="px-4 pb-3.5">
+              <button type="button" id="${uid}-confirm" class="w-full h-[34px] rounded-lg bg-[#5B5FE5] text-white text-[12px] font-medium hover:bg-[#494dcc]">
+                确认并继续
+              </button>
+            </div>
+          </div>
+        </div>`);
+
+      wrap.querySelectorAll(".survey-option").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const qidx = btn.dataset.qidx;
+          wrap.querySelectorAll(`.survey-option[data-qidx="${qidx}"]`).forEach((el) => {
+            el.classList.remove("is-selected");
+            el.querySelector(".survey-option-mark").textContent = "";
+          });
+          btn.classList.add("is-selected");
+          btn.querySelector(".survey-option-mark").textContent = "✓";
+        });
+      });
+
+      const abortCheck = setInterval(() => {
+        if (token !== abortToken) {
+          clearInterval(abortCheck);
+          reject(new Error("aborted"));
+        }
+      }, 80);
+
+      wrap.querySelector(`#${uid}-confirm`)?.addEventListener("click", () => {
+        clearInterval(abortCheck);
+        const answers = {};
+        survey.questions.forEach((q, qi) => {
+          const selected = wrap.querySelector(`.survey-option.is-selected[data-qidx="${qi}"]`);
+          const oidx = selected ? +selected.dataset.oidx : q.defaultIndex;
+          answers[q.id] = { label: q.label, value: q.options[oidx], index: oidx };
+        });
+        wrap.querySelector(`#${uid}-confirm`).disabled = true;
+        wrap.querySelector(`#${uid}-confirm`).textContent = "已确认";
+        resolve(answers);
+      });
+    });
+  }
+
+  function buildAgentTasksFromSurvey(promptText, answers, quickMode) {
+    const a = (id) => answers[id]?.value || "";
+
+    if (/婚礼|中式|策划/.test(promptText)) {
+      return [
+        { agent: AGENTS.planner, task: `制定 ${a("city")}、${a("tables")} 规模下的约 5 万预算分配与执行计划（侧重：${a("budget")}）` },
+        { agent: AGENTS.search, task: `检索 ${a("city")} 婚庆场地、四大金刚及${a("style")}风格布置的市场报价` },
+        { agent: AGENTS.reader, task: "研读中式婚礼流程规范与礼仪要点，提取可落地的仪式环节" },
+        { agent: AGENTS.researcher, task: `分析同价位（约 5W）婚礼案例，对比 ${a("tables")} 规模下的成本结构` },
+        { agent: AGENTS.writer, task: `撰写完整中式婚礼策划方案（${a("style")}，含流程、物料与预算明细）` },
+        { agent: AGENTS.editor, task: "校对策划方案中的预算条目、礼仪描述与风险表述" },
+      ];
+    }
+
+    if (quickMode === "research" || /深度研究|论文/.test(promptText)) {
+      return [
+        { agent: AGENTS.planner, task: `确定研究范围：${a("depth")}，维度覆盖「${a("dimension")}」` },
+        { agent: AGENTS.search, task: `按「${a("source")}」偏好检索文献与行业资料` },
+        { agent: AGENTS.reader, task: "深度研读筛选文献，提取证据链与关键论点" },
+        { agent: AGENTS.researcher, task: `完成多维度分析${a("chart") !== "不需要" ? "并生成" + a("chart") : ""}` },
+        { agent: AGENTS.writer, task: `按 ${a("depth")} 要求撰写论文正文（含摘要、方法与结论）` },
+        { agent: AGENTS.editor, task: "三审三校：学术规范、引文格式与内容导向审查" },
+      ];
+    }
+
+    return [
+      { agent: AGENTS.planner, task: `拆解需求：${a("purpose")}用途，面向${a("audience")}，篇幅 ${a("length")}` },
+      { agent: AGENTS.search, task: "检索与主题相关的外部资料与参考案例" },
+      { agent: AGENTS.reader, task: "阅读并归纳上传/检索资料中的有效信息" },
+      { agent: AGENTS.researcher, task: "分析归纳关键结论与数据支撑" },
+      { agent: AGENTS.writer, task: `按「${a("tone")}」文风撰写正文（${a("length")}）` },
+      { agent: AGENTS.editor, task: "校对文字、标点、知识与内容导向风险" },
+    ];
+  }
+
+  function agentTaskSplitCard(tasks) {
+    return appendMessage(`
+      <div class="mb-4 max-w-[92%]">
+        ${agentBadge(AGENTS.planner)}
+        <div class="rounded-lg border border-[#e8e8eb] bg-white p-3">
+          <div class="text-[11px] font-semibold mb-2">智能体任务分工</div>
+          <p class="text-[10px] text-[#888] mb-2">已根据补充信息，将需求拆分至六位智能体：</p>
+          <div>
+            ${tasks.map((t) => `
+              <div class="agent-task-row">
+                <span class="text-[16px] leading-none shrink-0">${t.agent.emoji}</span>
+                <div class="min-w-0">
+                  <div class="font-semibold text-[#333]">${t.agent.name}</div>
+                  <div class="text-[#666] mt-0.5 leading-relaxed">${t.task}</div>
+                </div>
+              </div>`).join("")}
+          </div>
+        </div>
+      </div>`);
+  }
+
+  async function runInteractiveSurveyPhase(promptText, token) {
+    const survey = buildInteractiveSurvey(promptText, flowContext.quickMode);
+    updateStatusBar("需求澄清中", AGENTS.planner.name, 0, getActiveTodoItems().length, 8, "交互模式", false);
+    agentMessage(AGENTS.planner, survey.intro);
+    await sleep(500, token);
+    const answers = await waitForSurveyConfirmation(survey, token);
+    chatSession.surveyAnswers = answers;
+    const tasks = buildAgentTasksFromSurvey(promptText, answers, flowContext.quickMode);
+    agentMessage(AGENTS.planner, "已收到补充信息，现将需求拆分至各智能体并开始协作：");
+    agentTaskSplitCard(tasks);
+    await sleep(700, token);
+    return { survey, answers, tasks };
+  }
+
   async function runResearchPaperFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
     todoPanelEl = null;
@@ -1719,6 +2017,7 @@
 
     userMessage(promptText);
     await sleep(600, token);
+    await runInteractiveSurveyPhase(promptText, token);
     statusLine("深度研究技能已加载", "ok");
 
     setProgress(0, "话题拆分中", AGENTS.planner.name, "交互模式", { partial: 0.3 });
@@ -1792,6 +2091,8 @@
     userMessage(promptText, files);
     await sleep(700, token);
 
+    await runInteractiveSurveyPhase(promptText, token);
+
     if (hasFiles) {
       agentMessage(AGENTS.planner,
         "已收到您上传的文件。该任务涉及跨文档分析，建议切换至 <strong>交互模式</strong> 以便确认任务计划与阶段结果。");
@@ -1808,8 +2109,15 @@
     /* ── 步骤0：创建写作大纲（统筹专家规划 → 写作达人生成） ── */
     setProgress(0, "任务规划中", AGENTS.planner.name, "交互模式", { partial: 0.2 });
     ownerHandoff(AGENTS.planner, "需求拆解与任务规划");
+    const surveyHint = chatSession.surveyAnswers?.city
+      ? `（已确认：${chatSession.surveyAnswers.city.value}、${chatSession.surveyAnswers.tables?.value || "规模已确认"}）`
+      : chatSession.surveyAnswers?.depth
+      ? `（已确认：${chatSession.surveyAnswers.depth.value}）`
+      : chatSession.surveyAnswers?.purpose
+      ? `（已确认：${chatSession.surveyAnswers.purpose.value}）`
+      : "";
     agentMessage(AGENTS.planner,
-      `已将您的需求拆分为 <strong>${getActiveTodoItems().length}</strong> 个步骤，并按职责分配给统筹、检索、文献阅读、写作与编辑等智能体。`);
+      `已将您的需求拆分为 <strong>${getActiveTodoItems().length}</strong> 个步骤，并按职责分配给六位智能体${surveyHint}。`);
     todoPanelEl = appendMessage(inlineTodoPanel(0));
     await sleep(600, token);
 
