@@ -617,17 +617,57 @@
       min-height: 0;
       padding: 16px 18px;
       overflow-y: auto;
+      background: #fff;
     }
-    .cr-editor-textarea {
+    .cr-editor-content {
       width: 100%;
-      height: 100%;
       min-height: 280px;
       border: none;
       outline: none;
-      resize: none;
-      font-size: 13px;
-      line-height: 1.75;
+      font-family: FangSong, "仿宋", STFangsong, serif;
+      font-size: 18px;
+      line-height: 1.85;
       color: #333;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .cr-editor-content:empty::before {
+      content: attr(data-placeholder);
+      color: #bbb;
+      pointer-events: none;
+    }
+    .cr-mark-typo {
+      position: relative;
+      display: inline;
+      background: #ffe8c8;
+      border-radius: 2px;
+      padding: 0 1px;
+      cursor: pointer;
+    }
+    .cr-mark-typo::before {
+      content: "!";
+      position: absolute;
+      top: -10px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #f5c842;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 14px;
+      text-align: center;
+      font-family: system-ui, sans-serif;
+    }
+    .cr-mark-suspect {
+      border-bottom: 3px solid #4da3ff;
+      cursor: pointer;
+      padding-bottom: 0;
+    }
+    .cr-mark-active {
+      box-shadow: 0 0 0 2px rgba(0, 160, 223, .35);
+      border-radius: 2px;
     }
     .cr-bottombar {
       display: flex;
@@ -661,7 +701,9 @@
     }
     .cr-btn-proofread:hover { background: #008fc8; }
     .cr-right-panel {
-      width: 360px;
+      width: 42%;
+      min-width: 380px;
+      max-width: 520px;
       flex-shrink: 0;
       display: flex;
       min-height: 0;
@@ -673,6 +715,7 @@
       display: flex;
       flex-direction: column;
       border-right: 1px solid #ececef;
+      background: #fafbfc;
     }
     .cr-result-empty {
       flex: 1;
@@ -682,7 +725,159 @@
       justify-content: center;
       padding: 24px 16px;
       text-align: center;
+      background: #fff;
     }
+    .cr-result-empty.hidden { display: none; }
+    .cr-result-cards {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      background: #f7f8fa;
+    }
+    .cr-result-cards.hidden { display: none; }
+    .cr-cards-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 10px 12px;
+      border-bottom: 1px solid #ececef;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .cr-filter-dropdown {
+      flex: 1;
+      min-width: 0;
+      height: 30px;
+      padding: 0 10px;
+      border: 1px solid #e0e2e6;
+      border-radius: 6px;
+      background: #fff;
+      font-size: 11px;
+      color: #444;
+      text-align: left;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+    .cr-accept-all {
+      height: 30px;
+      padding: 0 12px;
+      border-radius: 6px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+    .cr-accept-all:hover { background: #008fc8; }
+    .cr-cards-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .cr-suggestion-card {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #e8eaed;
+      padding: 12px 14px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, .04);
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .cr-suggestion-card:hover,
+    .cr-suggestion-card.is-active {
+      border-color: #91dafa;
+      box-shadow: 0 2px 8px rgba(0, 160, 223, .12);
+    }
+    .cr-suggestion-card.is-resolved {
+      opacity: .45;
+      pointer-events: none;
+    }
+    .cr-card-head {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+    }
+    .cr-card-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .cr-card-icon.typo { background: #f5c842; color: #fff; }
+    .cr-card-icon.suspect { background: #4da3ff; color: #fff; }
+    .cr-card-original {
+      font-size: 13px;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .cr-card-suggest {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .cr-card-suggest-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 4px;
+      background: #e9f6fd;
+      color: #00a0df;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .cr-card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .cr-card-tag {
+      font-size: 10px;
+      color: #999;
+    }
+    .cr-card-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .cr-card-btn {
+      height: 26px;
+      padding: 0 12px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+    .cr-card-btn-dismiss {
+      border: 1px solid #e0e2e6;
+      background: #fff;
+      color: #666;
+    }
+    .cr-card-btn-dismiss:hover { background: #f5f5f5; }
+    .cr-card-btn-accept {
+      background: #00a0df;
+      color: #fff;
+      font-weight: 600;
+    }
+    .cr-card-btn-accept:hover { background: #008fc8; }
     .cr-result-empty-art {
       width: 140px;
       height: 120px;
@@ -690,12 +885,13 @@
       color: #b8c4d0;
     }
     .cr-result-strip {
-      width: 108px;
+      width: 112px;
       flex-shrink: 0;
       display: flex;
       flex-direction: column;
       padding: 12px 8px;
       font-size: 11px;
+      background: #fff;
     }
     .cr-result-strip-title {
       font-weight: 700;
@@ -1741,8 +1937,8 @@
                 <button type="button" class="cr-tool-btn" title="清除格式"><i data-lucide="remove-formatting" class="w-[14px] h-[14px]"></i></button>
                 <button type="button" class="cr-tool-btn" title="格式刷"><i data-lucide="paintbrush" class="w-[14px] h-[14px]"></i></button>
                 <span class="cr-tool-sep"></span>
-                <span class="cr-tool-select">字体<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
-                <span class="cr-tool-select">字号<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
+                <span class="cr-tool-select">仿宋<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
+                <span class="cr-tool-select">18px<i data-lucide="chevron-down" class="w-[10px] h-[10px]"></i></span>
                 <span class="cr-tool-sep"></span>
                 <button type="button" class="cr-tool-btn" title="文字颜色"><i data-lucide="baseline" class="w-[14px] h-[14px]"></i></button>
                 <button type="button" class="cr-tool-btn" title="加粗"><i data-lucide="bold" class="w-[14px] h-[14px]"></i></button>
@@ -1756,10 +1952,10 @@
                 <button type="button" class="cr-tool-btn" title="右对齐"><i data-lucide="align-right" class="w-[14px] h-[14px]"></i></button>
                 <button type="button" class="cr-tool-btn" title="无序列表"><i data-lucide="list" class="w-[14px] h-[14px]"></i></button>
                 <button type="button" class="cr-tool-btn" title="有序列表"><i data-lucide="list-ordered" class="w-[14px] h-[14px]"></i></button>
-                <button type="button" class="ml-auto text-[11px] text-[#00a0df] hover:underline">查看示例</button>
+                <button type="button" id="crViewExample" class="ml-auto text-[11px] text-[#00a0df] hover:underline">查看示例</button>
               </div>
               <div class="cr-editor-area">
-                <textarea id="crEditorText" class="cr-editor-textarea" placeholder=""></textarea>
+                <div id="crEditorContent" class="cr-editor-content" contenteditable="true" data-placeholder=""></div>
               </div>
               <div class="cr-bottombar">
                 <div class="cr-bottom-left">
@@ -1775,7 +1971,7 @@
             <div class="cr-resize-handle" aria-hidden="true"><div class="cr-resize-dots"></div></div>
             <div class="cr-right-panel">
               <div class="cr-result-main">
-                <div class="cr-result-empty">
+                <div id="crResultEmpty" class="cr-result-empty">
                   <svg class="cr-result-empty-art" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <ellipse cx="80" cy="108" rx="52" ry="8" fill="#e8ecf0"/>
                     <rect x="48" y="28" width="64" height="48" rx="6" fill="#eef4f8" stroke="#c5d4de" stroke-width="1.5"/>
@@ -1786,16 +1982,28 @@
                   </svg>
                   <p class="text-[12px] text-[#888] leading-relaxed max-w-[200px]">请在左侧输入或粘贴(Ctrl+V)您的文本或上传文档</p>
                 </div>
+                <div id="crResultCards" class="cr-result-cards hidden">
+                  <div class="cr-cards-toolbar">
+                    <button type="button" id="crFilterDropdown" class="cr-filter-dropdown">
+                      <span>已选择全部错误类型</span>
+                      <i data-lucide="chevron-down" class="w-[12px] h-[12px] shrink-0"></i>
+                    </button>
+                    <button type="button" id="crAcceptAll" class="cr-accept-all">
+                      <i data-lucide="check" class="w-[12px] h-[12px]"></i>一键接受
+                    </button>
+                  </div>
+                  <div id="crCardsList" class="cr-cards-list"></div>
+                </div>
               </div>
               <aside class="cr-result-strip">
                 <div class="cr-result-strip-title">校对结果</div>
-                <div class="cr-result-item"><span>全部错误</span><span class="cr-result-badge all">0</span></div>
-                <div class="cr-result-item"><span>严重错误</span><span class="cr-result-badge severe">0</span></div>
-                <div class="cr-result-item"><span>一般错误</span><span class="cr-result-badge general">0</span></div>
-                <div class="cr-result-item"><span>疑似错误</span><span class="cr-result-badge suspect">0</span></div>
-                <div class="cr-result-item"><span>自定义错误</span><span class="cr-result-badge custom">0</span></div>
-                <div class="cr-result-item"><span>风险提示</span><span class="cr-result-badge risk">0</span></div>
-                <div class="cr-result-item"><span>修改记录</span><span class="cr-result-badge record">0</span></div>
+                <div class="cr-result-item" data-stat="all"><span>全部错误</span><span id="crStatAll" class="cr-result-badge all">0</span></div>
+                <div class="cr-result-item" data-stat="severe"><span>严重错误</span><span id="crStatSevere" class="cr-result-badge severe">0</span></div>
+                <div class="cr-result-item" data-stat="general"><span>一般错误</span><span id="crStatGeneral" class="cr-result-badge general">0</span></div>
+                <div class="cr-result-item" data-stat="suspect"><span>疑似错误</span><span id="crStatSuspect" class="cr-result-badge suspect">0</span></div>
+                <div class="cr-result-item" data-stat="custom"><span>自定义错误</span><span id="crStatCustom" class="cr-result-badge custom">0</span></div>
+                <div class="cr-result-item" data-stat="risk"><span>风险提示</span><span id="crStatRisk" class="cr-result-badge risk">0</span></div>
+                <div class="cr-result-item" data-stat="record"><span>修改记录</span><span id="crStatRecord" class="cr-result-badge record">0</span></div>
                 <button type="button" class="cr-result-errata hover:underline">查看勘误表</button>
               </aside>
             </div>
@@ -4804,7 +5012,7 @@
     const PROOFREAD_CATEGORIES = [
       {
         title: "文字标点差错校对",
-        items: ["错别字、词", "多字错误", "少字错误", "语义重复", "量和单位差错", "数字差错", "序号检查", "标点符号差错", "大段内容查重", "空格检查", "电头格式"],
+        items: ["语义重复", "量和单位差错", "数字差错", "错别字、词", "多字错误", "少字错误", "序号检查", "标点符号差错", "大段内容查重", "空格检查", "电头格式"],
       },
       {
         title: "知识性差错校对",
@@ -4812,13 +5020,254 @@
       },
       {
         title: "内容导向风险识别",
-        items: ["涉民族宗教", "涉黄、暴、恐、赌、毒", "涉低俗辱骂", "涉违法违规", "涉国家统一、主权和领土完整", "其他敏感内容"],
+        items: ["涉民族宗教", "涉黄", "暴", "恐", "赌", "毒", "涉低俗辱骂", "涉违法违规", "其他敏感内容"],
       },
       {
         title: "自定义词",
-        items: ["自定义禁用词", "自定义敏感词", "自定义正词", "自定义错词", "自定义重点词", "自定义领导人职务信息", "自定义领导人排序"],
+        items: ["自定义禁用词", "自定义敏感词", "自定义正词", "自定义错词", "自定义重点词"],
+      },
+      {
+        title: "专项巡查校对",
+        items: ["两会规范用语校对"],
       },
     ];
+
+    const CR_DEMO_STORY = `在一片茂密的森林里，住着一只聪明伶俐厉害的小刺猬。它身上的刺又尖又硬，每当遇到危险时，就会把身体蜷成一团，竖起所有的刺来保护自己。
+
+小刺猬性格开朗，喜欢在森林里探险。有一天，它发现了一条从未走过的小径，好奇心驱使它沿着小路一直往前走。
+
+走了很久，小刺猬来到了一片开阔的草地。草地上开满了五颜六色的野花，蝴蝶在花丛中飞舞。小刺猬兴奋地在花丛中奔跑，享受着大自然的美好。
+
+傍晚时分，小刺猬踏上了回家的路。当它路过一片灌木丛时，突然听到了微弱的呼救声。原来是一只小兔子不慎掉进了猎人设置的陷阱里。
+
+小刺猬毫不犹豫地跑过去，用它锋利的刺咬断了陷阱上的绳子，救出了小兔子。小兔子感激地说："谢谢你，你真是一只善良又聪明伶俐的刺猬！"
+
+从那以后，小刺猬和小兔子成为了好朋友。它们经常一起在森林里玩耍、探险，过着快乐的生活。森林里的小动物们都知道，有一只勇敢善良的小刺猬，生活着，它们都愿意和它做朋友。`;
+
+    const CR_DEMO_ERRORS = [
+      {
+        id: "err_typo_1",
+        match: "聪明伶俐厉害",
+        suggestion: "聪明伶俐",
+        headTitle: "错别字、词",
+        tag: "错别字",
+        severity: "general",
+        markClass: "cr-mark-typo",
+        cardIcon: "typo",
+        cardIconChar: "★",
+      },
+      {
+        id: "err_suspect_1",
+        match: "生活着，它们",
+        markSub: "，",
+        suggestion: "生活着。它们",
+        displayOriginal: "，",
+        displaySuggest: "。",
+        headTitle: "疑似错误",
+        tag: "疑似错误",
+        severity: "suspect",
+        markClass: "cr-mark-suspect",
+        cardIcon: "suspect",
+        cardIconChar: "／",
+      },
+    ];
+
+    let crActiveErrors = [];
+    let crResolvedCount = 0;
+
+    function getCrEditorPlainText() {
+      return ($("#crEditorContent")?.innerText || "").trim();
+    }
+
+    function setCrEditorPlainText(text) {
+      const el = $("#crEditorContent");
+      if (!el) return;
+      el.textContent = text;
+      resetCrProofreadResults();
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function buildMarkedEditorHtml(text, errors) {
+      const sorted = [...errors].sort((a, b) => text.indexOf(a.match) - text.indexOf(b.match));
+      let html = "";
+      let cursor = 0;
+      sorted.forEach((err) => {
+        const idx = text.indexOf(err.match, cursor);
+        if (idx === -1) return;
+        html += escapeHtml(text.slice(cursor, idx));
+        const matchPart = text.slice(idx, idx + err.match.length);
+        if (err.markSub && matchPart.includes(err.markSub)) {
+          const subIdx = matchPart.indexOf(err.markSub);
+          html += escapeHtml(matchPart.slice(0, subIdx));
+          html += `<span class="${err.markClass}" data-err-id="${err.id}" role="button" tabindex="0">${escapeHtml(err.markSub)}</span>`;
+          html += escapeHtml(matchPart.slice(subIdx + err.markSub.length));
+        } else {
+          html += `<span class="${err.markClass}" data-err-id="${err.id}" role="button" tabindex="0">${escapeHtml(matchPart)}</span>`;
+        }
+        cursor = idx + err.match.length;
+      });
+      html += escapeHtml(text.slice(cursor));
+      return html.replace(/\n/g, "<br>");
+    }
+
+    function renderProofreadCards(errors) {
+      const list = $("#crCardsList");
+      if (!list) return;
+      list.innerHTML = errors.map((err) => {
+        const orig = err.displayOriginal || err.match;
+        const sugg = err.displaySuggest || err.suggestion;
+        return `
+          <article class="cr-suggestion-card" data-card-id="${err.id}">
+            <div class="cr-card-head">
+              <span class="cr-card-icon ${err.cardIcon}">${err.cardIconChar}</span>
+              <span>${err.headTitle}</span>
+            </div>
+            <div class="cr-card-original">${escapeHtml(orig)}</div>
+            <div class="cr-card-suggest">
+              <span>建议替换为</span>
+              <span class="cr-card-suggest-pill">${escapeHtml(sugg)}</span>
+            </div>
+            <div class="cr-card-foot">
+              <span class="cr-card-tag">${escapeHtml(err.tag)}</span>
+              <div class="cr-card-actions">
+                <button type="button" class="cr-card-btn cr-card-btn-dismiss" data-dismiss="${err.id}">误报</button>
+                <button type="button" class="cr-card-btn cr-card-btn-accept" data-accept="${err.id}">接受</button>
+              </div>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    function updateCrStats(errors, resolved = 0) {
+      const pending = errors.filter((e) => !e.resolved);
+      const counts = {
+        all: pending.length,
+        severe: pending.filter((e) => e.severity === "severe").length,
+        general: pending.filter((e) => e.severity === "general").length,
+        suspect: pending.filter((e) => e.severity === "suspect").length,
+        custom: pending.filter((e) => e.severity === "custom").length,
+        risk: pending.filter((e) => e.severity === "risk").length,
+        record: resolved,
+      };
+      const map = {
+        all: "#crStatAll",
+        severe: "#crStatSevere",
+        general: "#crStatGeneral",
+        suspect: "#crStatSuspect",
+        custom: "#crStatCustom",
+        risk: "#crStatRisk",
+        record: "#crStatRecord",
+      };
+      Object.entries(map).forEach(([key, sel]) => {
+        const el = $(sel);
+        if (el) el.textContent = String(counts[key]);
+      });
+    }
+
+    function showCrProofreadResults(errors) {
+      crActiveErrors = errors.map((e) => ({ ...e, resolved: false }));
+      crResolvedCount = 0;
+      $("#crResultEmpty")?.classList.add("hidden");
+      $("#crResultCards")?.classList.remove("hidden");
+      renderProofreadCards(crActiveErrors);
+      updateCrStats(crActiveErrors, crResolvedCount);
+      lucide.createIcons();
+    }
+
+    function resetCrProofreadResults() {
+      crActiveErrors = [];
+      crResolvedCount = 0;
+      $("#crResultEmpty")?.classList.remove("hidden");
+      $("#crResultCards")?.classList.add("hidden");
+      $("#crCardsList").innerHTML = "";
+      updateCrStats([], 0);
+    }
+
+    function highlightCrError(errId) {
+      $$(".cr-mark-typo, .cr-mark-suspect").forEach((el) => el.classList.remove("cr-mark-active"));
+      $$(".cr-suggestion-card").forEach((el) => el.classList.remove("is-active"));
+      const mark = document.querySelector(`[data-err-id="${errId}"]`);
+      const card = document.querySelector(`[data-card-id="${errId}"]`);
+      mark?.classList.add("cr-mark-active");
+      card?.classList.add("is-active");
+      mark?.scrollIntoView({ behavior: "smooth", block: "center" });
+      card?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+
+    function applyCrErrorFix(errId) {
+      const err = crActiveErrors.find((e) => e.id === errId);
+      if (!err || err.resolved) return;
+      const el = $("#crEditorContent");
+      if (!el) return;
+      const plain = el.innerText;
+      if (!plain.includes(err.match)) return;
+      const nextText = plain.replace(err.match, err.suggestion);
+      el.innerHTML = buildMarkedEditorHtml(nextText, crActiveErrors.filter((e) => !e.resolved && e.id !== errId));
+      err.resolved = true;
+      crResolvedCount += 1;
+      document.querySelector(`[data-card-id="${errId}"]`)?.classList.add("is-resolved");
+      updateCrStats(crActiveErrors, crResolvedCount);
+      const nextPending = crActiveErrors.find((e) => !e.resolved);
+      if (nextPending) highlightCrError(nextPending.id);
+    }
+
+    function dismissCrError(errId) {
+      const err = crActiveErrors.find((e) => e.id === errId);
+      if (!err || err.resolved) return;
+      const el = $("#crEditorContent");
+      if (!el) return;
+      const plain = el.innerText;
+      const remaining = crActiveErrors.filter((e) => !e.resolved && e.id !== errId);
+      el.innerHTML = buildMarkedEditorHtml(plain, remaining);
+      err.resolved = true;
+      crResolvedCount += 1;
+      document.querySelector(`[data-card-id="${errId}"]`)?.classList.add("is-resolved");
+      updateCrStats(crActiveErrors, crResolvedCount);
+    }
+
+    function runCrSmartProofread() {
+      const editor = $("#crEditorContent");
+      if (!editor) return;
+      let text = getCrEditorPlainText();
+      if (!text) {
+        text = CR_DEMO_STORY;
+        editor.textContent = text;
+      }
+      const errors = CR_DEMO_ERRORS.filter((e) => text.includes(e.match));
+      if (!errors.length) {
+        showToast("未发现可标记的错误（原型演示）");
+        return;
+      }
+      editor.innerHTML = buildMarkedEditorHtml(text, errors);
+      showCrProofreadResults(errors);
+      highlightCrError(errors[0].id);
+      showToast("智能校对完成");
+    }
+
+    function acceptAllCrErrors() {
+      const pending = crActiveErrors.filter((e) => !e.resolved);
+      if (!pending.length) {
+        showToast("没有待处理的建议");
+        return;
+      }
+      let text = getCrEditorPlainText();
+      pending.forEach((err) => {
+        if (text.includes(err.match)) text = text.replace(err.match, err.suggestion);
+        err.resolved = true;
+      });
+      crResolvedCount = crActiveErrors.length;
+      $("#crEditorContent").innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
+      $$(".cr-suggestion-card").forEach((c) => c.classList.add("is-resolved"));
+      updateCrStats(crActiveErrors, crResolvedCount);
+      showToast("已接受全部修改建议");
+    }
 
     function renderProofreadModal() {
       const body = $("#proofreadModalBody");
@@ -4902,7 +5351,7 @@
     $("#crUploadDoc")?.addEventListener("click", () => showToast("请选择要上传的文档（原型演示）"));
     $("#crCustomLexicon")?.addEventListener("click", () => showToast("自定义词库（原型演示）"));
     $("#crCopyText")?.addEventListener("click", async () => {
-      const text = $("#crEditorText")?.value || "";
+      const text = getCrEditorPlainText();
       if (!text) { showToast("暂无内容可复制"); return; }
       try {
         await navigator.clipboard.writeText(text);
@@ -4912,15 +5361,35 @@
       }
     });
     $("#crClearText")?.addEventListener("click", () => {
-      const el = $("#crEditorText");
-      if (el) el.value = "";
+      const el = $("#crEditorContent");
+      if (el) el.innerHTML = "";
+      resetCrProofreadResults();
       showToast("已清空内容");
     });
     $("#crExportDoc")?.addEventListener("click", () => showToast("导出文档（原型演示）"));
-    $("#crSmartProofread")?.addEventListener("click", () => {
-      const text = $("#crEditorText")?.value.trim();
-      if (!text) showToast("请先输入或粘贴待校对文本");
-      else showToast("智能校对中（原型演示）");
+    $("#crViewExample")?.addEventListener("click", () => {
+      setCrEditorPlainText(CR_DEMO_STORY);
+      showToast("已加载示例文本");
+    });
+    $("#crSmartProofread")?.addEventListener("click", runCrSmartProofread);
+    $("#crAcceptAll")?.addEventListener("click", acceptAllCrErrors);
+    $("#crCardsList")?.addEventListener("click", (event) => {
+      const acceptBtn = event.target.closest("[data-accept]");
+      if (acceptBtn) {
+        applyCrErrorFix(acceptBtn.dataset.accept);
+        return;
+      }
+      const dismissBtn = event.target.closest("[data-dismiss]");
+      if (dismissBtn) {
+        dismissCrError(dismissBtn.dataset.dismiss);
+        return;
+      }
+      const card = event.target.closest(".cr-suggestion-card");
+      if (card?.dataset.cardId) highlightCrError(card.dataset.cardId);
+    });
+    $("#crEditorContent")?.addEventListener("click", (event) => {
+      const mark = event.target.closest("[data-err-id]");
+      if (mark?.dataset.errId) highlightCrError(mark.dataset.errId);
     });
 
     $("#recentList").addEventListener("click", (event) => {
