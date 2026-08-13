@@ -237,6 +237,27 @@
       background: #f4f4ff;
       border-color: #b9bbf6;
     }
+    .main-stage.is-chat-mode { overflow: hidden !important; }
+    #workflowChat {
+      scrollbar-width: thin;
+      scrollbar-color: #c8c9cc #f0f1f3;
+    }
+    #workflowChat::-webkit-scrollbar { width: 8px; }
+    #workflowChat::-webkit-scrollbar-thumb {
+      background: #c8c9cc;
+      border-radius: 999px;
+    }
+    .chat-doc-preview h2 { font-size: 18px; font-weight: 700; color: #1a1a1a; margin: 0 0 12px; }
+    .chat-doc-preview h3 { font-size: 13px; font-weight: 600; color: #333; margin: 16px 0 8px; }
+    .chat-doc-preview p { font-size: 12px; line-height: 1.75; color: #444; margin: 0 0 10px; }
+    .cite-ref {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 14px; height: 14px; border-radius: 50%; background: #eaf8fd;
+      color: #00a0df; font-size: 9px; font-weight: 700; vertical-align: super;
+    }
+    .todo-panel { border: 1px solid #e8e8eb; border-radius: 10px; background: #fff; overflow: hidden; }
+    .todo-panel summary { cursor: pointer; list-style: none; padding: 10px 12px; font-size: 12px; font-weight: 600; }
+    .todo-panel summary::-webkit-details-marker { display: none; }
   </style>
 </head>
 <body>
@@ -487,7 +508,7 @@
           </div>
 
           <div class="mt-[24px] flex justify-center gap-[7px] flex-wrap">
-            <button data-suggestion="请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button data-suggestion="请生成一份中式，大约预算5W左右的婚礼策划方案" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47b83f]"></i>写作
             </button>
             <button data-suggestion="深度研究人工智能发展趋势并生成行业分析报告" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
@@ -545,26 +566,34 @@
           </div>
         </section>
 
-        <section id="workflowView" class="hidden absolute inset-0 flex flex-col bg-[#f8f9fa]">
-          <div class="shrink-0 border-b border-[#ececef] bg-white px-4 py-3">
-            <div class="flex items-center justify-between mb-2">
-              <button id="backHome" class="flex items-center gap-1.5 text-[11px] text-[#666] hover:text-brand rounded-lg px-2 py-1 hover:bg-indigo-50">
-                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>返回首页
-              </button>
-              <span class="text-[11px] font-semibold text-[#333]">智能体工作区</span>
-              <span class="w-[60px]"></span>
-            </div>
-            <div id="workflowStatusBar"></div>
+        <section id="workflowView" class="hidden absolute inset-0 flex flex-col bg-[#f3f4f6]">
+          <div id="workflowStatusBar" class="shrink-0 bg-white border-b border-[#ececef] px-4 py-2.5"></div>
+          <div id="workflowChat" class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 py-4">
+            <div id="chatThread" class="max-w-[680px] mx-auto w-full"></div>
           </div>
-          <div class="flex flex-1 min-h-0">
-            <div id="workflowChat" class="flex-1 overflow-y-auto px-5 py-4"></div>
-            <aside id="workflowTodo" class="hidden w-[220px] shrink-0 border-l border-[#ececef] bg-white p-4">
-              <div class="flex items-center justify-between mb-3">
-                <span class="text-[11px] font-semibold text-[#333]">待办事项</span>
-                <span id="workflowTodoCount" class="text-[10px] text-[#888]">1/6</span>
+          <div class="shrink-0 border-t border-[#ececef] bg-white px-4 pt-2.5 pb-3">
+            <div class="max-w-[680px] mx-auto w-full">
+              <button id="newChatBtn" type="button" class="mb-2.5 inline-flex items-center gap-1.5 h-[28px] px-2.5 rounded-lg text-[11px] text-[#666] hover:bg-[#f5f5f5] hover:text-brand">
+                <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>新建对话
+              </button>
+              <div class="rounded-[11px] border border-[#e6e7ea] bg-white shadow-composer p-[10px]">
+                <textarea id="chatPrompt" class="w-full h-[36px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
+                <div class="flex items-center justify-between mt-1">
+                  <div class="flex items-center gap-[5px]">
+                    <button type="button" class="w-[29px] h-[29px] rounded-[9px] border border-[#e1e2e5] grid place-items-center text-[#555] hover:bg-[#f0f0f0]" title="添加内容">
+                      <i data-lucide="plus" class="w-[17px] h-[17px]"></i>
+                    </button>
+                    <span class="h-[29px] px-[9px] flex items-center gap-[5px] rounded-[8px] border border-[#91dafa] bg-[#e9f8ff] text-[#00a0df] text-[11px]">
+                      <i data-lucide="command" class="w-[13px] h-[13px]"></i>智能体
+                    </span>
+                  </div>
+                  <button id="chatSend" type="button" class="w-[28px] h-[28px] rounded-full bg-brand text-white grid place-items-center hover:shadow-md" title="发送">
+                    <i data-lucide="arrow-up" class="w-[15px] h-[15px]"></i>
+                  </button>
+                </div>
               </div>
-              <ul id="workflowTodoList" class="space-y-0.5"></ul>
-            </aside>
+              <p class="mt-2 text-center text-[9px] text-[#b0b2b8]">内容由 AI 生成，生成内容仅供参考，用户需对内容自行进行检查和评估</p>
+            </div>
           </div>
         </section>
       </main>
@@ -738,6 +767,54 @@
     "如何把研究结果转化为下季度行动计划？",
   ];
 
+  function inferDeliverable(promptText) {
+    const p = promptText;
+    if (/ppt|PPT|演示|幻灯片/.test(p)) {
+      return {
+        ext: "pptx",
+        icon: "presentation",
+        typeLabel: "PowerPoint 演示文稿",
+        title: "项目介绍演示文稿",
+        finalName: "项目介绍演示文稿（最终结果）.pptx",
+        draftName: "项目介绍演示文稿（初稿）.pptx",
+        preview: null,
+        searchQuery: "项目介绍 结构 设计要点",
+      };
+    }
+    if (/婚礼|策划|中式/.test(p)) {
+      return {
+        ext: "docx",
+        icon: "file-text",
+        typeLabel: "Word 文档",
+        title: "中式婚礼策划方案",
+        finalName: "中式婚礼策划方案（最终结果）.docx",
+        draftName: "中式婚礼策划方案（初稿）.docx",
+        preview: {
+          sections: [
+            { heading: "（一）活动目的与时间地点", body: "本次中式婚礼旨在传承传统文化，融合现代时尚元素，为新人打造一场庄重而温馨的记忆盛典。拟定于 2026 年 8 月 18 日举行，地点选用具有中式园林风格的宴会厅，整体装饰以金红配色为主。" },
+            { heading: "（二）参与对象与预估达成效果", body: "预计参与宾客约 150 人，涵盖双方亲属、同事及好友。通过精心设计的仪式环节与场景布置，预期达成情感共鸣与品牌口碑双重效果，预算控制在约 5 万元以内。" },
+          ],
+        },
+        searchQuery: "中式婚礼 预算 策划流程",
+      };
+    }
+    return {
+      ext: "docx",
+      icon: "file-text",
+      typeLabel: "Word 文档",
+      title: "工作总结分析报告",
+      finalName: "工作总结分析报告（最终结果）.docx",
+      draftName: "工作总结分析报告（初稿）.docx",
+      preview: {
+        sections: [
+          { heading: "一、报告引言", body: "本报告基于用户上传资料与外部检索结果，对近期工作成果进行整合分析，为后续决策提供依据。" },
+          { heading: "二、核心结论", body: "综合 12 条有效证据，当前工作推进总体符合预期，成本与收入匹配度良好，仍需关注跨部门协同效率。" },
+        ],
+      },
+      searchQuery: "成本核算 收入 工作内容",
+    };
+  }
+
   let running = false;
   let abortToken = 0;
   let currentTodoIndex = 0;
@@ -748,18 +825,23 @@
   function init() {
     els.homeView = document.getElementById("homeView");
     els.workflowView = document.getElementById("workflowView");
+    els.mainStage = document.querySelector(".main-stage");
     els.workflowChat = document.getElementById("workflowChat");
+    els.chatThread = document.getElementById("chatThread");
     els.workflowStatusBar = document.getElementById("workflowStatusBar");
-    els.workflowTodo = document.getElementById("workflowTodo");
-    els.workflowTodoList = document.getElementById("workflowTodoList");
-    els.workflowTodoCount = document.getElementById("workflowTodoCount");
-    els.backHome = document.getElementById("backHome");
     els.filesModal = document.getElementById("filesModal");
     els.feedbackModal = document.getElementById("feedbackModal");
 
     if (!els.workflowView) return;
 
-    els.backHome?.addEventListener("click", stopAndGoHome);
+    document.getElementById("newChatBtn")?.addEventListener("click", stopAndGoHome);
+    document.getElementById("chatSend")?.addEventListener("click", () => {
+      const chatPrompt = document.getElementById("chatPrompt");
+      const text = chatPrompt?.value.trim();
+      if (!text) return;
+      chatPrompt.value = "";
+      window.showToast?.("已收到追问，将基于当前上下文继续处理");
+    });
     document.getElementById("closeFilesModal")?.addEventListener("click", () => toggleModal("filesModal", false));
     document.getElementById("closeFeedbackModal")?.addEventListener("click", () => toggleModal("feedbackModal", false));
     document.getElementById("submitFeedback")?.addEventListener("click", () => {
@@ -788,6 +870,7 @@
     running = false;
     els.workflowView.classList.add("hidden");
     els.homeView?.classList.remove("hidden");
+    els.mainStage?.classList.remove("is-chat-mode");
     document.getElementById("benefits")?.classList.remove("hidden");
   }
 
@@ -813,61 +896,90 @@
     });
   }
 
-  function updateStatusBar(stage, owner, completed, total, percent) {
+  function updateStatusBar(stage, owner, completed, total, percent, modeLabel) {
+    const mode = modeLabel || "交互模式";
     els.workflowStatusBar.innerHTML = `
-      <div class="flex items-center justify-between gap-3 mb-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <span class="shrink-0 px-2 py-0.5 rounded bg-[#eaf8fd] text-[#00a0df] text-[10px] font-semibold">交互模式</span>
-          <span class="truncate text-[11px] text-[#444]">${stage}</span>
+      <div class="max-w-[680px] mx-auto w-full">
+        <div class="flex items-center justify-between gap-3 mb-1.5">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="shrink-0 px-2 py-0.5 rounded bg-[#eaf8fd] text-[#00a0df] text-[10px] font-semibold">${mode}</span>
+            <span class="truncate text-[11px] text-[#444]">${stage}</span>
+          </div>
+          <div class="shrink-0 text-[10px] text-[#888]">${completed}/${total} · ${owner}</div>
         </div>
-        <div class="shrink-0 text-[10px] text-[#888]">${completed}/${total} · ${owner}</div>
-      </div>
-      <div class="flex items-center gap-2">
-        <div class="flex-1 h-[6px] rounded-full bg-[#ececef] overflow-hidden" role="progressbar"
-          aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
-          <div class="wf-progress-fill h-full rounded-full bg-[#5B5FE5] transition-all duration-500" style="width:${percent}%"></div>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 h-[5px] rounded-full bg-[#ececef] overflow-hidden" role="progressbar"
+            aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
+            <div class="wf-progress-fill h-full rounded-full bg-[#5B5FE5]" style="width:${percent}%"></div>
+          </div>
+          <span class="text-[10px] font-semibold text-[#5B5FE5] w-[32px] text-right">${percent}%</span>
         </div>
-        <span class="text-[10px] font-semibold text-[#5B5FE5] w-[32px] text-right">${percent}%</span>
       </div>`;
   }
 
   function renderTodoList() {
-    els.workflowTodoList.innerHTML = TODO_ITEMS.map((item, i) => {
-      let statusClass = "text-[#aaa]";
-      let icon = '<span class="w-[14px] h-[14px] rounded-full border border-[#ddd]"></span>';
-      if (i < currentTodoIndex) {
-        statusClass = "text-[#35a92f]";
-        icon = '<i data-lucide="circle-check" class="w-[14px] h-[14px] text-[#35a92f]"></i>';
-      } else if (i === currentTodoIndex) {
-        statusClass = "text-[#00a0df] font-medium";
-        icon = '<span class="w-[14px] h-[14px] rounded-full border-2 border-[#00a0df] border-t-transparent animate-spin"></span>';
+    /* 待办事项改由 inlineTodoPanel 在对话流内渲染 */
+  }
+
+  function inlineTodoPanel(activeIndex) {
+    const items = TODO_ITEMS.map((item, i) => {
+      let cls = "text-[#bbb]";
+      let mark = '<span class="w-3 h-3 rounded-full border border-[#ddd] shrink-0"></span>';
+      if (i < activeIndex) {
+        cls = "text-[#35a92f]";
+        mark = '<i data-lucide="circle-check" class="w-3 h-3 shrink-0 text-[#35a92f]"></i>';
+      } else if (i === activeIndex) {
+        cls = "text-[#00a0df] font-medium";
+        mark = '<span class="w-3 h-3 rounded-full border-2 border-[#00a0df] border-t-transparent animate-spin shrink-0"></span>';
       }
-      return `<li class="flex items-center gap-2 py-1.5 ${statusClass}">
-        ${icon}<span class="text-[11px]">${item.title}</span>
-      </li>`;
+      return `<li class="flex items-center gap-2 py-1 ${cls}">${mark}<span class="text-[11px]">${item.title}</span></li>`;
     }).join("");
-    els.workflowTodoCount.textContent = `${Math.min(currentTodoIndex + 1, TODO_ITEMS.length)}/${TODO_ITEMS.length}`;
+    return `<details class="todo-panel mb-4" open>
+      <summary class="flex items-center justify-between">
+        <span>待办事项 ${Math.min(activeIndex + 1, TODO_ITEMS.length)}/${TODO_ITEMS.length}</span>
+        <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#aaa]"></i>
+      </summary>
+      <ul class="px-3 pb-3 space-y-0.5 border-t border-[#f0f0f0] pt-2">${items}</ul>
+    </details>`;
+  }
+
+  let todoPanelEl = null;
+  function updateInlineTodo(activeIndex) {
+    currentTodoIndex = activeIndex;
+    if (!todoPanelEl) return;
+    todoPanelEl.outerHTML = inlineTodoPanel(activeIndex);
+    todoPanelEl = document.querySelector(".todo-panel");
     window.lucide?.createIcons();
   }
 
-  function setProgress(completed, stage, owner) {
+  function setProgress(completed, stage, owner, modeLabel) {
     const weights = TODO_ITEMS.reduce((s, t) => s + t.weight, 0);
     let done = 0;
     for (let i = 0; i < completed; i++) done += TODO_ITEMS[i]?.weight || 0;
     progressPercent = Math.min(100, Math.round((done / weights) * 100));
-    updateStatusBar(stage, owner, completed, TODO_ITEMS.length, progressPercent);
-    currentTodoIndex = completed;
-    renderTodoList();
+    updateStatusBar(stage, owner, completed, TODO_ITEMS.length, progressPercent, modeLabel);
+    updateInlineTodo(completed);
   }
 
   function appendMessage(html) {
     const wrap = document.createElement("div");
     wrap.className = "wf-msg animate-[wfIn_.35s_ease]";
     wrap.innerHTML = html;
-    els.workflowChat.appendChild(wrap);
+    (els.chatThread || els.workflowChat).appendChild(wrap);
     scrollChat();
     window.lucide?.createIcons();
     return wrap;
+  }
+
+  function ownerHandoff(agent, subtitle) {
+    return appendMessage(`
+      <div class="mb-3 flex items-center gap-2 px-3 py-2 rounded-lg bg-white border border-[#ececef] text-[11px]">
+        <span class="text-[22px] leading-none">${agent.emoji}</span>
+        <div>
+          <div class="font-semibold text-[#333]">当前负责人：${agent.name}</div>
+          ${subtitle ? `<div class="text-[#888] mt-0.5">${subtitle}</div>` : ""}
+        </div>
+      </div>`);
   }
 
   function agentBadge(agent) {
@@ -886,8 +998,8 @@
           </span>`).join("")}</div>`
       : "";
     return appendMessage(`
-      <div class="flex justify-end mb-4">
-        <div class="max-w-[78%] rounded-[12px] rounded-tr-[4px] bg-[#5B5FE5] text-white px-3.5 py-2.5 text-[12px] leading-relaxed">
+      <div class="flex justify-end mb-5">
+        <div class="max-w-[85%] rounded-[14px] rounded-tr-[4px] bg-[#eef0f2] text-[#333] px-4 py-3 text-[12px] leading-relaxed shadow-sm">
           ${text}${fileHtml}
         </div>
       </div>`);
@@ -968,17 +1080,33 @@
     return wrap;
   }
 
-  function fileCard(name, label) {
+  function fileCard(name, label, icon) {
+    const ic = icon || "file-text";
     return appendMessage(`
-      <div class="mb-3 inline-flex items-center gap-2.5 px-3 py-2 rounded-lg border border-[#e4e6ea] bg-white hover:border-[#91dafa] cursor-pointer wf-file-card">
-        <span class="w-[32px] h-[32px] rounded bg-[#eaf8fd] grid place-items-center">
-          <i data-lucide="file-text" class="w-4 h-4 text-[#00a0df]"></i>
-        </span>
-        <div>
-          <div class="text-[11px] font-medium text-[#333]">${name}</div>
-          <div class="text-[9px] text-[#aaa]">${label || "Word 文档"}</div>
+      <div class="mb-3 flex">
+        <div class="inline-flex items-center gap-2.5 px-3 py-2.5 rounded-xl border border-[#e4e6ea] bg-white hover:border-[#91dafa] cursor-pointer wf-file-card shadow-sm">
+          <span class="w-[36px] h-[36px] rounded-lg bg-[#eaf8fd] grid place-items-center shrink-0">
+            <i data-lucide="${ic}" class="w-4 h-4 text-[#00a0df]"></i>
+          </span>
+          <div>
+            <div class="text-[12px] font-medium text-[#333]">${name}</div>
+            <div class="text-[10px] text-[#aaa] mt-0.5">${label || "Word 文档"}</div>
+          </div>
+          <i data-lucide="download" class="w-4 h-4 text-[#ccc] ml-3 shrink-0"></i>
         </div>
-        <i data-lucide="download" class="w-3.5 h-3.5 text-[#bbb] ml-2"></i>
+      </div>`);
+  }
+
+  function documentPreviewCard(deliverable) {
+    if (!deliverable.preview) return null;
+    const sections = deliverable.preview.sections.map((s, i) => `
+      <h3>${s.heading}</h3>
+      <p>${s.body}<span class="cite-ref">${i + 1}</span></p>
+    `).join("");
+    return appendMessage(`
+      <div class="mb-5 chat-doc-preview rounded-xl border border-[#e8e8eb] bg-white p-5 shadow-sm">
+        <h2>${deliverable.title}</h2>
+        ${sections}
       </div>`);
   }
 
@@ -1059,127 +1187,128 @@
   }
 
   async function runInteractiveFlow(promptText, token) {
-    els.workflowChat.innerHTML = "";
-    els.workflowTodo.classList.remove("hidden");
+    if (els.chatThread) els.chatThread.innerHTML = "";
+    todoPanelEl = null;
     currentTodoIndex = 0;
     progressPercent = 0;
-    setProgress(0, "需求理解中", AGENTS.planner.name);
+    const deliverable = inferDeliverable(promptText);
+    setProgress(0, "需求理解中", AGENTS.planner.name, "交互模式");
 
     const hasFiles = /整合|上传|文档|文件|报告/.test(promptText);
-    const displayPrompt = promptText;
     const files = hasFiles ? DEMO_FILES : null;
 
-    userMessage(displayPrompt, files);
-    await sleep(600, token);
+    userMessage(promptText, files);
+    await sleep(700, token);
 
     if (hasFiles) {
       agentMessage(AGENTS.planner,
-        "已收到您上传的 <strong>2</strong> 份文件。该任务涉及跨文档分析与报告生成，系统推荐切换至 <strong>交互模式</strong>，以便您确认任务计划与阶段结果。");
-      const modeCard = appendMessage(`
-        <div class="mb-4 flex gap-2">
-          <button class="wf-mode-btn is-active h-[32px] px-4 rounded-lg bg-[#5B5FE5] text-white text-[11px] font-medium">切换至交互模式</button>
-          <button class="wf-mode-btn h-[32px] px-4 rounded-lg border border-[#e4e6ea] text-[11px] text-[#666]">继续使用快速模式</button>
+        "已收到您上传的文件。该任务涉及跨文档分析，建议切换至 <strong>交互模式</strong> 以便确认任务计划与阶段结果。");
+      appendMessage(`
+        <div class="mb-4 flex flex-wrap gap-2">
+          <button class="h-[32px] px-4 rounded-lg bg-[#5B5FE5] text-white text-[11px] font-medium ring-2 ring-[#5B5FE5]/25">切换至交互模式</button>
+          <button class="h-[32px] px-4 rounded-lg border border-[#e4e6ea] text-[11px] text-[#666]">继续使用快速模式</button>
         </div>`);
-      await sleep(1200, token);
-      modeCard.querySelector(".is-active")?.classList.add("ring-2", "ring-[#5B5FE5]/30");
+      await sleep(1000, token);
     }
 
     statusLine("写作技能已加载", "ok");
-    agentMessage(AGENTS.planner, "当前负责人：<strong>统筹专家</strong>。正在理解需求并规划任务…");
+    ownerHandoff(AGENTS.planner, "正在理解需求并规划任务");
     await sleep(800, token);
 
-    setProgress(0, "任务规划中", AGENTS.planner.name);
     agentMessage(AGENTS.planner,
-      "已将您的任务拆分为 <strong>6</strong> 个步骤，涉及统筹、检索、写作与编辑四个智能体协作。请查看右侧待办事项跟踪进度。");
-    await sleep(700, token);
+      `已将您的需求拆分为 <strong>${TODO_ITEMS.length}</strong> 个步骤，由统筹、检索、写作与编辑四个智能体协作完成。`);
+    todoPanelEl = appendMessage(inlineTodoPanel(0));
+    await sleep(600, token);
 
-    setProgress(1, "资料检索中 · 12%", AGENTS.search.name);
-    statusLine("正在搜索：成本核算方法", "info");
-    toolLog([
-      { type: "read", text: "正在阅读文件…", detail: "20260105 周报.docx" },
-      { type: "read", text: "正在阅读文件…", detail: "测试文档01.pdf" },
-    ]);
-    await sleep(900, token);
-    statusLine("正在搜索：收入 成本 工作内容", "info");
+    setProgress(1, "资料检索中", AGENTS.search.name, "交互模式");
+    ownerHandoff(AGENTS.search, "正在检索相关资料");
+    statusLine(`正在搜索：${deliverable.searchQuery}`, "info");
+    if (hasFiles) {
+      toolLog([
+        { type: "read", text: "正在阅读文件…", detail: DEMO_FILES[0].name },
+        { type: "read", text: "正在阅读文件…", detail: DEMO_FILES[1].name },
+      ]);
+      await sleep(700, token);
+    }
     toolLog([{ type: "search", text: "调用搜索工具", action: "查看" }]);
     await sleep(800, token);
 
-    setProgress(2, "资料检索中 · 45%", AGENTS.search.name);
+    setProgress(2, "资料检索 · 45%", AGENTS.search.name, "交互模式");
     searchResults();
-    agentMessage(AGENTS.reader, "已从上传文件与外部来源中提取 <strong>12</strong> 条有效证据，生成资料摘要卡片。");
+    agentMessage(AGENTS.reader, "已从资料中提取 <strong>12</strong> 条有效证据，生成资料摘要卡片。");
     await sleep(700, token);
 
-    setProgress(2, "分析归纳中 · 55%", AGENTS.writer.name);
-    agentMessage(AGENTS.writer, "基于资料分析，正在生成报告大纲…");
+    setProgress(2, "分析归纳中", AGENTS.writer.name, "交互模式");
+    ownerHandoff(AGENTS.writer, "正在生成内容大纲");
+    agentMessage(AGENTS.writer, "基于资料分析，正在生成文档大纲…");
     await sleep(600, token);
 
-    setProgress(3, "等待确认大纲", AGENTS.writer.name);
+    setProgress(3, "等待确认大纲", AGENTS.writer.name, "交互模式");
     let outlineConfirmed = false;
     outlineCard(() => {
       outlineConfirmed = true;
-      window.showToast?.("已确认大纲，开始分章撰写");
+      window.showToast?.("已确认大纲，开始撰写");
     });
-    await sleep(1500, token);
-    if (!outlineConfirmed) {
-      document.getElementById("confirmOutline")?.click();
-    }
+    await sleep(1400, token);
+    if (!outlineConfirmed) document.getElementById("confirmOutline")?.click();
     await sleep(400, token);
 
-    setProgress(4, "分章撰写中 · 68%", AGENTS.writer.name);
-    statusLine("开始撰写第一章：报告引言", "info");
-    fileCard("第一章-报告引言.md", "Markdown · 12 KB");
+    setProgress(4, "分章撰写中", AGENTS.writer.name, "交互模式");
+    ownerHandoff(AGENTS.writer, "按大纲分章撰写");
+    statusLine("开始撰写第一章…", "info");
+    fileCard("第一章-引言.md", "Markdown · 12 KB", "file-code");
     await sleep(700, token);
-    statusLine("第一章完成，开始撰写第二章：核心需求分析", "info");
-    await sleep(600, token);
     statusLine("章节撰写完成，正在合并文档…", "info");
-    fileCard("工作总结分析报告（初稿）.docx", "Word · 856 KB");
+    fileCard(deliverable.draftName, `${deliverable.typeLabel} · 856 KB`, deliverable.icon);
     await sleep(700, token);
 
-    setProgress(5, "三审三校中 · 85%", AGENTS.editor.name);
-    agentMessage(AGENTS.editor, "报告已生成，现进入 <strong>三审三校</strong> 流程：");
+    setProgress(5, "三审三校中", AGENTS.editor.name, "交互模式");
+    ownerHandoff(AGENTS.editor, "质量校验与风险审查");
+    agentMessage(AGENTS.editor, "文档已生成，现进入 <strong>三审三校</strong> 流程：");
     const reviewWrap = appendMessage(`
-      <div class="mb-4 ml-8 space-y-1.5 text-[11px]">
-        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>文字与标点校对 — 执行中</div>
-        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>知识准确性校验 — 执行中</div>
-        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>内容导向风险审查 — 执行中</div>
+      <div class="mb-4 ml-2 space-y-2 text-[11px]">
+        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>文字与标点校对 — 进行中</div>
+        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>知识准确性校验 — 进行中</div>
+        <div class="flex items-center gap-2"><i data-lucide="loader" class="w-3 h-3 animate-spin text-[#00a0df]"></i>内容导向风险审查 — 进行中</div>
       </div>`);
     window.lucide?.createIcons();
-    await sleep(1200, token);
+    await sleep(1100, token);
     reviewWrap.innerHTML = `
-      <div class="mb-4 ml-8 space-y-1.5 text-[11px]">
+      <div class="mb-4 ml-2 space-y-2 text-[11px]">
         <div class="flex items-center gap-2 text-[#35a92f]"><i data-lucide="circle-check" class="w-3 h-3"></i>文字与标点校对 — 修正 15 处</div>
         <div class="flex items-center gap-2 text-[#35a92f]"><i data-lucide="circle-check" class="w-3 h-3"></i>知识准确性校验 — 修正 1 处</div>
         <div class="flex items-center gap-2 text-[#35a92f]"><i data-lucide="circle-check" class="w-3 h-3"></i>内容导向风险审查 — 规避 5 处风险</div>
       </div>`;
     window.lucide?.createIcons();
-    fileCard("工作总结分析报告（校对版）.docx", "Word · 862 KB");
-    await sleep(600, token);
+    await sleep(500, token);
 
-    setProgress(6, "最终定稿交付 · 100%", AGENTS.planner.name);
-    agentMessage(AGENTS.planner, "全部任务已完成！以下是最终结果：");
-    fileCard("工作总结分析报告（最终结果）.docx", "Word · 871 KB");
+    setProgress(6, "最终定稿交付", AGENTS.planner.name, "交互模式");
+    ownerHandoff(AGENTS.planner, "整理最终结果并交付");
+    agentMessage(AGENTS.planner, "全部任务已完成！以下是为您生成的文档预览与交付文件：");
+    documentPreviewCard(deliverable);
+    fileCard(deliverable.finalName, `${deliverable.typeLabel} · 871 KB`, deliverable.icon);
     workflowCarousel();
     ratingAndQuestions();
     scrollChat();
   }
 
   async function runQuickFlow(promptText, token) {
-    els.workflowChat.innerHTML = "";
-    els.workflowTodo.classList.add("hidden");
-    updateStatusBar("快速生成中", AGENTS.writer.name, 0, 1, 15);
+    if (els.chatThread) els.chatThread.innerHTML = "";
+    todoPanelEl = null;
+    const deliverable = inferDeliverable(promptText);
+    setProgress(0, "快速生成中", AGENTS.writer.name, "快速模式");
 
     userMessage(promptText);
     await sleep(500, token);
+    ownerHandoff(AGENTS.writer, "正在解析并生成");
     statusLine("正在解析任务目标…", "info");
     await sleep(600, token);
-    updateStatusBar("内容撰写中", AGENTS.writer.name, 0, 1, 55);
+    setProgress(0, "内容撰写中", AGENTS.writer.name, "快速模式");
     toolLog([{ type: "edit", text: "正在生成文档…" }]);
     await sleep(900, token);
-    updateStatusBar("质量校验中", AGENTS.editor.name, 0, 1, 85);
-    await sleep(600, token);
-    updateStatusBar("交付完成", AGENTS.writer.name, 1, 1, 100);
-    agentMessage(AGENTS.writer, "已根据您的要求快速生成结果：");
-    fileCard("生成结果.docx", "Word · 420 KB");
+    setProgress(1, "交付完成", AGENTS.writer.name, "快速模式");
+    documentPreviewCard(deliverable);
+    fileCard(deliverable.finalName, `${deliverable.typeLabel} · 420 KB`, deliverable.icon);
     ratingAndQuestions();
   }
 
@@ -1190,7 +1319,9 @@
 
     els.homeView?.classList.add("hidden");
     els.workflowView?.classList.remove("hidden");
+    els.mainStage?.classList.add("is-chat-mode");
     document.getElementById("benefits")?.classList.add("hidden");
+    els.workflowChat.scrollTop = 0;
 
     try {
       if (mode === "交互模式") {
@@ -1396,11 +1527,9 @@
       if (button.textContent.includes("办公写作Agent")) {
         if (!document.getElementById("workflowView")?.classList.contains("hidden")) {
           stopAndGoHome();
+        } else {
+          promptBox.focus();
         }
-        document.getElementById("workflowView")?.classList.add("hidden");
-        document.getElementById("homeView")?.classList.remove("hidden");
-        document.getElementById("benefits")?.classList.remove("hidden");
-        promptBox.focus();
         return;
       }
       showToast(button.textContent.trim() + " 功能即将打开");
