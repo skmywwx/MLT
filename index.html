@@ -92,6 +92,12 @@
       white-space: nowrap;
     }
     .recent-row:hover { background: #f1f1f1; }
+    .recent-row.is-active {
+      background: #d6d6d6;
+    }
+    .recent-row.is-active:hover {
+      background: #cecece;
+    }
     .recent-row .delete-conversation {
       opacity: 0;
       pointer-events: none;
@@ -698,7 +704,7 @@
               <button id="viewAll" aria-label="查看全部对话" class="text-[#8b8f95] hover:text-brand hover:bg-indigo-50 rounded p-1"><i data-lucide="chevron-right" class="w-[11px] h-[11px]"></i></button>
             </div>
             <div id="recentList" class="mt-[4px] space-y-[1px]">
-              <div class="recent-row group flex items-center">
+              <div class="recent-row group flex items-center" data-conversation-id="conv_seed_integrate">
                 <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
                   <span class="recent-mode-tag tag-writing">写作</span>
                   <span class="recent-row-title">请将以上文档内容整合，并整...</span>
@@ -707,7 +713,7 @@
                   <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
-              <div class="recent-row group flex items-center">
+              <div class="recent-row group flex items-center" data-conversation-id="conv_seed_wedding_trend">
                 <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
                   <span class="recent-mode-tag tag-research">深度研究</span>
                   <span class="recent-row-title">请根据最近中式婚礼潮流，生...</span>
@@ -716,7 +722,7 @@
                   <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
-              <div class="recent-row group flex items-center">
+              <div class="recent-row group flex items-center" data-conversation-id="conv_seed_wedding_plan">
                 <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
                   <span class="recent-mode-tag tag-writing">写作</span>
                   <span class="recent-row-title">请生成一份中式，大约预算5W...</span>
@@ -1210,19 +1216,31 @@
 
   function saveActiveConversation() {
     if (!activeConversationId || !els.chatThread?.innerHTML?.trim()) return;
+    const bookmark = document.getElementById("chatBookmark");
     const snap = {
       id: activeConversationId,
       title: chatSession.initialPrompt || chatSession.userTurns?.[0]?.text || "",
       chatThreadHtml: els.chatThread.innerHTML,
       statusBarHtml: els.workflowStatusBar?.innerHTML || "",
       chatSession: {
-        ...chatSession,
+        initialPrompt: chatSession.initialPrompt,
+        workMode: chatSession.workMode,
+        quickMode: chatSession.quickMode,
+        deliverable: chatSession.deliverable,
+        surveyAnswers: chatSession.surveyAnswers,
+        promptContext: chatSession.promptContext,
+        suggestedQuestions: chatSession.suggestedQuestions,
+        taskCompleted: chatSession.taskCompleted,
+        turnCount: chatSession.turnCount,
+        askedQuestions: chatSession.askedQuestions || [],
+        currentTurnIndex: chatSession.currentTurnIndex,
         userTurns: (chatSession.userTurns || []).map(({ index, text }) => ({ index, text })),
       },
       flowContext: { ...flowContext },
       progressPercent,
       currentTodoIndex,
       scrollTop: els.workflowChat?.scrollTop || 0,
+      bookmarkOpen: bookmark?.classList.contains("is-open") || false,
       updatedAt: Date.now(),
     };
     try {
@@ -1244,12 +1262,46 @@
 
   function rebuildUserTurnElements() {
     const nodes = els.chatThread?.querySelectorAll("[data-user-turn]") || [];
+    const savedTurns = chatSession.userTurns || [];
     chatSession.userTurns = [...nodes].map((node, index) => ({
       index: index + 1,
-      text: node.textContent?.trim() || chatSession.userTurns?.[index]?.text || "",
+      text: savedTurns[index]?.text || node.textContent?.trim() || "",
       element: node.closest(".wf-msg") || node,
     }));
-    chatSession.currentTurnIndex = chatSession.userTurns.length || chatSession.currentTurnIndex;
+    const savedIndex = chatSession.currentTurnIndex;
+    if (!savedIndex || savedIndex > chatSession.userTurns.length) {
+      chatSession.currentTurnIndex = chatSession.userTurns.length;
+    }
+  }
+
+  function setActiveRecentRow(conversationId) {
+    document.querySelectorAll("#recentList .recent-row").forEach((row) => {
+      row.classList.toggle("is-active", !!conversationId && row.dataset.conversationId === conversationId);
+    });
+  }
+
+  function findConversationSnapshotId(row) {
+    const convId = row?.dataset?.conversationId;
+    if (convId && loadConversationSnapshot(convId)) return convId;
+    const title = row?.querySelector(".recent-row-title")?.textContent?.trim();
+    if (!title) return null;
+    const titleKey = title.replace(/\.\.\.$/, "").slice(0, 14);
+    for (let i = 0; i < sessionStorage.length; i++) {
+      const key = sessionStorage.key(i);
+      if (!key?.startsWith("mlt:conv:")) continue;
+      try {
+        const snap = JSON.parse(sessionStorage.getItem(key));
+        const full = snap?.title || snap?.chatSession?.initialPrompt || "";
+        if (!full) continue;
+        if (full.includes(titleKey) || titleKey.includes(full.slice(0, 14))) return snap.id;
+      } catch (_) { /* ignore */ }
+    }
+    return null;
+  }
+
+  function linkRecentRowToConversation(row, conversationId) {
+    if (!row || !conversationId) return;
+    row.dataset.conversationId = conversationId;
   }
 
   function rebindConversationInteractions() {
@@ -1272,9 +1324,16 @@
     });
   }
 
-  function restoreConversation(id) {
+  function restoreConversation(id, row) {
     const snap = loadConversationSnapshot(id);
     if (!snap?.chatThreadHtml) return false;
+
+    if (id === activeConversationId && !els.workflowView?.classList.contains("hidden")) {
+      saveActiveConversation();
+      setActiveRecentRow(id);
+      if (row) linkRecentRowToConversation(row, id);
+      return true;
+    }
 
     saveActiveConversation();
     abortToken++;
@@ -1284,6 +1343,7 @@
     resetChatSession();
     Object.assign(chatSession, snap.chatSession || {});
     chatSession.userTurns = snap.chatSession?.userTurns || [];
+    chatSession.askedQuestions = snap.chatSession?.askedQuestions || [];
     flowContext.isResearch = !!snap.flowContext?.isResearch;
     flowContext.quickMode = snap.flowContext?.quickMode ?? null;
     progressPercent = snap.progressPercent || 0;
@@ -1303,8 +1363,11 @@
     window.lucide?.createIcons();
 
     if (els.workflowChat) els.workflowChat.scrollTop = snap.scrollTop || 0;
+    setChatBookmarkOpen(!!snap.bookmarkOpen);
     updateChatBookmark();
     syncChatBookmarkPosition();
+    setActiveRecentRow(id);
+    if (row) linkRecentRowToConversation(row, id);
     return true;
   }
 
@@ -1846,6 +1909,8 @@
     window.saveActiveConversation = saveActiveConversation;
     window.restoreConversation = restoreConversation;
     window.deleteConversationSnapshot = deleteConversationSnapshot;
+    window.findConversationSnapshotId = findConversationSnapshotId;
+    window.setActiveRecentRow = setActiveRecentRow;
   }
 
   function submitChatFollowUp() {
@@ -1880,6 +1945,7 @@
     progressPercent = 0;
     flowContext.isResearch = false;
     resetChatSession();
+    setActiveRecentRow(null);
   }
 
   function goHomeFromLogo() {
@@ -2073,6 +2139,7 @@
         </div>
       </div>`);
     registerUserTurn(text, wrap);
+    saveActiveConversation();
     return wrap;
   }
 
@@ -3011,6 +3078,8 @@
   async function startWorkflowSimulation(promptText, mode, quickMode, options = {}) {
     if (options.conversationId) activeConversationId = options.conversationId;
     else if (!activeConversationId) activeConversationId = generateConversationId();
+    const convIdAtStart = activeConversationId;
+    setActiveRecentRow(convIdAtStart);
     if (running) abortToken++;
     const token = ++abortToken;
     running = true;
@@ -3039,6 +3108,9 @@
     } catch (e) {
       if (e.message !== "aborted") throw e;
     } finally {
+      if (token === abortToken && activeConversationId === convIdAtStart) {
+        saveActiveConversation();
+      }
       if (token === abortToken) running = false;
     }
   }
@@ -3411,17 +3483,38 @@
       const rowButton = event.target.closest(".recent-row button:first-child");
       if (!rowButton) return;
       const row = rowButton.closest(".recent-row");
-      const convId = row?.dataset.conversationId;
-      if (convId && window.restoreConversation?.(convId)) {
+      let convId = row?.dataset.conversationId;
+      const matchedId = window.findConversationSnapshotId?.(row);
+      if (matchedId) {
+        convId = matchedId;
+        row.dataset.conversationId = matchedId;
+      }
+      if (convId && window.restoreConversation?.(convId, row)) {
         showToast("已恢复对话记录");
         return;
       }
       const text = rowButton.querySelector(".recent-row-title")?.textContent.trim()
         || rowButton.textContent.trim();
       if (!text) return;
-      promptBox.value = text;
-      submitPrompt({ skipRecent: true });
+      showToast("暂无该对话的保存记录，将重新开始");
+      promptBox.value = text.replace(/\.\.\.$/, "");
+      submitPrompt({ skipRecent: true, conversationId: convId });
     });
+
+    function findRecentRowForPrompt(text) {
+      const key = text.slice(0, 14);
+      return [...document.querySelectorAll("#recentList .recent-row")].find((row) => {
+        const title = row.querySelector(".recent-row-title")?.textContent?.trim() || "";
+        const titleKey = title.replace(/\.\.\.$/, "");
+        return titleKey && (text.includes(titleKey.slice(0, 10)) || titleKey.includes(key.slice(0, 10)));
+      }) || null;
+    }
+
+    function resolveConversationIdForSubmit(text) {
+      const matchedRow = findRecentRowForPrompt(text);
+      if (matchedRow?.dataset.conversationId) return matchedRow.dataset.conversationId;
+      return window.generateConversationId?.() || `conv_${Date.now()}`;
+    }
 
     function createRecentRow(text, id, quickMode) {
       const mode = quickMode || resolveQuickMode(text);
@@ -3486,10 +3579,18 @@
         mode = "快速模式";
       }
       window.saveActiveConversation?.();
-      const convId = window.generateConversationId?.() || `conv_${Date.now()}`;
+      const convId = options?.conversationId || resolveConversationIdForSubmit(text);
       window.setActiveConversationId?.(convId);
       if (!options?.skipRecent) {
-        $("#recentList").prepend(createRecentRow(text, convId, quickMode));
+        const existingRow = findRecentRowForPrompt(text);
+        if (existingRow) {
+          existingRow.dataset.conversationId = convId;
+          existingRow.querySelector(".recent-row-title").textContent =
+            text.length > 22 ? text.slice(0, 22) + "..." : text;
+          $("#recentList").prepend(existingRow);
+        } else {
+          $("#recentList").prepend(createRecentRow(text, convId, quickMode));
+        }
         lucide.createIcons();
       }
       promptBox.value = "";
