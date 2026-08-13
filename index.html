@@ -354,7 +354,7 @@
 
   <div id="agentApp" class="app-shell hidden overflow-hidden bg-white border border-[#d4d6da]">
     <header class="h-[45px] border-b border-[#eceff2] flex items-center justify-between px-[21px] bg-white">
-      <button class="flex items-center gap-[6px] group" title="返回模力通首页">
+      <button id="appLogoHome" type="button" class="flex items-center gap-[6px] group" title="返回模力通首页" aria-label="返回模力通首页">
         <span class="text-[25px] leading-none italic font-extrabold tracking-[-2px] text-[#08a5ec] group-hover:text-brand">midu</span>
         <span class="h-[20px] border-l border-[#a6a6a6]"></span>
         <span class="font-semibold text-[16px] text-[#323232] group-hover:text-brand">模力通</span>
@@ -845,6 +845,7 @@
     if (!els.workflowView) return;
 
     document.getElementById("newChatBtn")?.addEventListener("click", stopAndGoHome);
+    document.getElementById("appLogoHome")?.addEventListener("click", goHomeFromLogo);
     document.getElementById("chatSend")?.addEventListener("click", () => {
       const chatPrompt = document.getElementById("chatPrompt");
       const text = chatPrompt?.value.trim();
@@ -878,10 +879,24 @@
   function stopAndGoHome() {
     abortToken++;
     running = false;
-    els.workflowView.classList.add("hidden");
+    els.workflowView?.classList.add("hidden");
     els.homeView?.classList.remove("hidden");
     els.mainStage?.classList.remove("is-chat-mode");
     document.getElementById("benefits")?.classList.remove("hidden");
+    if (els.workflowStatusBar) els.workflowStatusBar.innerHTML = "";
+    if (els.chatThread) els.chatThread.innerHTML = "";
+    todoPanelEl = null;
+    progressPercent = 0;
+    flowContext.isResearch = false;
+  }
+
+  function goHomeFromLogo() {
+    if (!els.workflowView || els.workflowView.classList.contains("hidden")) {
+      document.getElementById("prompt")?.focus();
+      return;
+    }
+    stopAndGoHome();
+    document.getElementById("prompt")?.focus();
   }
 
   function sleep(ms, token) {
