@@ -227,6 +227,16 @@
       .agent-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .hero-title { font-size: 27px; }
     }
+    @keyframes wfIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .wf-progress-fill { transition: width .5s ease; }
+    [data-feedback-chip].is-selected {
+      color: #5B5FE5;
+      background: #f4f4ff;
+      border-color: #b9bbf6;
+    }
   </style>
 </head>
 <body>
@@ -414,7 +424,7 @@
           <i data-lucide="badge-check" class="w-[12px] h-[12px]"></i>权益详情
         </button>
 
-        <section class="hero-inner w-[563px] mx-auto pt-[57px] pb-[26px]">
+        <section id="homeView" class="hero-inner w-[563px] mx-auto pt-[57px] pb-[26px]">
           <div class="hero-title h-[74px] flex justify-center items-center gap-[18px] text-[31px] text-[#12366d] font-serif tracking-[1px]">
             <span>一句话交代</span>
             <div class="speech-logo relative w-[49px] h-[49px]">
@@ -477,10 +487,10 @@
           </div>
 
           <div class="mt-[24px] flex justify-center gap-[7px]">
-            <button data-suggestion="帮我写一份工作汇报" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button data-suggestion="请将以上文档内容整合，并基于我上传的文件生成一份工作总结分析报告" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47b83f]"></i>写作
             </button>
-            <button data-suggestion="深度研究人工智能发展趋势" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button data-suggestion="深度研究人工智能发展趋势并生成行业分析报告" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="microscope" class="w-[13px] h-[13px] text-[#ff7043]"></i>深度研究
             </button>
             <button data-suggestion="生成一份项目介绍PPT" class="quick-ppt h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
@@ -532,6 +542,29 @@
               </div>
               <div class="flex gap-[5px] mt-[7px] text-[8px]"><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">文字校对</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">标点校对</span><span class="bg-[#f5f5f5] px-[5px] py-[2px] rounded">知识校对</span></div>
             </button>
+          </div>
+        </section>
+
+        <section id="workflowView" class="hidden absolute inset-0 flex flex-col bg-[#f8f9fa]">
+          <div class="shrink-0 border-b border-[#ececef] bg-white px-4 py-3">
+            <div class="flex items-center justify-between mb-2">
+              <button id="backHome" class="flex items-center gap-1.5 text-[11px] text-[#666] hover:text-brand rounded-lg px-2 py-1 hover:bg-indigo-50">
+                <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i>返回首页
+              </button>
+              <span class="text-[11px] font-semibold text-[#333]">智能体工作区</span>
+              <span class="w-[60px]"></span>
+            </div>
+            <div id="workflowStatusBar"></div>
+          </div>
+          <div class="flex flex-1 min-h-0">
+            <div id="workflowChat" class="flex-1 overflow-y-auto px-5 py-4"></div>
+            <aside id="workflowTodo" class="hidden w-[220px] shrink-0 border-l border-[#ececef] bg-white p-4">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] font-semibold text-[#333]">待办事项</span>
+                <span id="workflowTodoCount" class="text-[10px] text-[#888]">1/6</span>
+              </div>
+              <ul id="workflowTodoList" class="space-y-0.5"></ul>
+            </aside>
           </div>
         </section>
       </main>
@@ -626,6 +659,45 @@
   </div>
   <div id="toast" class="hidden toast fixed z-[90] left-1/2 top-[60px] -translate-x-1/2 px-[16px] py-[9px] rounded-[8px] bg-[#263542] text-white shadow-xl text-[12px]"></div>
 
+  <div id="filesModal" class="hidden fixed inset-0 z-[85] bg-black/30 items-center justify-center p-4">
+    <div class="w-[420px] max-w-full rounded-xl bg-white shadow-2xl border border-[#e7e9ec] overflow-hidden">
+      <div class="flex items-center justify-between px-4 py-3 border-b border-[#ececef]">
+        <h3 class="text-[14px] font-semibold">任务中所有文件</h3>
+        <button id="closeFilesModal" class="w-7 h-7 rounded-full grid place-items-center hover:bg-[#f0f0f0]"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="px-3 py-2 flex gap-2 border-b border-[#f5f5f5] text-[11px]">
+        <span class="px-2.5 py-1 rounded-full bg-[#5B5FE5] text-white">全部</span>
+        <span class="px-2.5 py-1 rounded-full text-[#888] hover:bg-[#f5f5f5] cursor-pointer">文档</span>
+        <span class="px-2.5 py-1 rounded-full text-[#888] hover:bg-[#f5f5f5] cursor-pointer">图片</span>
+        <span class="px-2.5 py-1 rounded-full text-[#888] hover:bg-[#f5f5f5] cursor-pointer">链接</span>
+      </div>
+      <div id="filesModalBody" class="max-h-[360px] overflow-y-auto p-2"></div>
+    </div>
+  </div>
+
+  <div id="feedbackModal" class="hidden fixed inset-0 z-[85] bg-black/30 items-center justify-center p-4">
+    <div class="w-[400px] max-w-full rounded-xl bg-white shadow-2xl border border-[#e7e9ec] p-5">
+      <h3 class="text-[14px] font-semibold">抱歉，让您有不好的感受</h3>
+      <p class="text-[11px] text-[#888] mt-1">请选择理由帮助我们做得更好</p>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">没有理解问题</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">引用网页质量不高</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">没有完成任务</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">信息陈旧</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">编造事实</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">文风不好</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">废话太多</button>
+        <button data-feedback-chip class="px-3 py-1.5 rounded-full border border-[#e4e6ea] text-[11px] hover:border-[#b9bbf6]">没有创意</button>
+      </div>
+      <textarea class="mt-4 w-full h-[80px] rounded-lg border border-[#e4e6ea] p-3 text-[12px] outline-none resize-none placeholder:text-[#bbb]" placeholder="欢迎说说您的想法"></textarea>
+      <div class="mt-4 flex justify-end gap-2">
+        <button id="closeFeedbackModal" class="h-[32px] px-4 rounded-lg border border-[#e4e6ea] text-[12px] hover:bg-[#f5f5f5]">取消</button>
+        <button id="submitFeedback" class="h-[32px] px-4 rounded-lg bg-[#5B5FE5] text-white text-[12px] hover:bg-[#494dcc]">提交</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./scripts/workflow-sim.js"></script>
   <script>
     lucide.createIcons();
 
@@ -730,6 +802,7 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => toast.classList.add("hidden"), 2200);
     }
+    window.showToast = showToast;
 
     function openModal(title, content) {
       $("#modalTitle").textContent = title;
@@ -798,6 +871,12 @@
 
     $$("[data-suggestion]").forEach(button => button.addEventListener("click", () => {
       promptBox.value = button.dataset.suggestion;
+      if (button.classList.contains("quick-research") || button.classList.contains("quick-writing")) {
+        $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+        const interactive = document.querySelector('[data-work-mode="交互模式"]');
+        interactive?.classList.add("is-mode-selected");
+        $("#speedModeText").textContent = "交互模式";
+      }
       promptBox.focus();
     }));
 
@@ -833,6 +912,15 @@
       return row;
     }
 
+    function getWorkMode() {
+      const selected = document.querySelector("[data-work-mode].is-mode-selected");
+      return selected?.dataset.workMode || "快速模式";
+    }
+
+    function detectRecommendedMode(text) {
+      return /整合|分析|研究|报告|论证|对比|规划|上传|文档|文件|深度/.test(text) ? "交互模式" : "快速模式";
+    }
+
     function submitPrompt() {
       const text = promptBox.value.trim();
       if (!text) {
@@ -840,10 +928,22 @@
         showToast("请先输入要交代的任务");
         return;
       }
+      let mode = getWorkMode();
+      const recommended = detectRecommendedMode(text);
+      if (recommended === "交互模式" && mode === "快速模式") {
+        $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+        document.querySelector('[data-work-mode="交互模式"]')?.classList.add("is-mode-selected");
+        $("#speedModeText").textContent = "交互模式";
+        mode = "交互模式";
+      }
       $("#recentList").prepend(createRecentRow(text));
       lucide.createIcons();
       promptBox.value = "";
-      showToast("任务已提交，智能体团队正在协作");
+      if (typeof window.startWorkflowSimulation === "function") {
+        window.startWorkflowSimulation(text, mode);
+      } else {
+        showToast("任务已提交，智能体团队正在协作");
+      }
     }
     $("#send").addEventListener("click", submitPrompt);
     promptBox.addEventListener("keydown", (event) => {
