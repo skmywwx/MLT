@@ -70,6 +70,27 @@
       height: 36px;
       font-size: 14px !important;
     }
+    .recent-mode-tag {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .recent-mode-tag.tag-writing { color: #35a92f; background: #f3fff1; border: 1px solid #57c94d; }
+    .recent-mode-tag.tag-research { color: #e95f32; background: #fff6f1; border: 1px solid #ff7a45; }
+    .recent-mode-tag.tag-ppt { color: #5B5FE5; background: #f4f4ff; border: 1px solid #5B5FE5; }
+    .recent-row-title {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
     .recent-row:hover { background: #f1f1f1; }
     .recent-row .delete-conversation {
       opacity: 0;
@@ -678,19 +699,28 @@
             </div>
             <div id="recentList" class="mt-[4px] space-y-[1px]">
               <div class="recent-row group flex items-center">
-                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请将以上文档内容整合，并整...</button>
+                <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
+                  <span class="recent-mode-tag tag-writing">写作</span>
+                  <span class="recent-row-title">请将以上文档内容整合，并整...</span>
+                </button>
                 <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
                   <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
               <div class="recent-row group flex items-center">
-                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请根据最近中式婚礼潮流，生...</button>
+                <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
+                  <span class="recent-mode-tag tag-research">深度研究</span>
+                  <span class="recent-row-title">请根据最近中式婚礼潮流，生...</span>
+                </button>
                 <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
                   <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
               </div>
               <div class="recent-row group flex items-center">
-                <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]">请生成一份中式，大约预算5W...</button>
+                <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
+                  <span class="recent-mode-tag tag-writing">写作</span>
+                  <span class="recent-row-title">请生成一份中式，大约预算5W...</span>
+                </button>
                 <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
                   <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
                 </button>
@@ -3386,22 +3416,29 @@
         showToast("已恢复对话记录");
         return;
       }
-      const text = rowButton.textContent.trim();
+      const text = rowButton.querySelector(".recent-row-title")?.textContent.trim()
+        || rowButton.textContent.trim();
       if (!text) return;
       promptBox.value = text;
       submitPrompt({ skipRecent: true });
     });
 
-    function createRecentRow(text, id) {
+    function createRecentRow(text, id, quickMode) {
+      const mode = quickMode || resolveQuickMode(text);
+      const meta = QUICK_MODE_META[mode] || QUICK_MODE_META.writing;
       const row = document.createElement("div");
       row.className = "recent-row group flex items-center";
       if (id) row.dataset.conversationId = id;
+      row.dataset.quickMode = mode;
       row.innerHTML = `
-        <button class="min-w-0 flex-1 text-left truncate pl-[9px] pr-[30px] h-[29px]"></button>
+        <button type="button" class="min-w-0 flex-1 flex items-center gap-[5px] text-left pl-[6px] pr-[30px] h-[36px]">
+          <span class="recent-mode-tag ${meta.tagClass}">${meta.label}</span>
+          <span class="recent-row-title"></span>
+        </button>
         <button class="delete-conversation absolute right-[7px] w-[22px] h-[22px] rounded grid place-items-center text-[#8a8a8a] hover:text-[#333]" aria-label="删除对话" title="删除">
           <svg viewBox="0 0 24 24" class="w-[17px] h-[17px]" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M5 7h14"/><path d="M9 7V4h6v3"/><path d="M7.5 7 8.5 20h7L16.5 7"/></svg>
         </button>`;
-      row.querySelector("button").textContent = text;
+      row.querySelector(".recent-row-title").textContent = text;
       return row;
     }
 
@@ -3452,7 +3489,7 @@
       const convId = window.generateConversationId?.() || `conv_${Date.now()}`;
       window.setActiveConversationId?.(convId);
       if (!options?.skipRecent) {
-        $("#recentList").prepend(createRecentRow(text, convId));
+        $("#recentList").prepend(createRecentRow(text, convId, quickMode));
         lucide.createIcons();
       }
       promptBox.value = "";
