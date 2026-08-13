@@ -1059,6 +1059,106 @@
       font-weight: 600;
     }
     .proofread-btn-ok:hover { background: #008fc8; }
+    .errata-modal-overlay {
+      background: rgba(0, 0, 0, .35);
+    }
+    .errata-modal {
+      width: min(960px, calc(100vw - 32px));
+      max-height: calc(100vh - 48px);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .errata-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 18px;
+      border-bottom: 1px solid #ebeef5;
+    }
+    .errata-modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 0;
+    }
+    .errata-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      color: #333;
+    }
+    .errata-table thead th {
+      background: #f5f7fa;
+      color: #606266;
+      font-weight: 600;
+      padding: 10px 8px;
+      border-bottom: 1px solid #ebeef5;
+      text-align: center;
+      white-space: nowrap;
+    }
+    .errata-table tbody td {
+      padding: 12px 8px;
+      border-bottom: 1px solid #ebeef5;
+      text-align: center;
+      vertical-align: middle;
+      line-height: 1.5;
+    }
+    .errata-table tbody td.errata-col-detail {
+      text-align: left;
+      max-width: 280px;
+      line-height: 1.65;
+      color: #444;
+    }
+    .errata-table tbody tr:hover td {
+      background: #fafbfc;
+    }
+    .errata-table tbody tr.is-resolved td {
+      color: #aaa;
+    }
+    .errata-highlight {
+      color: #e85d5d;
+      font-weight: 500;
+    }
+    .errata-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .errata-status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .errata-status-dot.pending { background: #f08a3a; }
+    .errata-status-dot.done { background: #5ec269; }
+    .errata-modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      padding: 12px 18px;
+      border-top: 1px solid #ebeef5;
+    }
+    .errata-export-btn {
+      height: 34px;
+      padding: 0 28px;
+      border-radius: 4px;
+      background: #00a0df;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .errata-export-btn:hover { background: #008fc8; }
+    .errata-empty {
+      padding: 48px 24px;
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+    }
     @media (max-width: 900px) {
       .proofread-item-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .cr-right-panel { width: 300px; }
@@ -2004,7 +2104,7 @@
                 <div class="cr-result-item" data-stat="custom"><span>自定义错误</span><span id="crStatCustom" class="cr-result-badge custom">0</span></div>
                 <div class="cr-result-item" data-stat="risk"><span>风险提示</span><span id="crStatRisk" class="cr-result-badge risk">0</span></div>
                 <div class="cr-result-item" data-stat="record"><span>修改记录</span><span id="crStatRecord" class="cr-result-badge record">0</span></div>
-                <button type="button" class="cr-result-errata hover:underline">查看勘误表</button>
+                <button type="button" id="crViewErrata" class="cr-result-errata hover:underline">查看勘误表</button>
               </aside>
             </div>
           </div>
@@ -2034,6 +2134,38 @@
       <div class="proofread-modal-foot">
         <button type="button" id="proofreadCancel" class="proofread-btn-cancel">取消</button>
         <button type="button" id="proofreadConfirm" class="proofread-btn-ok">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 勘误表弹窗 -->
+  <div id="errataModal" class="errata-modal-overlay hidden fixed inset-0 z-[89] items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="errataModalTitle">
+    <div class="errata-modal">
+      <div class="errata-modal-head">
+        <h2 id="errataModalTitle" class="text-[15px] font-bold text-[#222]">勘误表</h2>
+        <button type="button" id="closeErrataModal" class="w-[28px] h-[28px] rounded-full grid place-items-center text-[#666] hover:bg-[#f0f0f0]" aria-label="关闭">
+          <i data-lucide="x" class="w-[16px] h-[16px]"></i>
+        </button>
+      </div>
+      <div class="errata-modal-body">
+        <table class="errata-table">
+          <thead>
+            <tr>
+              <th style="width:36px"><input type="checkbox" id="errataSelectAll" aria-label="全选" /></th>
+              <th style="width:72px">错误等级</th>
+              <th style="width:88px">错误类型</th>
+              <th style="width:72px">可疑内容</th>
+              <th style="width:88px">建议内容</th>
+              <th>详细信息</th>
+              <th style="width:80px">处理状态</th>
+            </tr>
+          </thead>
+          <tbody id="errataTableBody"></tbody>
+        </table>
+        <div id="errataEmpty" class="errata-empty hidden">暂无勘误记录，请先进行智能校对</div>
+      </div>
+      <div class="errata-modal-foot">
+        <button type="button" id="errataExport" class="errata-export-btn">导出</button>
       </div>
     </div>
   </div>
@@ -5032,48 +5164,183 @@
       },
     ];
 
-    const CR_DEMO_STORY = `在一片茂密的森林里，住着一只聪明伶俐厉害的小刺猬。它身上的刺又尖又硬，每当遇到危险时，就会把身体蜷成一团，竖起所有的刺来保护自己。
+    const CR_DEMO_STORY = `盼望着，盼望着，东风来了，秋天的脚步近了。
 
-小刺猬性格开朗，喜欢在森林里探险。有一天，它发现了一条从未走过的小径，好奇心驱使它沿着小路一直往前走。
+园子里，田野里，瞧去，一大片一大片满是的。
 
-走了很久，小刺猬来到了一片开阔的草地。草地上开满了五颜六色的野花，蝴蝶在花丛中飞舞。小刺猬兴奋地在花丛中奔跑，享受着大自然的美好。
-
-傍晚时分，小刺猬踏上了回家的路。当它路过一片灌木丛时，突然听到了微弱的呼救声。原来是一只小兔子不慎掉进了猎人设置的陷阱里。
-
-小刺猬毫不犹豫地跑过去，用它锋利的刺咬断了陷阱上的绳子，救出了小兔子。小兔子感激地说："谢谢你，你真是一只善良又聪明伶俐的刺猬！"
-
-从那以后，小刺猬和小兔子成为了好朋友。它们经常一起在森林里玩耍、探险，过着快乐的生活。森林里的小动物们都知道，有一只勇敢善良的小刺猬，生活着，它们都愿意和它做朋友。`;
+雨是最寻常的，一下就是三两天。可别恼，看，像牛毛，像花针，像细丝，密密地斜织着，人家屋顶上全笼着一层黄沙。树叶子却绿得发亮，小草也青得逼你的眼。`;
 
     const CR_DEMO_ERRORS = [
       {
-        id: "err_typo_1",
-        match: "聪明伶俐厉害",
-        suggestion: "聪明伶俐",
-        headTitle: "错别字、词",
-        tag: "错别字",
+        id: "err_fact_1",
+        match: "秋天的脚步近了",
+        markSub: "秋天",
+        suggestion: "春天的脚步近了",
+        displayOriginal: "秋天",
+        displaySuggest: "春天",
+        headTitle: "事实性差错",
+        tag: "事实性差错",
+        errataLevel: "一般错误",
+        errataType: "事实性差错",
         severity: "general",
         markClass: "cr-mark-typo",
         cardIcon: "typo",
         cardIconChar: "★",
+        context: "盼望着，盼望着，东风来了，秋天的脚步近了。",
       },
       {
-        id: "err_suspect_1",
-        match: "生活着，它们",
-        markSub: "，",
-        suggestion: "生活着。它们",
-        displayOriginal: "，",
-        displaySuggest: "。",
-        headTitle: "疑似错误",
-        tag: "疑似错误",
-        severity: "suspect",
-        markClass: "cr-mark-suspect",
-        cardIcon: "suspect",
-        cardIconChar: "／",
+        id: "err_missing_1",
+        match: "满是的",
+        markSub: "满是",
+        suggestion: "满是绿油油的",
+        displayOriginal: "满是",
+        displaySuggest: "满是绿油油",
+        headTitle: "少字错误",
+        tag: "少字错误",
+        errataLevel: "一般错误",
+        errataType: "少字错误",
+        severity: "general",
+        markClass: "cr-mark-typo",
+        cardIcon: "typo",
+        cardIconChar: "★",
+        context: "园子里，田野里，瞧去，一大片一大片满是的。",
+      },
+      {
+        id: "err_fact_2",
+        match: "全笼着一层黄沙",
+        markSub: "黄沙",
+        suggestion: "全笼着一层薄雾",
+        displayOriginal: "黄沙",
+        displaySuggest: "薄雾",
+        headTitle: "事实性差错",
+        tag: "事实性差错",
+        errataLevel: "一般错误",
+        errataType: "事实性差错",
+        severity: "general",
+        markClass: "cr-mark-typo",
+        cardIcon: "typo",
+        cardIconChar: "★",
+        context: "雨是最寻常的...人家屋顶上全笼着一层黄沙。树叶子却绿得发亮...",
       },
     ];
 
     let crActiveErrors = [];
     let crResolvedCount = 0;
+    let crProofreadSourceText = "";
+
+    function formatErrataDetail(err) {
+      const hl = err.displayOriginal || err.markSub || err.match;
+      const ctx = err.context || crProofreadSourceText;
+      if (!ctx) return escapeHtml(hl);
+      const idx = ctx.indexOf(hl);
+      if (idx === -1) return escapeHtml(ctx);
+      return escapeHtml(ctx.slice(0, idx))
+        + `<span class="errata-highlight">${escapeHtml(hl)}</span>`
+        + escapeHtml(ctx.slice(idx + hl.length));
+    }
+
+    function getErrataLevelLabel(err) {
+      if (err.errataLevel) return err.errataLevel;
+      if (err.severity === "severe") return "严重错误";
+      if (err.severity === "suspect") return "疑似错误";
+      return "一般错误";
+    }
+
+    function renderErrataTable() {
+      const tbody = $("#errataTableBody");
+      const empty = $("#errataEmpty");
+      const table = tbody?.closest("table");
+      if (!tbody) return;
+      if (!crActiveErrors.length) {
+        tbody.innerHTML = "";
+        empty?.classList.remove("hidden");
+        table?.classList.add("hidden");
+        return;
+      }
+      empty?.classList.add("hidden");
+      table?.classList.remove("hidden");
+      tbody.innerHTML = crActiveErrors.map((err) => {
+        const suspicious = err.displayOriginal || err.markSub || err.match;
+        const suggested = err.displaySuggest || err.suggestion;
+        const statusClass = err.resolved ? "done" : "pending";
+        const statusText = err.resolved ? "已处理" : "未处理";
+        return `
+          <tr class="${err.resolved ? "is-resolved" : ""}" data-errata-id="${err.id}">
+            <td><input type="checkbox" class="errata-row-cb" data-errata-cb="${err.id}" ${err.resolved ? "disabled" : ""} /></td>
+            <td>${escapeHtml(getErrataLevelLabel(err))}</td>
+            <td>${escapeHtml(err.errataType || err.tag || err.headTitle)}</td>
+            <td>${escapeHtml(suspicious)}</td>
+            <td>${escapeHtml(suggested)}</td>
+            <td class="errata-col-detail">${formatErrataDetail(err)}</td>
+            <td>
+              <span class="errata-status">
+                <span class="errata-status-dot ${statusClass}"></span>${statusText}
+              </span>
+            </td>
+          </tr>`;
+      }).join("");
+      syncErrataSelectAll();
+    }
+
+    function syncErrataSelectAll() {
+      const allCbs = $$(".errata-row-cb:not(:disabled)");
+      const selectAll = $("#errataSelectAll");
+      if (!selectAll) return;
+      selectAll.checked = allCbs.length > 0 && allCbs.every((cb) => cb.checked);
+    }
+
+    function openErrataModal() {
+      if (!crActiveErrors.length) {
+        showToast("请先进行智能校对");
+        return;
+      }
+      renderErrataTable();
+      const modal = $("#errataModal");
+      modal?.classList.remove("hidden");
+      modal?.classList.add("flex");
+      lucide.createIcons();
+    }
+
+    function closeErrataModal() {
+      const modal = $("#errataModal");
+      modal?.classList.add("hidden");
+      modal?.classList.remove("flex");
+    }
+
+    function exportErrataTable() {
+      if (!crActiveErrors.length) {
+        showToast("暂无勘误数据可导出");
+        return;
+      }
+      const header = ["错误等级", "错误类型", "可疑内容", "建议内容", "详细信息", "处理状态"];
+      const rows = crActiveErrors.map((err) => {
+        const suspicious = err.displayOriginal || err.markSub || err.match;
+        const suggested = err.displaySuggest || err.suggestion;
+        const detail = (err.context || "").replace(/"/g, '""');
+        const status = err.resolved ? "已处理" : "未处理";
+        return [
+          getErrataLevelLabel(err),
+          err.errataType || err.tag || "",
+          suspicious,
+          suggested,
+          detail,
+          status,
+        ].map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",");
+      });
+      const csv = "\uFEFF" + [header.join(","), ...rows].join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "勘误表.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("勘误表已导出");
+    }
+
+    function refreshErrataIfOpen() {
+      if (!$("#errataModal")?.classList.contains("hidden")) renderErrataTable();
+    }
 
     function getCrEditorPlainText() {
       return ($("#crEditorContent")?.innerText || "").trim();
@@ -5184,6 +5451,7 @@
     function resetCrProofreadResults() {
       crActiveErrors = [];
       crResolvedCount = 0;
+      crProofreadSourceText = "";
       $("#crResultEmpty")?.classList.remove("hidden");
       $("#crResultCards")?.classList.add("hidden");
       $("#crCardsList").innerHTML = "";
@@ -5214,6 +5482,7 @@
       crResolvedCount += 1;
       document.querySelector(`[data-card-id="${errId}"]`)?.classList.add("is-resolved");
       updateCrStats(crActiveErrors, crResolvedCount);
+      refreshErrataIfOpen();
       const nextPending = crActiveErrors.find((e) => !e.resolved);
       if (nextPending) highlightCrError(nextPending.id);
     }
@@ -5230,6 +5499,7 @@
       crResolvedCount += 1;
       document.querySelector(`[data-card-id="${errId}"]`)?.classList.add("is-resolved");
       updateCrStats(crActiveErrors, crResolvedCount);
+      refreshErrataIfOpen();
     }
 
     function runCrSmartProofread() {
@@ -5240,6 +5510,7 @@
         text = CR_DEMO_STORY;
         editor.textContent = text;
       }
+      crProofreadSourceText = text;
       const errors = CR_DEMO_ERRORS.filter((e) => text.includes(e.match));
       if (!errors.length) {
         showToast("未发现可标记的错误（原型演示）");
@@ -5266,6 +5537,7 @@
       $("#crEditorContent").innerHTML = escapeHtml(text).replace(/\n/g, "<br>");
       $$(".cr-suggestion-card").forEach((c) => c.classList.add("is-resolved"));
       updateCrStats(crActiveErrors, crResolvedCount);
+      refreshErrataIfOpen();
       showToast("已接受全部修改建议");
     }
 
@@ -5347,6 +5619,21 @@
       if (event.key === "Escape" && !$("#proofreadTypeModal")?.classList.contains("hidden")) {
         closeProofreadTypeModal();
       }
+      if (event.key === "Escape" && !$("#errataModal")?.classList.contains("hidden")) {
+        closeErrataModal();
+      }
+    });
+    $("#crViewErrata")?.addEventListener("click", openErrataModal);
+    $("#closeErrataModal")?.addEventListener("click", closeErrataModal);
+    $("#errataExport")?.addEventListener("click", exportErrataTable);
+    $("#errataModal")?.addEventListener("click", (event) => {
+      if (event.target === $("#errataModal")) closeErrataModal();
+    });
+    $("#errataSelectAll")?.addEventListener("change", (event) => {
+      $$(".errata-row-cb:not(:disabled)").forEach((cb) => { cb.checked = event.target.checked; });
+    });
+    document.addEventListener("change", (event) => {
+      if (event.target.classList?.contains("errata-row-cb")) syncErrataSelectAll();
     });
     $("#crUploadDoc")?.addEventListener("click", () => showToast("请选择要上传的文档（原型演示）"));
     $("#crCustomLexicon")?.addEventListener("click", () => showToast("自定义词库（原型演示）"));
