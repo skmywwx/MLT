@@ -734,18 +734,28 @@
     planner: { name: "统筹专家", emoji: "👨🏻‍💼", tag: "任务规划" },
     search: { name: "检索专家", emoji: "🧑🏻‍💻", tag: "信息收集" },
     reader: { name: "文献阅读师", emoji: "🧑🏻‍🏫", tag: "资料阅读" },
+    researcher: { name: "研究员", emoji: "🧑🏻‍🔬", tag: "深度研究" },
     writer: { name: "写作达人", emoji: "👩🏻", tag: "内容撰写" },
     editor: { name: "资深编辑", emoji: "👩🏻‍💼", tag: "质量校验" },
   };
 
+  let flowContext = { isResearch: false };
+
+  function getTodoDisplayAgent(item) {
+    if (item.id === "analyze" && flowContext.isResearch) return AGENTS.researcher;
+    return item.executor || item.agent;
+  }
+
   const TODO_ITEMS = [
-    { id: "outline", title: "创建写作大纲", weight: 1 },
-    { id: "research", title: "资料收集", weight: 1.5 },
-    { id: "analyze", title: "分析归纳", weight: 1 },
-    { id: "write", title: "分章撰写", weight: 2 },
-    { id: "review", title: "三审三校", weight: 1 },
-    { id: "deliver", title: "最终定稿交付", weight: 0.5 },
+    { id: "outline", title: "创建写作大纲", weight: 1, agent: AGENTS.planner, executor: AGENTS.writer },
+    { id: "research", title: "资料收集", weight: 1.5, agent: AGENTS.search },
+    { id: "analyze", title: "分析归纳", weight: 1, agent: AGENTS.reader },
+    { id: "write", title: "分章撰写", weight: 2, agent: AGENTS.writer },
+    { id: "review", title: "三审三校", weight: 1, agent: AGENTS.editor },
+    { id: "deliver", title: "最终定稿交付", weight: 0.5, agent: AGENTS.planner },
   ];
+
+  const TOTAL_WEIGHT = TODO_ITEMS.reduce((s, t) => s + t.weight, 0);
 
   const DEMO_FILES = [
     { name: "20260105 周报.docx", type: "doc", size: "128 KB" },
@@ -896,8 +906,10 @@
     });
   }
 
-  function updateStatusBar(stage, owner, completed, total, percent, modeLabel) {
+  function updateStatusBar(stage, owner, completed, total, percent, modeLabel, isComplete) {
     const mode = modeLabel || "交互模式";
+    const barColor = isComplete ? "bg-[#35a92f]" : "bg-[#5B5FE5]";
+    const textColor = isComplete ? "text-[#35a92f]" : "text-[#5B5FE5]";
     els.workflowStatusBar.innerHTML = `
       <div class="max-w-[680px] mx-auto w-full">
         <div class="flex items-center justify-between gap-3 mb-1.5">
@@ -910,9 +922,9 @@
         <div class="flex items-center gap-2">
           <div class="flex-1 h-[5px] rounded-full bg-[#ececef] overflow-hidden" role="progressbar"
             aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100">
-            <div class="wf-progress-fill h-full rounded-full bg-[#5B5FE5]" style="width:${percent}%"></div>
+            <div class="wf-progress-fill h-full rounded-full ${barColor}" style="width:${percent}%"></div>
           </div>
-          <span class="text-[10px] font-semibold text-[#5B5FE5] w-[32px] text-right">${percent}%</span>
+          <span class="text-[10px] font-semibold ${textColor} w-[32px] text-right">${percent}%</span>
         </div>
       </div>`;
   }
@@ -922,21 +934,25 @@
   }
 
   function inlineTodoPanel(activeIndex) {
+    const allDone = activeIndex >= TODO_ITEMS.length;
     const items = TODO_ITEMS.map((item, i) => {
       let cls = "text-[#bbb]";
       let mark = '<span class="w-3 h-3 rounded-full border border-[#ddd] shrink-0"></span>';
-      if (i < activeIndex) {
+      if (allDone || i < activeIndex) {
         cls = "text-[#35a92f]";
         mark = '<i data-lucide="circle-check" class="w-3 h-3 shrink-0 text-[#35a92f]"></i>';
       } else if (i === activeIndex) {
         cls = "text-[#00a0df] font-medium";
         mark = '<span class="w-3 h-3 rounded-full border-2 border-[#00a0df] border-t-transparent animate-spin shrink-0"></span>';
       }
-      return `<li class="flex items-center gap-2 py-1 ${cls}">${mark}<span class="text-[11px]">${item.title}</span></li>`;
+      return `<li class="flex items-center gap-2 py-1 ${cls}">${mark}<span class="text-[11px]">${item.title}</span><span class="ml-auto text-[9px] text-[#bbb]">${getTodoDisplayAgent(item).name}</span></li>`;
     }).join("");
+    const label = allDone
+      ? `${TODO_ITEMS.length}/${TODO_ITEMS.length}`
+      : `${activeIndex + 1}/${TODO_ITEMS.length}`;
     return `<details class="todo-panel mb-4" open>
       <summary class="flex items-center justify-between">
-        <span>待办事项 ${Math.min(activeIndex + 1, TODO_ITEMS.length)}/${TODO_ITEMS.length}</span>
+        <span>待办事项 ${label}</span>
         <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#aaa]"></i>
       </summary>
       <ul class="px-3 pb-3 space-y-0.5 border-t border-[#f0f0f0] pt-2">${items}</ul>
@@ -952,13 +968,56 @@
     window.lucide?.createIcons();
   }
 
-  function setProgress(completed, stage, owner, modeLabel) {
-    const weights = TODO_ITEMS.reduce((s, t) => s + t.weight, 0);
+  function calcProgressPercent(finishedSteps, partialInCurrent) {
     let done = 0;
-    for (let i = 0; i < completed; i++) done += TODO_ITEMS[i]?.weight || 0;
-    progressPercent = Math.min(100, Math.round((done / weights) * 100));
-    updateStatusBar(stage, owner, completed, TODO_ITEMS.length, progressPercent, modeLabel);
-    updateInlineTodo(completed);
+    for (let i = 0; i < finishedSteps; i++) done += TODO_ITEMS[i].weight;
+    if (partialInCurrent > 0 && finishedSteps < TODO_ITEMS.length) {
+      done += TODO_ITEMS[finishedSteps].weight * Math.min(1, partialInCurrent);
+    }
+    return Math.round((done / TOTAL_WEIGHT) * 100);
+  }
+
+  function setProgress(activeStepIndex, stage, owner, modeLabel, opts) {
+    opts = opts || {};
+    const total = TODO_ITEMS.length;
+
+    if (opts.delivered) {
+      progressPercent = 100;
+      updateStatusBar(stage, owner, total, total, 100, modeLabel, true);
+      updateInlineTodo(total);
+      return;
+    }
+
+    const finishedSteps = activeStepIndex;
+    const partial = opts.partial || 0;
+    progressPercent = calcProgressPercent(finishedSteps, partial);
+    if (progressPercent >= 100) progressPercent = 99;
+
+    const displayStep = Math.min(finishedSteps + 1, total);
+    updateStatusBar(stage, owner, displayStep, total, progressPercent, modeLabel, false);
+    updateInlineTodo(activeStepIndex);
+  }
+
+  function setQuickProgress(stage, owner, modeLabel, percent, delivered) {
+    const p = delivered ? 100 : Math.min(99, percent);
+    const stepDisplay = delivered ? "1/1" : "进行中";
+    els.workflowStatusBar.innerHTML = `
+      <div class="max-w-[680px] mx-auto w-full">
+        <div class="flex items-center justify-between gap-3 mb-1.5">
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="shrink-0 px-2 py-0.5 rounded bg-[#eaf8fd] text-[#00a0df] text-[10px] font-semibold">${modeLabel}</span>
+            <span class="truncate text-[11px] text-[#444]">${stage}</span>
+          </div>
+          <div class="shrink-0 text-[10px] text-[#888]">${stepDisplay} · ${owner}</div>
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 h-[5px] rounded-full bg-[#ececef] overflow-hidden" role="progressbar"
+            aria-valuenow="${p}" aria-valuemin="0" aria-valuemax="100">
+            <div class="wf-progress-fill h-full rounded-full ${delivered ? "bg-[#35a92f]" : "bg-[#5B5FE5]"}" style="width:${p}%"></div>
+          </div>
+          <span class="text-[10px] font-semibold ${delivered ? "text-[#35a92f]" : "text-[#5B5FE5]"} w-[32px] text-right">${p}%</span>
+        </div>
+      </div>`;
   }
 
   function appendMessage(html) {
@@ -1111,9 +1170,11 @@
   }
 
   function workflowCarousel() {
+    const analyzeAgent = flowContext.isResearch ? AGENTS.researcher : AGENTS.reader;
     const steps = [
       { agent: AGENTS.planner, label: "任务规划" },
       { agent: AGENTS.search, label: "资料检索" },
+      { agent: analyzeAgent, label: "分析归纳" },
       { agent: AGENTS.writer, label: "分章撰写" },
       { agent: AGENTS.editor, label: "三审三校" },
       { agent: AGENTS.planner, label: "最终交付" },
@@ -1192,8 +1253,8 @@
     currentTodoIndex = 0;
     progressPercent = 0;
     const deliverable = inferDeliverable(promptText);
-    setProgress(0, "需求理解中", AGENTS.planner.name, "交互模式");
-
+    const isResearch = /深度研究|研究|分析|论证/.test(promptText);
+    flowContext.isResearch = isResearch;
     const hasFiles = /整合|上传|文档|文件|报告/.test(promptText);
     const files = hasFiles ? DEMO_FILES : null;
 
@@ -1212,58 +1273,78 @@
     }
 
     statusLine("写作技能已加载", "ok");
-    ownerHandoff(AGENTS.planner, "正在理解需求并规划任务");
-    await sleep(800, token);
 
+    /* ── 步骤0：创建写作大纲（统筹专家规划 → 写作达人生成） ── */
+    setProgress(0, "任务规划中", AGENTS.planner.name, "交互模式", { partial: 0.2 });
+    ownerHandoff(AGENTS.planner, "需求拆解与任务规划");
     agentMessage(AGENTS.planner,
-      `已将您的需求拆分为 <strong>${TODO_ITEMS.length}</strong> 个步骤，由统筹、检索、写作与编辑四个智能体协作完成。`);
+      `已将您的需求拆分为 <strong>${TODO_ITEMS.length}</strong> 个步骤，并按职责分配给统筹、检索、文献阅读、写作与编辑等智能体。`);
     todoPanelEl = appendMessage(inlineTodoPanel(0));
     await sleep(600, token);
 
-    setProgress(1, "资料检索中", AGENTS.search.name, "交互模式");
-    ownerHandoff(AGENTS.search, "正在检索相关资料");
-    statusLine(`正在搜索：${deliverable.searchQuery}`, "info");
-    if (hasFiles) {
-      toolLog([
-        { type: "read", text: "正在阅读文件…", detail: DEMO_FILES[0].name },
-        { type: "read", text: "正在阅读文件…", detail: DEMO_FILES[1].name },
-      ]);
-      await sleep(700, token);
-    }
-    toolLog([{ type: "search", text: "调用搜索工具", action: "查看" }]);
-    await sleep(800, token);
+    setProgress(0, "创建写作大纲", AGENTS.writer.name, "交互模式", { partial: 0.6 });
+    ownerHandoff(AGENTS.writer, "生成文档大纲");
+    agentMessage(AGENTS.writer, "基于需求分析，正在生成文档大纲…");
+    await sleep(500, token);
 
-    setProgress(2, "资料检索 · 45%", AGENTS.search.name, "交互模式");
-    searchResults();
-    agentMessage(AGENTS.reader, "已从资料中提取 <strong>12</strong> 条有效证据，生成资料摘要卡片。");
-    await sleep(700, token);
-
-    setProgress(2, "分析归纳中", AGENTS.writer.name, "交互模式");
-    ownerHandoff(AGENTS.writer, "正在生成内容大纲");
-    agentMessage(AGENTS.writer, "基于资料分析，正在生成文档大纲…");
-    await sleep(600, token);
-
-    setProgress(3, "等待确认大纲", AGENTS.writer.name, "交互模式");
     let outlineConfirmed = false;
     outlineCard(() => {
       outlineConfirmed = true;
-      window.showToast?.("已确认大纲，开始撰写");
+      window.showToast?.("已确认大纲，开始资料收集");
     });
     await sleep(1400, token);
     if (!outlineConfirmed) document.getElementById("confirmOutline")?.click();
     await sleep(400, token);
 
-    setProgress(4, "分章撰写中", AGENTS.writer.name, "交互模式");
-    ownerHandoff(AGENTS.writer, "按大纲分章撰写");
+    /* ── 步骤1：资料收集（检索专家） ── */
+    setProgress(1, "资料检索中", AGENTS.search.name, "交互模式");
+    ownerHandoff(AGENTS.search, "检索外部资料与权威来源");
+    statusLine(`正在检索：${deliverable.searchQuery}`, "info");
+    toolLog([{ type: "search", text: "调用搜索工具", action: "查看" }]);
+    await sleep(800, token);
+
+    if (hasFiles) {
+      ownerHandoff(AGENTS.reader, "深度研读上传文件");
+      toolLog([
+        { type: "read", text: "文献阅读师正在阅读…", detail: DEMO_FILES[0].name },
+        { type: "read", text: "文献阅读师正在阅读…", detail: DEMO_FILES[1].name },
+      ]);
+      await sleep(700, token);
+    }
+
+    setProgress(1, "资料检索中", AGENTS.search.name, "交互模式", { partial: 0.8 });
+    searchResults();
+    agentMessage(AGENTS.search, "共检索到 <strong>120</strong> 条相关信息，已筛选高相关来源。");
+    await sleep(600, token);
+
+    /* ── 步骤2：分析归纳（文献阅读师 / 研究员） ── */
+    const analyzeAgent = isResearch ? AGENTS.researcher : AGENTS.reader;
+    setProgress(2, "分析归纳中", analyzeAgent.name, "交互模式");
+    ownerHandoff(analyzeAgent, isResearch ? "深度研究与证据归纳" : "提取证据与资料摘要");
+    agentMessage(analyzeAgent,
+      isResearch
+        ? "已完成系统性分析，整理 <strong>12</strong> 条有效证据卡片与关键结论。"
+        : "已从资料中提取 <strong>12</strong> 条有效证据，生成资料摘要卡片。");
+    if (isResearch) {
+      toolLog([{ type: "chart", text: "研究员正在生成对比数据…" }]);
+      await sleep(500, token);
+    }
+    await sleep(600, token);
+
+    /* ── 步骤3：分章撰写（写作达人） ── */
+    setProgress(3, "分章撰写中", AGENTS.writer.name, "交互模式");
+    ownerHandoff(AGENTS.writer, "按大纲分章撰写正文");
     statusLine("开始撰写第一章…", "info");
     fileCard("第一章-引言.md", "Markdown · 12 KB", "file-code");
     await sleep(700, token);
+    setProgress(3, "分章撰写中", AGENTS.writer.name, "交互模式", { partial: 0.7 });
     statusLine("章节撰写完成，正在合并文档…", "info");
     fileCard(deliverable.draftName, `${deliverable.typeLabel} · 856 KB`, deliverable.icon);
     await sleep(700, token);
 
-    setProgress(5, "三审三校中", AGENTS.editor.name, "交互模式");
-    ownerHandoff(AGENTS.editor, "质量校验与风险审查");
+    /* ── 步骤4：三审三校（资深编辑） ── */
+    setProgress(4, "三审三校中", AGENTS.editor.name, "交互模式");
+    ownerHandoff(AGENTS.editor, "文字、知识与风险校验");
     agentMessage(AGENTS.editor, "文档已生成，现进入 <strong>三审三校</strong> 流程：");
     const reviewWrap = appendMessage(`
       <div class="mb-4 ml-2 space-y-2 text-[11px]">
@@ -1282,9 +1363,14 @@
     window.lucide?.createIcons();
     await sleep(500, token);
 
-    setProgress(6, "最终定稿交付", AGENTS.planner.name, "交互模式");
+    /* ── 步骤5：最终定稿交付（统筹专家） ── */
+    setProgress(5, "最终定稿交付", AGENTS.planner.name, "交互模式", { partial: 0.5 });
     ownerHandoff(AGENTS.planner, "整理最终结果并交付");
-    agentMessage(AGENTS.planner, "全部任务已完成！以下是为您生成的文档预览与交付文件：");
+    agentMessage(AGENTS.planner, "全部子任务已完成，正在交付最终结果…");
+    await sleep(500, token);
+
+    setProgress(5, "交付完成", AGENTS.planner.name, "交互模式", { delivered: true });
+    agentMessage(AGENTS.planner, "以下是为您生成的文档预览与交付文件：");
     documentPreviewCard(deliverable);
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · 871 KB`, deliverable.icon);
     workflowCarousel();
@@ -1296,17 +1382,26 @@
     if (els.chatThread) els.chatThread.innerHTML = "";
     todoPanelEl = null;
     const deliverable = inferDeliverable(promptText);
-    setProgress(0, "快速生成中", AGENTS.writer.name, "快速模式");
 
     userMessage(promptText);
+    setQuickProgress("正在解析任务", AGENTS.writer.name, "快速模式", 15, false);
     await sleep(500, token);
-    ownerHandoff(AGENTS.writer, "正在解析并生成");
+
+    ownerHandoff(AGENTS.writer, "解析需求并生成内容");
     statusLine("正在解析任务目标…", "info");
     await sleep(600, token);
-    setProgress(0, "内容撰写中", AGENTS.writer.name, "快速模式");
-    toolLog([{ type: "edit", text: "正在生成文档…" }]);
+
+    setQuickProgress("内容撰写中", AGENTS.writer.name, "快速模式", 55, false);
+    toolLog([{ type: "edit", text: "写作达人正在生成文档…" }]);
     await sleep(900, token);
-    setProgress(1, "交付完成", AGENTS.writer.name, "快速模式");
+
+    setQuickProgress("质量校验中", AGENTS.editor.name, "快速模式", 80, false);
+    ownerHandoff(AGENTS.editor, "快速校对");
+    await sleep(500, token);
+
+    setQuickProgress("交付完成", AGENTS.planner.name, "快速模式", 100, true);
+    ownerHandoff(AGENTS.planner, "整理最终结果并交付");
+    agentMessage(AGENTS.planner, "已根据您的要求快速生成结果并完成交付：");
     documentPreviewCard(deliverable);
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · 420 KB`, deliverable.icon);
     ratingAndQuestions();
