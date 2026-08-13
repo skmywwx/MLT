@@ -118,6 +118,132 @@
       border-color: #5B5FE5;
       box-shadow: 0 3px 10px rgba(91, 95, 229, .12);
     }
+    .quick-writing.is-quick-selected {
+      color: #35a92f;
+      background: #f3fff1;
+      border-color: #57c94d;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(70, 190, 60, .12);
+    }
+    .quick-research.is-quick-selected {
+      color: #e95f32;
+      background: #fff6f1;
+      border-color: #ff7a45;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(255, 122, 69, .12);
+    }
+    .quick-ppt.is-quick-selected {
+      color: #5B5FE5;
+      background: #f4f4ff;
+      border-color: #5B5FE5;
+      font-weight: 600;
+      box-shadow: 0 3px 10px rgba(91, 95, 229, .14);
+    }
+    .quick-mode-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .quick-mode-tag.tag-writing { color: #35a92f; background: #f3fff1; border: 1px solid #57c94d; }
+    .quick-mode-tag.tag-research { color: #e95f32; background: #fff6f1; border: 1px solid #ff7a45; }
+    .quick-mode-tag.tag-ppt { color: #5B5FE5; background: #f4f4ff; border: 1px solid #5B5FE5; }
+    .mode-category-tab {
+      height: 26px;
+      padding: 0 10px;
+      border-radius: 13px;
+      font-size: 11px;
+      color: #666;
+      white-space: nowrap;
+      border: 1px solid transparent;
+    }
+    .mode-category-tab.is-active {
+      color: #35a92f;
+      background: #f3fff1;
+      border-color: #57c94d;
+      font-weight: 600;
+    }
+    .mode-category-tab:not(.is-active):hover {
+      background: #f5f5f5;
+      color: #333;
+    }
+    .writing-template-card {
+      border-radius: 10px;
+      border: 1px solid #e8ebee;
+      background: #fff;
+      padding: 10px;
+      text-align: left;
+      min-height: 72px;
+      position: relative;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .writing-template-card:hover {
+      border-color: #57c94d;
+      box-shadow: 0 4px 14px rgba(70, 190, 60, .10);
+      transform: translateY(-1px);
+    }
+    .writing-template-card .tpl-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 8px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: #f3fff1;
+      color: #35a92f;
+    }
+    .research-case-card,
+    .ppt-case-card {
+      flex: 0 0 168px;
+      border-radius: 12px;
+      border: 1px solid #e8ebee;
+      background: #fff;
+      overflow: hidden;
+      text-align: left;
+      transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+    }
+    .research-case-card:hover {
+      border-color: #ff7a45;
+      box-shadow: 0 6px 18px rgba(255, 122, 69, .12);
+      transform: translateY(-2px);
+    }
+    .ppt-case-card:hover {
+      border-color: #5B5FE5;
+      box-shadow: 0 6px 18px rgba(91, 95, 229, .14);
+      transform: translateY(-2px);
+    }
+    .research-case-card .case-thumb {
+      height: 88px;
+      background: linear-gradient(145deg, #fff6f1, #ffe8dc);
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      color: #ff7a45;
+    }
+    .ppt-case-card .ppt-slide {
+      height: 96px;
+      display: grid;
+      place-items: center;
+      padding: 10px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.35;
+    }
+    .mode-case-scroll {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: thin;
+    }
+    .mode-case-scroll::-webkit-scrollbar { height: 5px; }
+    .mode-case-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
     .agent-card:hover {
       border-color: #b9bbf6;
       box-shadow: 0 7px 20px rgba(91, 95, 229, .10);
@@ -461,6 +587,10 @@
           </div>
 
           <div id="composerBox" class="mt-[13px] min-h-[97px] rounded-[11px] border border-[#e6e7ea] bg-white shadow-composer p-[10px]">
+            <div id="quickModeTag" class="quick-mode-tag tag-writing hidden">
+              <i data-lucide="feather" class="w-[11px] h-[11px] quick-tag-icon"></i>
+              <span id="quickModeTagText">写作</span>
+            </div>
             <textarea id="prompt" class="w-full h-[43px] resize-none outline-none text-[12px] placeholder:text-[#a6a8ac]" placeholder="请输入内容开始写作"></textarea>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-[5px]">
@@ -507,19 +637,43 @@
             </div>
           </div>
 
-          <div class="mt-[24px] flex justify-center gap-[7px] flex-wrap">
-            <button data-suggestion="请生成一份中式，大约预算5W左右的婚礼策划方案" class="quick-writing h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+          <div id="quickModeBar" class="mt-[24px] flex justify-center gap-[7px] flex-wrap">
+            <button type="button" data-quick-mode="writing" data-suggestion="请帮我撰写一份部门年度工作总结，包含工作回顾、数据亮点与改进计划" class="quick-writing is-quick-selected h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="feather" class="w-[13px] h-[13px] text-[#47b83f]"></i>写作
             </button>
-            <button data-suggestion="深度研究人工智能发展趋势并生成行业分析报告" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button type="button" data-quick-mode="research" data-suggestion="深度研究人工智能发展趋势并生成行业分析论文" class="quick-research h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="microscope" class="w-[13px] h-[13px] text-[#ff7043]"></i>深度研究
             </button>
-            <button data-suggestion="生成一份项目介绍PPT" class="quick-ppt h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
+            <button type="button" data-quick-mode="ppt" data-suggestion="生成一份项目介绍PPT，包含背景、方案亮点与实施计划" class="quick-ppt h-[32px] px-[12px] rounded-[14px] border border-[#e8ebee] flex items-center gap-[6px]">
               <i data-lucide="presentation" class="w-[13px] h-[13px] text-[#5B5FE5]"></i>AI PPT
             </button>
           </div>
 
-          <h2 class="mt-[28px] mb-[11px] text-center text-[11px] font-semibold text-[#222]">办公写作智能体：让写作专家团队，为您精修每一篇文章</h2>
+          <div id="quickModePanel" class="mt-[14px]">
+            <div id="panelWriting" data-panel="writing">
+              <div id="writingCategoryTabs" class="flex gap-[6px] overflow-x-auto pb-[8px]">
+                <button type="button" data-writing-cat="推荐" class="mode-category-tab is-active">推荐</button>
+                <button type="button" data-writing-cat="通知通告" class="mode-category-tab">通知通告</button>
+                <button type="button" data-writing-cat="总结汇报" class="mode-category-tab">总结汇报</button>
+                <button type="button" data-writing-cat="会议" class="mode-category-tab">会议</button>
+                <button type="button" data-writing-cat="新闻稿件" class="mode-category-tab">新闻稿件</button>
+                <button type="button" data-writing-cat="公文" class="mode-category-tab">公文</button>
+              </div>
+              <div id="writingTemplateGrid" class="grid grid-cols-3 gap-[8px]"></div>
+            </div>
+
+            <div id="panelResearch" data-panel="research" class="hidden">
+              <p class="text-[10px] text-[#888] mb-[8px]">参考案例 · 深度研究输出学术论文</p>
+              <div id="researchCaseList" class="mode-case-scroll"></div>
+            </div>
+
+            <div id="panelPpt" data-panel="ppt" class="hidden">
+              <p class="text-[10px] text-[#888] mb-[8px]">参考案例 · AI PPT 输出演示文稿</p>
+              <div id="pptCaseList" class="mode-case-scroll"></div>
+            </div>
+          </div>
+
+          <h2 id="agentTeamHeading" class="mt-[28px] mb-[11px] text-center text-[11px] font-semibold text-[#222]">办公写作智能体：让写作专家团队，为您精修每一篇文章</h2>
           <div class="agent-grid grid grid-cols-3 gap-x-[10px] gap-y-[17px]">
             <button data-agent="写作达人" class="agent-card h-[83px] rounded-[10px] border border-[#e3e5e8] p-[11px] text-left bg-white shadow-card">
               <div class="flex gap-[7px]">
@@ -733,10 +887,74 @@
     editor: { name: "资深编辑", emoji: "👩🏻‍💼", tag: "质量校验" },
   };
 
-  let flowContext = { isResearch: false };
+  let flowContext = { isResearch: false, quickMode: "writing" };
+
+  const WRITING_TEMPLATES = {
+    推荐: [
+      { title: "工作总结", badge: "写作", icon: "📋", prompt: "请撰写一份部门年度工作总结，包含工作回顾、核心数据与改进计划" },
+      { title: "新闻稿件", badge: "写作", icon: "📰", prompt: "请撰写一篇单位活动新闻稿，突出活动亮点与成效" },
+      { title: "讲话稿", badge: "写作", icon: "🎤", prompt: "请撰写一份会议讲话稿，结构包含开场、主体论述与总结号召" },
+      { title: "方案策划", badge: "写作", icon: "📑", prompt: "请生成一份中式婚礼策划方案，预算约 5 万元，含流程与物料清单" },
+      { title: "通知通告", badge: "写作", icon: "📢", prompt: "请撰写一份正式通知，说明事项背景、具体要求与截止时间" },
+      { title: "调研报告", badge: "研究", icon: "🔍", prompt: "请撰写一份基层调研报告，包含现状、问题分析与对策建议" },
+    ],
+    通知通告: [
+      { title: "放假通知", badge: "写作", icon: "📢", prompt: "请撰写一份节假日放假安排通知" },
+      { title: "会议通知", badge: "写作", icon: "📅", prompt: "请撰写一份部门会议通知，含时间地点与参会要求" },
+      { title: "活动通知", badge: "写作", icon: "🎯", prompt: "请撰写一份内部培训活动通知" },
+    ],
+    总结汇报: [
+      { title: "年度总结", badge: "写作", icon: "📊", prompt: "请撰写一份年度工作总结汇报" },
+      { title: "季度汇报", badge: "写作", icon: "📈", prompt: "请撰写一份季度工作进展汇报" },
+      { title: "项目复盘", badge: "写作", icon: "🔄", prompt: "请撰写一份项目复盘总结报告" },
+    ],
+    会议: [
+      { title: "会议纪要", badge: "写作", icon: "📝", prompt: "请根据会议内容整理一份规范会议纪要" },
+      { title: "议程安排", badge: "写作", icon: "🗓️", prompt: "请撰写一份会议议程安排文档" },
+    ],
+    新闻稿件: [
+      { title: "活动报道", badge: "写作", icon: "📰", prompt: "请撰写一篇活动新闻报道稿" },
+      { title: "人物专访", badge: "写作", icon: "🎙️", prompt: "请撰写一篇人物专访新闻稿" },
+    ],
+    公文: [
+      { title: "请示", badge: "写作", icon: "📄", prompt: "请撰写一份正式请示公文" },
+      { title: "批复", badge: "写作", icon: "✅", prompt: "请撰写一份批复公文" },
+      { title: "函", badge: "写作", icon: "✉️", prompt: "请撰写一份公函" },
+    ],
+  };
+
+  const RESEARCH_CASES = [
+    { title: "2026年中国航空经济产业发展研究", excerpt: "从政策环境、产业链布局与区域竞争格局三个维度，系统分析航空经济发展趋势…", prompt: "深度研究2026年中国航空经济产业发展趋势，从政策、产业链、区域格局等维度撰写学术论文" },
+    { title: "人工智能在政务办公中的应用研究", excerpt: "梳理大模型赋能政务场景的路径，对比国内外实践案例，提出落地建议…", prompt: "深度研究人工智能在政务办公中的应用，撰写包含文献综述与对策分析的学术论文" },
+    { title: "绿色能源转型路径 comparative study", excerpt: "基于多国政策与产业数据，比较不同转型路径的成本效益与实施难点…", prompt: "深度研究绿色能源转型路径，从政策、技术、经济维度撰写比较研究论文" },
+  ];
+
+  const PPT_CASES = [
+    { title: "项目介绍", bg: "linear-gradient(135deg,#2d3436,#636e72)", color: "#fff", prompt: "生成一份项目介绍PPT，包含项目背景、核心亮点与实施计划" },
+    { title: "季度复盘汇报", bg: "linear-gradient(135deg,#0984e3,#74b9ff)", color: "#fff", prompt: "生成一份季度工作复盘PPT，含数据图表与下阶段计划" },
+    { title: "产品发布方案", bg: "linear-gradient(135deg,#dfe6e9,#ffffff)", color: "#2d3436", prompt: "生成一份产品发布方案PPT，突出卖点、用户价值与市场策略" },
+  ];
+
+  const RESEARCH_TODO_ITEMS = [
+    { id: "topic", title: "话题拆分", weight: 1, agent: AGENTS.planner },
+    { id: "dimension", title: "维度分解", weight: 1, agent: AGENTS.planner },
+    { id: "research", title: "资料检索", weight: 1.5, agent: AGENTS.search },
+    { id: "analyze", title: "文献研读", weight: 1, agent: AGENTS.reader },
+    { id: "write", title: "论文撰写", weight: 2, agent: AGENTS.writer },
+    { id: "review", title: "三审三校", weight: 1, agent: AGENTS.editor },
+    { id: "deliver", title: "最终交付", weight: 0.5, agent: AGENTS.planner },
+  ];
+
+  function getActiveTodoItems() {
+    return flowContext.quickMode === "research" ? RESEARCH_TODO_ITEMS : TODO_ITEMS;
+  }
+
+  function getActiveTotalWeight() {
+    return getActiveTodoItems().reduce((s, t) => s + t.weight, 0);
+  }
 
   function getTodoDisplayAgent(item) {
-    if (item.id === "analyze" && flowContext.isResearch) return AGENTS.researcher;
+    if (item.id === "analyze" && (flowContext.isResearch || flowContext.quickMode === "research")) return AGENTS.researcher;
     return item.executor || item.agent;
   }
 
@@ -771,9 +989,11 @@
     "如何把研究结果转化为下季度行动计划？",
   ];
 
-  function inferDeliverable(promptText) {
+  function inferDeliverable(promptText, quickMode) {
     const p = promptText;
-    if (/ppt|PPT|演示|幻灯片/.test(p)) {
+    const mode = quickMode || flowContext.quickMode || "writing";
+
+    if (mode === "ppt" || /ppt|PPT|演示|幻灯片/.test(p)) {
       return {
         ext: "pptx",
         icon: "presentation",
@@ -783,8 +1003,36 @@
         draftName: "项目介绍演示文稿（初稿）.pptx",
         preview: null,
         searchQuery: "项目介绍 结构 设计要点",
+        outputKind: "ppt",
       };
     }
+
+    if (mode === "research" || /深度研究|论文|研究报告|行业分析/.test(p)) {
+      const topic = /航空/.test(p) ? "2026年中国航空经济产业发展"
+        : /人工智能|AI|政务/.test(p) ? "人工智能在政务办公中的应用"
+        : /绿色能源|能源转型/.test(p) ? "绿色能源转型路径"
+        : "人工智能发展趋势行业分析";
+      return {
+        ext: "docx",
+        icon: "file-text",
+        typeLabel: "学术论文",
+        title: topic + "研究报告",
+        finalName: topic + "研究报告（论文终稿）.docx",
+        draftName: topic + "研究报告（初稿）.docx",
+        preview: {
+          sections: [
+            { heading: "摘要", body: "本文围绕「" + topic + "」展开系统性研究，从政策环境、产业格局、技术路径与实施建议四个维度进行论证，为相关决策提供参考。" },
+            { heading: "一、引言与研究背景", body: "随着相关领域快速演进，亟需从多维度梳理现状、识别关键问题并形成可验证的研究结论。" },
+            { heading: "二、研究方法与资料来源", body: "采用文献综述、政策文本分析与案例对比方法，检索并筛选 120 条高相关来源，形成 12 条核心证据链。" },
+            { heading: "三、核心发现与讨论", body: "综合多源证据，当前阶段呈现出结构性机遇与区域性差异并存的发展特征，需关注政策协同与落地节奏。" },
+            { heading: "四、结论与建议", body: "研究建议从顶层设计、试点验证与评估机制三方面推进，并建立动态跟踪与迭代机制。" },
+          ],
+        },
+        searchQuery: topic + " 政策 产业 研究",
+        outputKind: "paper",
+      };
+    }
+
     if (/婚礼|策划|中式/.test(p)) {
       return {
         ext: "docx",
@@ -800,6 +1048,7 @@
           ],
         },
         searchQuery: "中式婚礼 预算 策划流程",
+        outputKind: "document",
       };
     }
     return {
@@ -816,6 +1065,7 @@
         ],
       },
       searchQuery: "成本核算 收入 工作内容",
+      outputKind: "document",
     };
   }
 
@@ -943,8 +1193,9 @@
   }
 
   function inlineTodoPanel(activeIndex) {
-    const allDone = activeIndex >= TODO_ITEMS.length;
-    const items = TODO_ITEMS.map((item, i) => {
+    const todoItems = getActiveTodoItems();
+    const allDone = activeIndex >= todoItems.length;
+    const items = todoItems.map((item, i) => {
       let cls = "text-[#bbb]";
       let mark = '<span class="w-3 h-3 rounded-full border border-[#ddd] shrink-0"></span>';
       if (allDone || i < activeIndex) {
@@ -957,8 +1208,8 @@
       return `<li class="flex items-center gap-2 py-1 ${cls}">${mark}<span class="text-[11px]">${item.title}</span><span class="ml-auto text-[9px] text-[#bbb]">${getTodoDisplayAgent(item).name}</span></li>`;
     }).join("");
     const label = allDone
-      ? `${TODO_ITEMS.length}/${TODO_ITEMS.length}`
-      : `${activeIndex + 1}/${TODO_ITEMS.length}`;
+      ? `${todoItems.length}/${todoItems.length}`
+      : `${activeIndex + 1}/${todoItems.length}`;
     return `<details class="todo-panel mb-4" open>
       <summary class="flex items-center justify-between">
         <span>待办事项 ${label}</span>
@@ -978,17 +1229,19 @@
   }
 
   function calcProgressPercent(finishedSteps, partialInCurrent) {
+    const todoItems = getActiveTodoItems();
+    const totalWeight = getActiveTotalWeight();
     let done = 0;
-    for (let i = 0; i < finishedSteps; i++) done += TODO_ITEMS[i].weight;
-    if (partialInCurrent > 0 && finishedSteps < TODO_ITEMS.length) {
-      done += TODO_ITEMS[finishedSteps].weight * Math.min(1, partialInCurrent);
+    for (let i = 0; i < finishedSteps; i++) done += todoItems[i].weight;
+    if (partialInCurrent > 0 && finishedSteps < todoItems.length) {
+      done += todoItems[finishedSteps].weight * Math.min(1, partialInCurrent);
     }
-    return Math.round((done / TOTAL_WEIGHT) * 100);
+    return Math.round((done / totalWeight) * 100);
   }
 
   function setProgress(activeStepIndex, stage, owner, modeLabel, opts) {
     opts = opts || {};
-    const total = TODO_ITEMS.length;
+    const total = getActiveTodoItems().length;
 
     if (opts.delivered) {
       progressPercent = 100;
@@ -1178,16 +1431,61 @@
       </div>`);
   }
 
-  function workflowCarousel() {
-    const analyzeAgent = flowContext.isResearch ? AGENTS.researcher : AGENTS.reader;
-    const steps = [
-      { agent: AGENTS.planner, label: "任务规划" },
-      { agent: AGENTS.search, label: "资料检索" },
-      { agent: analyzeAgent, label: "分析归纳" },
-      { agent: AGENTS.writer, label: "分章撰写" },
-      { agent: AGENTS.editor, label: "三审三校" },
-      { agent: AGENTS.planner, label: "最终交付" },
+  function pptPreviewCard(deliverable) {
+    const slides = [
+      { title: deliverable.title, bg: "linear-gradient(135deg,#2d3436,#636e72)", color: "#fff" },
+      { title: "项目背景与目标", bg: "linear-gradient(135deg,#0984e3,#74b9ff)", color: "#fff" },
+      { title: "核心方案与亮点", bg: "linear-gradient(135deg,#dfe6e9,#ffffff)", color: "#2d3436" },
     ];
+    return appendMessage(`
+      <div class="mb-5">
+        <div class="text-[11px] font-semibold text-[#333] mb-2">演示文稿预览</div>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          ${slides.map((s, i) => `
+            <div class="shrink-0 w-[140px] rounded-lg overflow-hidden border border-[#e8e8eb] shadow-sm">
+              <div class="h-[78px] grid place-items-center p-2 text-center text-[10px] font-bold leading-tight" style="background:${s.bg};color:${s.color}">${s.title}</div>
+              <div class="px-2 py-1 text-[9px] text-[#aaa] bg-white">第 ${i + 1} 页</div>
+            </div>`).join("")}
+        </div>
+      </div>`);
+  }
+
+  function researchDimensionCard() {
+    return appendMessage(`
+      <div class="mb-4">
+        ${agentBadge(AGENTS.planner)}
+        <div class="rounded-lg border border-[#e8e8eb] bg-white p-3">
+          <div class="text-[11px] font-semibold mb-2">研究维度框架</div>
+          <div class="grid grid-cols-2 gap-2 text-[10px]">
+            ${["政策环境", "产业链布局", "技术路径", "区域竞争"].map(d =>
+              `<div class="rounded-lg bg-[#fff6f1] border border-[#ffd8c4] px-2.5 py-2 text-[#e95f32]">${d}</div>`
+            ).join("")}
+          </div>
+        </div>
+      </div>`);
+  }
+
+  function workflowCarousel() {
+    const isPaper = flowContext.quickMode === "research";
+    const analyzeAgent = isPaper || flowContext.isResearch ? AGENTS.researcher : AGENTS.reader;
+    const steps = isPaper
+      ? [
+          { agent: AGENTS.planner, label: "话题拆分" },
+          { agent: AGENTS.planner, label: "维度分解" },
+          { agent: AGENTS.search, label: "资料检索" },
+          { agent: analyzeAgent, label: "文献研读" },
+          { agent: AGENTS.writer, label: "论文撰写" },
+          { agent: AGENTS.editor, label: "三审三校" },
+          { agent: AGENTS.planner, label: "最终交付" },
+        ]
+      : [
+          { agent: AGENTS.planner, label: "任务规划" },
+          { agent: AGENTS.search, label: "资料检索" },
+          { agent: analyzeAgent, label: "分析归纳" },
+          { agent: AGENTS.writer, label: "分章撰写" },
+          { agent: AGENTS.editor, label: "三审三校" },
+          { agent: AGENTS.planner, label: "最终交付" },
+        ];
     return appendMessage(`
       <div class="mb-4 overflow-x-auto">
         <div class="flex gap-2 min-w-max pb-1">
@@ -1256,13 +1554,81 @@
     toggleModal("filesModal", true);
   }
 
+  async function runResearchPaperFlow(promptText, token) {
+    if (els.chatThread) els.chatThread.innerHTML = "";
+    todoPanelEl = null;
+    currentTodoIndex = 0;
+    progressPercent = 0;
+    flowContext.isResearch = true;
+    const deliverable = inferDeliverable(promptText, "research");
+
+    userMessage(promptText);
+    await sleep(600, token);
+    statusLine("深度研究技能已加载", "ok");
+
+    setProgress(0, "话题拆分中", AGENTS.planner.name, "交互模式", { partial: 0.3 });
+    ownerHandoff(AGENTS.planner, "识别核心研究问题");
+    agentMessage(AGENTS.planner,
+      "已将您的研究需求拆解为核心话题：<strong>「" + deliverable.title.replace("研究报告", "") + "」</strong>，并明确研究边界与输出形式为学术论文。");
+    todoPanelEl = appendMessage(inlineTodoPanel(0));
+    await sleep(700, token);
+
+    setProgress(1, "维度分解中", AGENTS.planner.name, "交互模式", { partial: 0.5 });
+    ownerHandoff(AGENTS.planner, "分解研究维度");
+    agentMessage(AGENTS.planner, "已将话题分解为 <strong>4</strong> 个研究维度，便于后续检索与论证：");
+    researchDimensionCard();
+    await sleep(800, token);
+
+    setProgress(2, "资料检索中", AGENTS.search.name, "交互模式", { partial: 0.4 });
+    ownerHandoff(AGENTS.search, "检索文献与权威来源");
+    statusLine("正在检索：" + deliverable.searchQuery, "info");
+    toolLog([{ type: "search", text: "调用学术搜索工具", action: "查看" }]);
+    await sleep(700, token);
+    setProgress(2, "资料检索中", AGENTS.search.name, "交互模式", { partial: 0.85 });
+    searchResults();
+    agentMessage(AGENTS.search, "共检索到 <strong>120</strong> 条文献与资料，已筛选 <strong>12</strong> 条高相关来源。");
+    await sleep(600, token);
+
+    setProgress(3, "文献研读中", AGENTS.researcher.name, "交互模式");
+    ownerHandoff(AGENTS.researcher, "深度研读并归纳证据");
+    agentMessage(AGENTS.researcher, "已完成文献研读，整理 <strong>12</strong> 条有效证据链与关键论点。");
+    toolLog([{ type: "read", text: "研究员正在生成证据卡片…" }, { type: "chart", text: "研究员正在生成对比图表…" }]);
+    await sleep(800, token);
+
+    setProgress(4, "论文撰写中", AGENTS.writer.name, "交互模式", { partial: 0.5 });
+    ownerHandoff(AGENTS.writer, "按论文结构撰写正文");
+    statusLine("正在撰写摘要与引言…", "info");
+    fileCard("摘要与引言.md", "Markdown · 18 KB", "file-code");
+    await sleep(600, token);
+    setProgress(4, "论文撰写中", AGENTS.writer.name, "交互模式", { partial: 0.9 });
+    fileCard(deliverable.draftName, `${deliverable.typeLabel} · 920 KB`, deliverable.icon);
+    await sleep(600, token);
+
+    setProgress(5, "三审三校中", AGENTS.editor.name, "交互模式");
+    ownerHandoff(AGENTS.editor, "学术规范与引文校验");
+    agentMessage(AGENTS.editor, "论文初稿已生成，现进行 <strong>三审三校</strong>（含引文格式与学术规范检查）：");
+    await sleep(900, token);
+
+    setProgress(6, "最终交付", AGENTS.planner.name, "交互模式", { partial: 0.6 });
+    ownerHandoff(AGENTS.planner, "整理论文终稿并交付");
+    agentMessage(AGENTS.planner, "论文撰写与校对已完成，以下是预览与终稿文件：");
+    await sleep(500, token);
+
+    setProgress(6, "交付完成", AGENTS.planner.name, "交互模式", { delivered: true });
+    documentPreviewCard(deliverable);
+    fileCard(deliverable.finalName, `${deliverable.typeLabel} · 938 KB`, deliverable.icon);
+    workflowCarousel();
+    ratingAndQuestions();
+    scrollChat();
+  }
+
   async function runInteractiveFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
     todoPanelEl = null;
     currentTodoIndex = 0;
     progressPercent = 0;
-    const deliverable = inferDeliverable(promptText);
-    const isResearch = /深度研究|研究|分析|论证/.test(promptText);
+    const deliverable = inferDeliverable(promptText, flowContext.quickMode);
+    const isResearch = flowContext.quickMode === "research" || /深度研究|研究|分析|论证/.test(promptText);
     flowContext.isResearch = isResearch;
     const hasFiles = /整合|上传|文档|文件|报告/.test(promptText);
     const files = hasFiles ? DEMO_FILES : null;
@@ -1287,7 +1653,7 @@
     setProgress(0, "任务规划中", AGENTS.planner.name, "交互模式", { partial: 0.2 });
     ownerHandoff(AGENTS.planner, "需求拆解与任务规划");
     agentMessage(AGENTS.planner,
-      `已将您的需求拆分为 <strong>${TODO_ITEMS.length}</strong> 个步骤，并按职责分配给统筹、检索、文献阅读、写作与编辑等智能体。`);
+      `已将您的需求拆分为 <strong>${getActiveTodoItems().length}</strong> 个步骤，并按职责分配给统筹、检索、文献阅读、写作与编辑等智能体。`);
     todoPanelEl = appendMessage(inlineTodoPanel(0));
     await sleep(600, token);
 
@@ -1379,8 +1745,14 @@
     await sleep(500, token);
 
     setProgress(5, "交付完成", AGENTS.planner.name, "交互模式", { delivered: true });
-    agentMessage(AGENTS.planner, "以下是为您生成的文档预览与交付文件：");
-    documentPreviewCard(deliverable);
+    agentMessage(AGENTS.planner, deliverable.outputKind === "paper"
+      ? "以下是为您生成的论文预览与交付文件："
+      : "以下是为您生成的文档预览与交付文件：");
+    if (deliverable.outputKind === "ppt") {
+      pptPreviewCard(deliverable);
+    } else {
+      documentPreviewCard(deliverable);
+    }
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · 871 KB`, deliverable.icon);
     workflowCarousel();
     ratingAndQuestions();
@@ -1390,36 +1762,45 @@
   async function runQuickFlow(promptText, token) {
     if (els.chatThread) els.chatThread.innerHTML = "";
     todoPanelEl = null;
-    const deliverable = inferDeliverable(promptText);
+    const deliverable = inferDeliverable(promptText, flowContext.quickMode);
+    const isPpt = deliverable.outputKind === "ppt";
+    const modeLabel = isPpt ? "AI PPT · 快速模式" : "快速模式";
 
     userMessage(promptText);
-    setQuickProgress("正在解析任务", AGENTS.writer.name, "快速模式", 15, false);
+    setQuickProgress("正在解析任务", AGENTS.writer.name, modeLabel, 15, false);
     await sleep(500, token);
 
-    ownerHandoff(AGENTS.writer, "解析需求并生成内容");
-    statusLine("正在解析任务目标…", "info");
+    ownerHandoff(AGENTS.writer, isPpt ? "解析演示需求并生成幻灯片" : "解析需求并生成内容");
+    statusLine(isPpt ? "正在规划 PPT 结构与页序…" : "正在解析任务目标…", "info");
     await sleep(600, token);
 
-    setQuickProgress("内容撰写中", AGENTS.writer.name, "快速模式", 55, false);
-    toolLog([{ type: "edit", text: "写作达人正在生成文档…" }]);
+    setQuickProgress(isPpt ? "幻灯片生成中" : "内容撰写中", AGENTS.writer.name, modeLabel, 55, false);
+    toolLog([{ type: "edit", text: isPpt ? "写作达人正在生成演示文稿…" : "写作达人正在生成文档…" }]);
     await sleep(900, token);
 
-    setQuickProgress("质量校验中", AGENTS.editor.name, "快速模式", 80, false);
-    ownerHandoff(AGENTS.editor, "快速校对");
+    setQuickProgress("质量校验中", AGENTS.editor.name, modeLabel, 80, false);
+    ownerHandoff(AGENTS.editor, isPpt ? "版式与内容校对" : "快速校对");
     await sleep(500, token);
 
-    setQuickProgress("交付完成", AGENTS.planner.name, "快速模式", 100, true);
+    setQuickProgress("交付完成", AGENTS.planner.name, modeLabel, 100, true);
     ownerHandoff(AGENTS.planner, "整理最终结果并交付");
-    agentMessage(AGENTS.planner, "已根据您的要求快速生成结果并完成交付：");
-    documentPreviewCard(deliverable);
-    fileCard(deliverable.finalName, `${deliverable.typeLabel} · 420 KB`, deliverable.icon);
+    agentMessage(AGENTS.planner, isPpt
+      ? "已根据您的要求快速生成 PPT 并完成交付："
+      : "已根据您的要求快速生成文档并完成交付：");
+    if (isPpt) {
+      pptPreviewCard(deliverable);
+    } else {
+      documentPreviewCard(deliverable);
+    }
+    fileCard(deliverable.finalName, `${deliverable.typeLabel} · ${isPpt ? "1.2 MB" : "420 KB"}`, deliverable.icon);
     ratingAndQuestions();
   }
 
-  async function startWorkflowSimulation(promptText, mode) {
+  async function startWorkflowSimulation(promptText, mode, quickMode) {
     if (running) abortToken++;
     const token = ++abortToken;
     running = true;
+    if (quickMode) flowContext.quickMode = quickMode;
 
     els.homeView?.classList.add("hidden");
     els.workflowView?.classList.remove("hidden");
@@ -1428,7 +1809,9 @@
     els.workflowChat.scrollTop = 0;
 
     try {
-      if (mode === "交互模式") {
+      if (flowContext.quickMode === "research") {
+        await runResearchPaperFlow(promptText, token);
+      } else if (mode === "交互模式") {
         await runInteractiveFlow(promptText, token);
       } else {
         await runQuickFlow(promptText, token);
@@ -1617,17 +2000,120 @@
         `<button class="w-full text-left px-3 py-2 rounded bg-[#f7f8f9] hover:bg-sky-50 hover:text-brand">${x}</button>`
       ).join("") + "</div>"));
 
-    $$("[data-suggestion]").forEach(button => button.addEventListener("click", () => {
-      promptBox.value = button.dataset.suggestion;
-      if (button.classList.contains("quick-research") || button.classList.contains("quick-writing")) {
-        setAgentModeActive(true);
-        $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
-        const interactive = document.querySelector('[data-work-mode="交互模式"]');
-        interactive?.classList.add("is-mode-selected");
+    let activeQuickMode = "writing";
+    const QUICK_MODE_META = {
+      writing: { label: "写作", icon: "feather", tagClass: "tag-writing", placeholder: "请输入写作需求，或选择下方文档模板" },
+      research: { label: "深度研究", icon: "microscope", tagClass: "tag-research", placeholder: "请输入研究主题，将按论文流程生成学术论文" },
+      ppt: { label: "AI PPT", icon: "presentation", tagClass: "tag-ppt", placeholder: "请输入 PPT 主题与要点，将生成演示文稿" },
+    };
+
+    function renderWritingTemplates(category) {
+      const grid = $("#writingTemplateGrid");
+      if (!grid) return;
+      const templates = WRITING_TEMPLATES[category] || WRITING_TEMPLATES["推荐"];
+      grid.innerHTML = templates.map(t => `
+        <button type="button" data-case-prompt="${t.prompt.replace(/"/g, "&quot;")}" class="writing-template-card">
+          <span class="tpl-badge">${t.badge}</span>
+          <span class="text-[18px]">${t.icon}</span>
+          <div class="mt-[6px] text-[11px] font-semibold text-[#333]">${t.title}</div>
+        </button>`).join("");
+      grid.querySelectorAll("[data-case-prompt]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          selectQuickMode("writing", { prompt: btn.dataset.casePrompt });
+        });
+      });
+    }
+
+    function renderResearchCases() {
+      const list = $("#researchCaseList");
+      if (!list) return;
+      list.innerHTML = RESEARCH_CASES.map(c => `
+        <button type="button" data-case-prompt="${c.prompt.replace(/"/g, "&quot;")}" class="research-case-card">
+          <div class="case-thumb">❝</div>
+          <div class="p-[10px]">
+            <div class="text-[11px] font-semibold text-[#333] leading-snug line-clamp-2">${c.title}</div>
+            <p class="mt-[6px] text-[9px] text-[#888] leading-relaxed line-clamp-3">${c.excerpt}</p>
+          </div>
+        </button>`).join("");
+      list.querySelectorAll("[data-case-prompt]").forEach(btn => {
+        btn.addEventListener("click", () => selectQuickMode("research", { prompt: btn.dataset.casePrompt }));
+      });
+    }
+
+    function renderPptCases() {
+      const list = $("#pptCaseList");
+      if (!list) return;
+      list.innerHTML = PPT_CASES.map(c => `
+        <button type="button" data-case-prompt="${c.prompt.replace(/"/g, "&quot;")}" class="ppt-case-card">
+          <div class="ppt-slide" style="background:${c.bg};color:${c.color}">${c.title}</div>
+        </button>`).join("");
+      list.querySelectorAll("[data-case-prompt]").forEach(btn => {
+        btn.addEventListener("click", () => selectQuickMode("ppt", { prompt: btn.dataset.casePrompt }));
+      });
+    }
+
+    function applyQuickModeWorkMode(mode) {
+      setAgentModeActive(true);
+      $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+      if (mode === "research") {
+        document.querySelector('[data-work-mode="交互模式"]')?.classList.add("is-mode-selected");
         $("#speedModeText").textContent = "交互模式";
+      } else {
+        document.querySelector('[data-work-mode="快速模式"]')?.classList.add("is-mode-selected");
+        $("#speedModeText").textContent = "快速模式";
+        resetSpeedModePanel();
       }
-      promptBox.focus();
-    }));
+    }
+
+    function selectQuickMode(mode, options) {
+      options = options || {};
+      activeQuickMode = mode;
+      flowContext.quickMode = mode;
+
+      $$("[data-quick-mode]").forEach(btn => {
+        btn.classList.toggle("is-quick-selected", btn.dataset.quickMode === mode);
+      });
+      $$("[data-panel]").forEach(panel => {
+        panel.classList.toggle("hidden", panel.dataset.panel !== mode);
+      });
+
+      const meta = QUICK_MODE_META[mode];
+      const tag = $("#quickModeTag");
+      tag.classList.remove("hidden", "tag-writing", "tag-research", "tag-ppt");
+      tag.classList.add(meta.tagClass);
+      $("#quickModeTagText").textContent = meta.label;
+      const tagIcon = tag.querySelector(".quick-tag-icon");
+      if (tagIcon) tagIcon.setAttribute("data-lucide", meta.icon);
+      promptBox.placeholder = meta.placeholder;
+      lucide.createIcons();
+
+      applyQuickModeWorkMode(mode);
+
+      if (options.prompt !== undefined) promptBox.value = options.prompt;
+      else if (!options.keepPrompt) {
+        const pill = document.querySelector(`[data-quick-mode="${mode}"]`);
+        if (pill?.dataset.suggestion) promptBox.value = pill.dataset.suggestion;
+      }
+      if (!options.skipFocus) promptBox.focus();
+    }
+
+    $$("[data-quick-mode]").forEach(button => {
+      button.addEventListener("click", () => selectQuickMode(button.dataset.quickMode));
+    });
+
+    $$("[data-writing-cat]").forEach(button => {
+      button.addEventListener("click", () => {
+        $$("[data-writing-cat]").forEach(tab => tab.classList.remove("is-active"));
+        button.classList.add("is-active");
+        renderWritingTemplates(button.dataset.writingCat);
+      });
+    });
+
+    renderWritingTemplates("推荐");
+    renderResearchCases();
+    renderPptCases();
+    selectQuickMode("writing", { skipFocus: true, keepPrompt: true });
+    $("#quickModeTag").classList.remove("hidden");
 
     $$("[data-agent]").forEach(button => button.addEventListener("click", () => {
       promptBox.value = "请让" + button.dataset.agent + "帮我完成：";
@@ -1682,7 +2168,9 @@
       return selected?.dataset.workMode || "快速模式";
     }
 
-    function detectRecommendedMode(text) {
+    function detectRecommendedMode(text, quickMode) {
+      if (quickMode === "research") return "交互模式";
+      if (quickMode === "ppt") return "快速模式";
       return /整合|分析|研究|报告|论证|对比|规划|上传|文档|文件|深度/.test(text) ? "交互模式" : "快速模式";
     }
 
@@ -1694,12 +2182,19 @@
         return;
       }
       let mode = getWorkMode();
-      const recommended = detectRecommendedMode(text);
+      const recommended = detectRecommendedMode(text, activeQuickMode);
       if (recommended === "交互模式" && mode === "快速模式") {
         $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
         document.querySelector('[data-work-mode="交互模式"]')?.classList.add("is-mode-selected");
         $("#speedModeText").textContent = "交互模式";
         mode = "交互模式";
+      }
+      if (activeQuickMode === "research") mode = "交互模式";
+      if (activeQuickMode === "ppt" && mode === "交互模式" && !/整合|上传|文件/.test(text)) {
+        $$("[data-work-mode]").forEach(item => item.classList.remove("is-mode-selected"));
+        document.querySelector('[data-work-mode="快速模式"]')?.classList.add("is-mode-selected");
+        $("#speedModeText").textContent = "快速模式";
+        mode = "快速模式";
       }
       if (!options?.skipRecent) {
         $("#recentList").prepend(createRecentRow(text));
@@ -1707,7 +2202,7 @@
       }
       promptBox.value = "";
       if (typeof window.startWorkflowSimulation === "function") {
-        window.startWorkflowSimulation(text, mode);
+        window.startWorkflowSimulation(text, mode, activeQuickMode);
       } else {
         showToast("任务已提交，智能体团队正在协作");
       }
