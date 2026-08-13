@@ -906,6 +906,100 @@
 
   let flowContext = { isResearch: false, quickMode: null };
 
+  const chatSession = {
+    initialPrompt: "",
+    workMode: "",
+    quickMode: null,
+    deliverable: null,
+    taskCompleted: false,
+    turnCount: 0,
+  };
+
+  function resetChatSession() {
+    chatSession.initialPrompt = "";
+    chatSession.workMode = "";
+    chatSession.quickMode = null;
+    chatSession.deliverable = null;
+    chatSession.taskCompleted = false;
+    chatSession.turnCount = 0;
+  }
+
+  function finalizeChatSession(promptText, deliverable, workMode) {
+    chatSession.initialPrompt = promptText;
+    chatSession.workMode = workMode;
+    chatSession.quickMode = flowContext.quickMode;
+    chatSession.deliverable = deliverable;
+    chatSession.taskCompleted = true;
+    chatSession.turnCount = 0;
+  }
+
+  function pickFollowUpAgent(question) {
+    if (/风险|校对|审核|错别字|标点/.test(question)) return AGENTS.editor;
+    if (/数据|研究|证据|来源|文献|论文/.test(question)) return AGENTS.researcher;
+    if (/检索|资料|收集/.test(question)) return AGENTS.search;
+    if (/撰写|修改|段落|章节|ppt|幻灯片|版式/.test(question)) return AGENTS.writer;
+    return AGENTS.planner;
+  }
+
+  function generateFollowUpReply(question) {
+    const title = chatSession.deliverable?.title || "本次交付内容";
+    const kind = chatSession.deliverable?.outputKind || "document";
+    const kindLabel = chatSession.deliverable?.typeLabel || "交付文件";
+    const taskHint = chatSession.initialPrompt.length > 36
+      ? chatSession.initialPrompt.slice(0, 36) + "…"
+      : chatSession.initialPrompt;
+
+    if (/差异|部门|不一致|分歧/.test(question)) {
+      return `结合「${title}」的调研结论，不同部门对核心指标的理解存在两点差异：① 财务侧更关注成本归集口径；② 业务侧强调交付节奏与节点。若需消除分歧，建议在后续版本增加「跨部门对齐说明」小节，并标注统一口径。`;
+    }
+    if (/风险|执行风险|隐患/.test(question)) {
+      return `基于当前${kindLabel}，主要执行风险包括：信息源时效性不足、跨团队协同周期偏长、以及部分关键假设尚未验证。对应缓释措施已整理为三项：补充数据源、设置阶段检查点、明确责任人与截止时间。`;
+    }
+    if (/转化|行动计划|下一步|落地|执行计划/.test(question)) {
+      return `可将本次研究结果转化为三项行动计划：<strong>短期</strong>（2 周内）完成试点验证；<strong>中期</strong>（1 个季度）建立指标看板；<strong>长期</strong>纳入制度化管理。如需，我可以按您的部门场景细化时间表与负责人。`;
+    }
+    if (/摘要|总结|概括|核心结论/.test(question)) {
+      const extra = kind === "paper"
+        ? "论文已在「核心发现与讨论」「结论与建议」两节给出论证。"
+        : kind === "ppt"
+        ? "PPT 已在「核心方案与亮点」「实施计划」等页面呈现要点。"
+        : "文档已在结论章节给出改进方向与数据亮点。";
+      return `「${title}」的核心结论是：整体进展符合预期，但仍需关注协同效率与数据口径统一。${extra}`;
+    }
+    if (/修改|调整|优化|改|修订|更新/.test(question)) {
+      const target = kind === "ppt" ? "PPT 结构与版式" : kind === "paper" ? "论文章节与引文" : "文档结构与表述";
+      return `已理解您的修改诉求。我可以在现有${kindLabel}基础上继续迭代，优先调整 <strong>${target}</strong>。请告诉我希望重点修改的部分（如某一章节、数据表格或措辞风格），我将基于当前上下文生成修订版。`;
+    }
+    if (/数据|图表|来源|引用|依据/.test(question)) {
+      return `本次内容共引用 <strong>12</strong> 条高相关来源，关键数据均可在正文引用标注与附录中追溯。若您需要，我可以补充「数据来源明细表」，或按您的关注维度重新生成对比图表。`;
+    }
+    if (/ppt|幻灯片|页|演示/.test(question) && kind === "ppt") {
+      return `当前 PPT 共规划 12 页，涵盖背景、方案亮点、实施计划与总结。若需增删页面或调整视觉风格，请说明目标页码或内容方向，我将继续为您生成新版幻灯片。`;
+    }
+
+    return `关于「${question.length > 28 ? question.slice(0, 28) + "…" : question}」，结合您此前的任务「${taskHint}」与已交付的<strong>${kindLabel}</strong>，我建议从现有结论延伸说明，或针对具体段落做定向修订。请告诉我希望深入的方向，我会基于同一对话上下文继续回答。`;
+  }
+
+  async function handleFollowUpQuestion(text) {
+    const question = text?.trim();
+    if (!question) return;
+
+    if (!chatSession.taskCompleted) {
+      window.showToast?.("请等待当前任务完成后再追问");
+      return;
+    }
+
+    userMessage(question);
+    const agent = pickFollowUpAgent(question);
+    const thinking = statusLine(`${agent.name}正在基于上下文组织回答…`, "info");
+    await sleep(700);
+    thinking?.remove();
+
+    agentMessage(agent, generateFollowUpReply(question));
+    chatSession.turnCount += 1;
+    scrollChat();
+  }
+
   const WRITING_TEMPLATES = {
     推荐: [
       { title: "工作总结", badge: "写作", icon: "📋", prompt: "请撰写一份部门年度工作总结，包含工作回顾、核心数据与改进计划" },
@@ -1107,13 +1201,14 @@
 
     document.getElementById("newChatBtn")?.addEventListener("click", stopAndGoHome);
     document.getElementById("appLogoHome")?.addEventListener("click", goHomeFromLogo);
-    document.getElementById("chatSend")?.addEventListener("click", () => {
-      const chatPrompt = document.getElementById("chatPrompt");
-      const text = chatPrompt?.value.trim();
-      if (!text) return;
-      chatPrompt.value = "";
-      window.showToast?.("已收到追问，将基于当前上下文继续处理");
+    document.getElementById("chatSend")?.addEventListener("click", submitChatFollowUp);
+    document.getElementById("chatPrompt")?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        submitChatFollowUp();
+      }
     });
+    window.handleFollowUpQuestion = handleFollowUpQuestion;
     document.getElementById("closeFilesModal")?.addEventListener("click", () => toggleModal("filesModal", false));
     document.getElementById("closeFeedbackModal")?.addEventListener("click", () => toggleModal("feedbackModal", false));
     document.getElementById("submitFeedback")?.addEventListener("click", () => {
@@ -1128,6 +1223,17 @@
     });
 
     window.startWorkflowSimulation = startWorkflowSimulation;
+  }
+
+  function submitChatFollowUp() {
+    const chatPrompt = document.getElementById("chatPrompt");
+    const text = chatPrompt?.value.trim();
+    if (!text) {
+      chatPrompt?.focus();
+      return;
+    }
+    chatPrompt.value = "";
+    handleFollowUpQuestion(text);
   }
 
   function toggleModal(id, show) {
@@ -1149,6 +1255,7 @@
     todoPanelEl = null;
     progressPercent = 0;
     flowContext.isResearch = false;
+    resetChatSession();
   }
 
   function goHomeFromLogo() {
@@ -1579,7 +1686,7 @@
     });
     wrap.querySelector("#openAllFiles")?.addEventListener("click", () => showFilesModal());
     wrap.querySelectorAll(".wf-followup").forEach((btn) => {
-      btn.addEventListener("click", () => window.showToast?.("已继承上下文：" + btn.textContent.slice(0, 20) + "..."));
+      btn.addEventListener("click", () => handleFollowUpQuestion(btn.textContent.trim()));
     });
     return wrap;
   }
@@ -1665,6 +1772,7 @@
     setProgress(6, "交付完成", AGENTS.planner.name, "交互模式", { delivered: true });
     renderDeliveryPreview(deliverable);
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · 938 KB`, deliverable.icon);
+    finalizeChatSession(promptText, deliverable, "交互模式");
     workflowCarousel();
     ratingAndQuestions();
     scrollChat();
@@ -1800,6 +1908,7 @@
       : "以下是为您生成的文档预览与交付文件：");
     renderDeliveryPreview(deliverable);
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · 871 KB`, deliverable.icon);
+    finalizeChatSession(promptText, deliverable, "交互模式");
     workflowCarousel();
     ratingAndQuestions();
     scrollChat();
@@ -1835,6 +1944,7 @@
       : "已根据您的要求快速生成文档并完成交付：");
     renderDeliveryPreview(deliverable);
     fileCard(deliverable.finalName, `${deliverable.typeLabel} · ${isPpt ? "1.2 MB" : "420 KB"}`, deliverable.icon);
+    finalizeChatSession(promptText, deliverable, modeLabel);
     ratingAndQuestions();
   }
 
@@ -1843,6 +1953,10 @@
     const token = ++abortToken;
     running = true;
     if (quickMode) flowContext.quickMode = quickMode;
+    resetChatSession();
+    chatSession.initialPrompt = promptText;
+    chatSession.workMode = mode;
+    chatSession.quickMode = quickMode || flowContext.quickMode;
 
     els.homeView?.classList.add("hidden");
     els.workflowView?.classList.remove("hidden");
