@@ -4,11 +4,13 @@
  *
  * - Parses h2–h4 headings to build clickable TOC
  * - Auto-updates <!-- PRD_TOC_START --> … <!-- PRD_TOC_END --> in PRD.md
+ * - Validates index.html version comment against PRD §7.6 revision table
  *
  * Usage: npm run sync-prd
+ * Workflow: edit PRD.md and/or index.html → update §7.6 if index changed → npm run sync-prd
  */
 
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { marked } from 'marked';
@@ -17,9 +19,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 const MD_PATH = join(ROOT, 'PRD.md');
 const HTML_PATH = join(ROOT, 'PRD.html');
+const INDEX_PATH = join(ROOT, 'index.html');
 
 const TOC_START = '<!-- PRD_TOC_START -->';
 const TOC_END = '<!-- PRD_TOC_END -->';
+const INDEX_REV_START = '<!-- INDEX_REV_START -->';
+const INDEX_REV_END = '<!-- INDEX_REV_END -->';
 
 /** @typedef {{ level: number, text: string, id: string }} TocItem */
 
@@ -474,6 +479,43 @@ ${contentHtml}
 `;
 }
 
+/**
+ * @param {string} markdown
+ */
+function getLatestIndexVersion(markdown) {
+  const pattern = new RegExp(
+    `${INDEX_REV_START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${INDEX_REV_END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`
+  );
+  const block = markdown.match(pattern)?.[0] ?? '';
+  const versions = [...block.matchAll(/\|\s*(UI-V[\d.]+)\s*\|/g)].map((m) => m[1]);
+  return versions.at(-1) ?? null;
+}
+
+function verifyIndexRevision(markdown) {
+  if (!existsSync(INDEX_PATH)) {
+    console.log('  index.html: not found (skip revision check)');
+    return;
+  }
+  const latest = getLatestIndexVersion(markdown);
+  const indexHtml = readFileSync(INDEX_PATH, 'utf8');
+  const commentMatch = indexHtml.match(/原型版本：(UI-V[\d.]+)/);
+  const fileVersion = commentMatch?.[1] ?? null;
+
+  if (!latest) {
+    console.warn('  ⚠ index.html: no revision rows in PRD §7.6');
+    return;
+  }
+  if (!fileVersion) {
+    console.warn(`  ⚠ index.html: missing header comment "原型版本：${latest}"`);
+    return;
+  }
+  if (fileVersion !== latest) {
+    console.warn(`  ⚠ index.html version (${fileVersion}) ≠ PRD §7.6 latest (${latest})`);
+    return;
+  }
+  console.log(`  index.html revision OK: ${fileVersion}`);
+}
+
 function main() {
   let markdown = readFileSync(MD_PATH, 'utf8');
   const toc = extractHeadings(markdown);
@@ -489,6 +531,7 @@ function main() {
   console.log(`✓ Updated TOC in ${MD_PATH}`);
   console.log(`✓ Synced ${MD_PATH} → ${HTML_PATH}`);
   console.log(`  TOC entries: ${toc.length} (h2–h4)`);
+  verifyIndexRevision(markdown);
 }
 
 main();
