@@ -2,8 +2,10 @@
 /**
  * Sync PRD.md (single source of truth) → PRD.html
  *
+ * - Parses h2–h4 headings to build clickable TOC
+ * - Auto-updates <!-- PRD_TOC_START --> … <!-- PRD_TOC_END --> in PRD.md
+ *
  * Usage: npm run sync-prd
- * After editing PRD.md, always run this command to regenerate PRD.html.
  */
 
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -16,6 +18,9 @@ const ROOT = join(__dirname, '..');
 const MD_PATH = join(ROOT, 'PRD.md');
 const HTML_PATH = join(ROOT, 'PRD.html');
 
+const TOC_START = '<!-- PRD_TOC_START -->';
+const TOC_END = '<!-- PRD_TOC_END -->';
+
 /** @typedef {{ level: number, text: string, id: string }} TocItem */
 
 /**
@@ -25,7 +30,7 @@ function slugify(text) {
   return text
     .trim()
     .toLowerCase()
-    .replace(/[`*_~]/g, '')
+    .replace(/[`*_~【】]/g, '')
     .replace(/\s+/g, '-')
     .replace(/[^\w\u4e00-\u9fff-]+/g, '')
     .replace(/-+/g, '-')
@@ -34,24 +39,105 @@ function slugify(text) {
 
 /**
  * @param {string} markdown
- * @returns {{ html: string, toc: TocItem[] }}
+ * @returns {TocItem[]}
  */
-function markdownToHtmlWithToc(markdown) {
+function extractHeadings(markdown) {
   /** @type {TocItem[]} */
   const toc = [];
   const slugCounts = new Map();
+  const lines = markdown.split('\n');
+  let inTocBlock = false;
 
-  const renderer = new marked.Renderer();
+  for (const line of lines) {
+    if (line.includes(TOC_START)) {
+      inTocBlock = true;
+      continue;
+    }
+    if (line.includes(TOC_END)) {
+      inTocBlock = false;
+      continue;
+    }
+    if (inTocBlock) continue;
 
-  renderer.heading = function ({ text, depth }) {
-    const plain = String(text).replace(/<[^>]+>/g, '');
+    const match = line.match(/^(#{2,4})\s+(.+)$/);
+    if (!match) continue;
+
+    const depth = match[1].length;
+    const plain = match[2].replace(/[`*_~]/g, '').trim();
+    if (!plain || plain === '目录') continue;
+
     let id = slugify(plain);
     const count = slugCounts.get(id) ?? 0;
     slugCounts.set(id, count + 1);
     if (count > 0) id = `${id}-${count}`;
 
-    if (depth >= 2) {
-      toc.push({ level: depth, text: plain, id });
+    toc.push({ level: depth, text: plain, id });
+  }
+
+  return toc;
+}
+
+/**
+ * @param {TocItem[]} toc
+ */
+function buildMarkdownToc(toc) {
+  const lines = [
+    TOC_START,
+    '## 目录',
+    '',
+    '> 由 `npm run sync-prd` 根据下文标题自动生成，支持点击快速定位。',
+    '',
+  ];
+
+  for (const item of toc) {
+    const indent = '  '.repeat(Math.max(0, item.level - 2));
+    lines.push(`${indent}- [${item.text}](#${item.id})`);
+  }
+
+  lines.push('', TOC_END);
+  return lines.join('\n');
+}
+
+/**
+ * @param {string} markdown
+ * @param {string} tocBlock
+ */
+function injectMarkdownToc(markdown, tocBlock) {
+  const pattern = new RegExp(
+    `${TOC_START.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${TOC_END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`
+  );
+
+  if (pattern.test(markdown)) {
+    return markdown.replace(pattern, tocBlock);
+  }
+
+  const anchor = '## 1. 一句话价值主张';
+  if (markdown.includes(anchor)) {
+    return markdown.replace(anchor, `${tocBlock}\n\n${anchor}`);
+  }
+
+  return `${tocBlock}\n\n${markdown}`;
+}
+
+/**
+ * @param {string} markdown
+ * @param {TocItem[]} toc
+ * @returns {{ html: string, toc: TocItem[] }}
+ */
+function markdownToHtmlWithToc(markdown, toc) {
+  const slugCounts = new Map();
+  const idByTextLevel = new Map(toc.map((item) => [`${item.level}:${item.text}`, item.id]));
+
+  const renderer = new marked.Renderer();
+
+  renderer.heading = function ({ text, depth }) {
+    const plain = String(text).replace(/<[^>]+>/g, '');
+    const mapped = idByTextLevel.get(`${depth}:${plain}`);
+    let id = mapped ?? slugify(plain);
+    if (!mapped) {
+      const count = slugCounts.get(id) ?? 0;
+      slugCounts.set(id, count + 1);
+      if (count > 0) id = `${id}-${count}`;
     }
 
     return `<h${depth} id="${id}">${text}</h${depth}>\n`;
@@ -69,10 +155,7 @@ function markdownToHtmlWithToc(markdown) {
     return `<pre><code${langClass}>${escaped}</code></pre>\n`;
   };
 
-  marked.setOptions({
-    gfm: true,
-    breaks: false,
-  });
+  marked.setOptions({ gfm: true, breaks: false });
 
   const html = marked.parse(markdown, { renderer });
   return { html, toc };
@@ -84,8 +167,8 @@ function markdownToHtmlWithToc(markdown) {
 function buildTocHtml(toc) {
   return toc
     .map((item) => {
-      const indent = item.level === 2 ? '' : '  ';
-      const cls = item.level === 2 ? 'toc-l2' : 'toc-l3';
+      const indent = '  '.repeat(Math.max(0, item.level - 2));
+      const cls = `toc-l${item.level}`;
       return `${indent}<li class="${cls}"><a href="#${item.id}" data-target="${item.id}">${item.text}</a></li>`;
     })
     .join('\n');
@@ -111,7 +194,7 @@ function buildPage(contentHtml, tocHtml) {
       --muted: #666;
       --accent: #2563eb;
       --accent-soft: #eff6ff;
-      --sidebar-width: 280px;
+      --sidebar-width: 300px;
       --gap: 16px;
       --radius: 4px;
     }
@@ -145,8 +228,8 @@ function buildPage(contentHtml, tocHtml) {
 
     .sidebar {
       flex: 0 0 var(--sidebar-width);
-      min-width: 220px;
-      max-width: 320px;
+      min-width: 240px;
+      max-width: 360px;
       padding: 20px 16px;
     }
 
@@ -175,7 +258,7 @@ function buildPage(contentHtml, tocHtml) {
 
     .toc a {
       display: block;
-      padding: 6px 8px;
+      padding: 5px 8px;
       border-radius: 4px;
       color: var(--text);
       text-decoration: none;
@@ -195,13 +278,11 @@ function buildPage(contentHtml, tocHtml) {
       font-weight: 600;
     }
 
-    .toc-l3 a {
-      padding-left: 20px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .toc-l3 a.active { color: var(--accent); }
+    .toc-l2 a { font-weight: 600; font-size: 13px; }
+    .toc-l3 a { padding-left: 16px; font-size: 12px; color: #444; }
+    .toc-l4 a { padding-left: 28px; font-size: 11px; color: var(--muted); }
+    .toc-l3 a.active,
+    .toc-l4 a.active { color: var(--accent); }
 
     .content h1 {
       margin-top: 0;
@@ -216,6 +297,7 @@ function buildPage(contentHtml, tocHtml) {
       font-size: 22px;
       border-bottom: 1px solid #eee;
       padding-bottom: 8px;
+      scroll-margin-top: 12px;
     }
 
     .content h3 {
@@ -223,6 +305,15 @@ function buildPage(contentHtml, tocHtml) {
       margin-bottom: 0.5em;
       font-size: 17px;
       color: #333;
+      scroll-margin-top: 12px;
+    }
+
+    .content h4 {
+      margin-top: 1.25em;
+      margin-bottom: 0.4em;
+      font-size: 15px;
+      color: #444;
+      scroll-margin-top: 12px;
     }
 
     .content p,
@@ -283,12 +374,6 @@ function buildPage(contentHtml, tocHtml) {
       font-size: 0.9em;
     }
 
-    .content hr {
-      border: none;
-      border-top: 1px solid #e5e5e5;
-      margin: 2em 0;
-    }
-
     .content em {
       color: var(--muted);
     }
@@ -303,7 +388,7 @@ function buildPage(contentHtml, tocHtml) {
       .sidebar {
         flex: 0 0 auto;
         max-width: none;
-        max-height: 240px;
+        max-height: 280px;
       }
 
       .content {
@@ -329,6 +414,7 @@ ${contentHtml}
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
     mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
 
+    const contentEl = document.querySelector('.content');
     const tocLinks = Array.from(document.querySelectorAll('.toc a'));
     const headings = tocLinks
       .map((link) => document.getElementById(link.dataset.target))
@@ -337,6 +423,9 @@ ${contentHtml}
     function setActive(id) {
       tocLinks.forEach((link) => {
         link.classList.toggle('active', link.dataset.target === id);
+        if (link.dataset.target === id) {
+          link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
       });
     }
 
@@ -361,7 +450,7 @@ ${contentHtml}
           setActive(visible[0].target.id);
         }
       },
-      { root: document.querySelector('.content'), rootMargin: '-10% 0px -70% 0px', threshold: [0, 0.25, 0.5] }
+      { root: contentEl, rootMargin: '-8% 0px -75% 0px', threshold: [0, 0.1, 0.25] }
     );
 
     headings.forEach((h) => observer.observe(h));
@@ -381,13 +470,20 @@ ${contentHtml}
 }
 
 function main() {
-  const markdown = readFileSync(MD_PATH, 'utf8');
-  const { html, toc } = markdownToHtmlWithToc(markdown);
+  let markdown = readFileSync(MD_PATH, 'utf8');
+  const toc = extractHeadings(markdown);
+  const tocBlock = buildMarkdownToc(toc);
+  markdown = injectMarkdownToc(markdown, tocBlock);
+  writeFileSync(MD_PATH, markdown, 'utf8');
+
+  const { html } = markdownToHtmlWithToc(markdown, toc);
   const tocHtml = buildTocHtml(toc);
   const page = buildPage(html, tocHtml);
   writeFileSync(HTML_PATH, page, 'utf8');
+
+  console.log(`✓ Updated TOC in ${MD_PATH}`);
   console.log(`✓ Synced ${MD_PATH} → ${HTML_PATH}`);
-  console.log(`  TOC entries: ${toc.length}`);
+  console.log(`  TOC entries: ${toc.length} (h2–h4)`);
 }
 
 main();
