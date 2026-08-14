@@ -6,7 +6,8 @@
  * - Auto-updates <!-- PRD_TOC_START --> … <!-- PRD_TOC_END --> in PRD.md
  * - Validates index.html version comment against PRD §7.6 revision table
  *
- * Usage: npm run sync-prd
+ * Usage: node scripts/sync-prd-html.mjs [theme-album]
+ *        npm run sync-prd:theme-album
  * Workflow: edit PRD.md and/or index.html → update §7.6 if index changed → npm run sync-prd
  */
 
@@ -17,9 +18,11 @@ import { marked } from 'marked';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
-const MD_PATH = join(ROOT, 'PRD.md');
-const HTML_PATH = join(ROOT, 'PRD.html');
-const INDEX_PATH = join(ROOT, 'index.html');
+const PROJECT = process.argv[2] ?? 'theme-album';
+const PROJECT_DIR = join(ROOT, 'docs', PROJECT);
+const MD_PATH = join(PROJECT_DIR, 'PRD.md');
+const HTML_PATH = join(PROJECT_DIR, 'PRD.html');
+const INDEX_PATH = join(PROJECT_DIR, 'index.html');
 
 const TOC_START = '<!-- PRD_TOC_START -->';
 const TOC_END = '<!-- PRD_TOC_END -->';
@@ -530,6 +533,7 @@ function main() {
 
   console.log(`✓ Updated TOC in ${MD_PATH}`);
   console.log(`✓ Synced ${MD_PATH} → ${HTML_PATH}`);
+  console.log(`  Project: ${PROJECT}`);
   console.log(`  TOC entries: ${toc.length} (h2–h4)`);
   verifyIndexRevision(markdown);
 }

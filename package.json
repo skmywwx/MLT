@@ -1,10 +1,12 @@
 {
-  "name": "workspace",
+  "name": "mlt-workspace",
   "version": "1.0.0",
-  "description": "模力通以及相关内容",
+  "description": "模力通与主题相册等产品文档及原型",
   "main": "index.js",
   "scripts": {
-    "sync-prd": "node scripts/sync-prd-html.mjs",
+    "sync-prd:molitong": "python3 scripts/sync-prd-molitong.py",
+    "sync-prd:theme-album": "node scripts/sync-prd-html.mjs theme-album",
+    "sync-prd": "npm run sync-prd:molitong && npm run sync-prd:theme-album",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
