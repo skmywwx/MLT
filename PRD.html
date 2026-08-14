@@ -245,7 +245,7 @@
   <li class="toc-l3"><a href="#44-远期照片导入与云存储流程p1" data-target="44-远期照片导入与云存储流程p1">4.4 远期：照片导入与云存储流程（P1）</a></li>
 <li class="toc-l2"><a href="#5-关键数据字段定义" data-target="5-关键数据字段定义">5. 关键数据字段定义</a></li>
   <li class="toc-l3"><a href="#51-用户user-p0" data-target="51-用户user-p0">5.1 用户（User）— P0</a></li>
-  <li class="toc-l3"><a href="#52-主题相册themealbum-p0" data-target="52-主题相册themealbum-p0">5.2 主题相册（ThemeAlbum）— P0</a></li>
+  <li class="toc-l3"><a href="#52-主题文件夹themefolder-p0" data-target="52-主题文件夹themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</a></li>
   <li class="toc-l3"><a href="#53-照片photo-p0" data-target="53-照片photo-p0">5.3 照片（Photo）— P0</a></li>
   <li class="toc-l3"><a href="#54-电子相册digitalalbum-p0" data-target="54-电子相册digitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</a></li>
   <li class="toc-l3"><a href="#55-画布元素canvaselement-p0" data-target="55-画布元素canvaselement-p0">5.5 画布元素（CanvasElement）— P0</a></li>
@@ -253,13 +253,20 @@
   <li class="toc-l3"><a href="#57-打印订单printorder-p2-规划" data-target="57-打印订单printorder-p2-规划">5.7 打印订单（PrintOrder）— P2 规划</a></li>
 <li class="toc-l2"><a href="#6-异常场景与边界条件" data-target="6-异常场景与边界条件">6. 异常场景与边界条件</a></li>
   <li class="toc-l3"><a href="#61-照片导入p0本地上传" data-target="61-照片导入p0本地上传">6.1 照片导入（P0：本地上传）</a></li>
-  <li class="toc-l3"><a href="#62-模式切换" data-target="62-模式切换">6.2 模式切换</a></li>
+  <li class="toc-l3"><a href="#62-模式切换与明信片收纳册" data-target="62-模式切换与明信片收纳册">6.2 模式切换与明信片收纳册</a></li>
   <li class="toc-l3"><a href="#63-电子相册编辑p0" data-target="63-电子相册编辑p0">6.3 电子相册编辑（P0）</a></li>
   <li class="toc-l3"><a href="#64-账号与个人中心p0" data-target="64-账号与个人中心p0">6.4 账号与个人中心（P0）</a></li>
   <li class="toc-l3"><a href="#65-云存储与数据安全p1-起" data-target="65-云存储与数据安全p1-起">6.5 云存储与数据安全（P1 起）</a></li>
   <li class="toc-l3"><a href="#66-原型阶段特有限制" data-target="66-原型阶段特有限制">6.6 原型阶段特有限制</a></li>
 <li class="toc-l2"><a href="#7-待进一步澄清的问题" data-target="7-待进一步澄清的问题">7. 待进一步澄清的问题</a></li>
+<li class="toc-l2"><a href="#8-双形态部署web-与小程序差异" data-target="8-双形态部署web-与小程序差异">8. 双形态部署：Web 与小程序差异</a></li>
+  <li class="toc-l3"><a href="#81-账号与个人中心" data-target="81-账号与个人中心">8.1 账号与个人中心</a></li>
+  <li class="toc-l3"><a href="#82-照片导入与全部照片库" data-target="82-照片导入与全部照片库">8.2 照片导入与全部照片库</a></li>
+  <li class="toc-l3"><a href="#83-主题文件夹与明信片收纳册" data-target="83-主题文件夹与明信片收纳册">8.3 主题文件夹与明信片收纳册</a></li>
+  <li class="toc-l3"><a href="#84-电子相册编辑手账式" data-target="84-电子相册编辑手账式">8.4 电子相册编辑（手账式）</a></li>
+  <li class="toc-l3"><a href="#85-通用差异" data-target="85-通用差异">8.5 通用差异</a></li>
 <li class="toc-l2"><a href="#附录-a需求来源摘要市场部口语" data-target="附录-a需求来源摘要市场部口语">附录 A：需求来源摘要（市场部口语）</a></li>
+<li class="toc-l2"><a href="#附录-c明信片收纳册线框参考" data-target="附录-c明信片收纳册线框参考">附录 C：明信片收纳册线框参考</a></li>
 <li class="toc-l2"><a href="#附录-b思维导图信息摘要用户与需求" data-target="附录-b思维导图信息摘要用户与需求">附录 B：思维导图信息摘要（用户与需求）</a></li>
       </ul>
     </aside>
@@ -275,7 +282,7 @@
 </thead>
 <tbody><tr>
 <td>文档状态</td>
-<td>第二版（V2.3）</td>
+<td>第二版（V2.4）</td>
 </tr>
 <tr>
 <td>产品代号</td>
@@ -284,6 +291,10 @@
 <tr>
 <td>目标阶段</td>
 <td>可交互原型（Prototype）</td>
+</tr>
+<tr>
+<td>部署形态</td>
+<td><strong>Web + 小程序</strong> 双形态（本期同步规划）</td>
 </tr>
 <tr>
 <td>撰写人</td>
@@ -337,9 +348,15 @@
 <td>产品</td>
 <td><strong>修正原型范围</strong>：本期不含云存储，但包含基本账号/个人中心，以及完整电子相册编辑美化能力（手账式排版、图片编辑、素材装饰、文本编辑）；云存储、导出分享、打印仍属 P1/P2。</td>
 </tr>
+<tr>
+<td>V2.4</td>
+<td>2026-08-14 14:25</td>
+<td>产品</td>
+<td>明确部署形态为 Web + 小程序双形态，新增各需求下双形态设计/交互差异说明；重构照片收纳逻辑（全部照片库 → 主题文件夹）；细化明信片收纳册交互（每页 2 张横版明信片、展示拍摄日期/时间/地点、与文件夹模式无缝切换）。</td>
+</tr>
 </tbody></table>
 <h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
-<p><strong>以「主题」为单位收纳与管理照片，在本地上传基础上提供手账式电子相册编辑美化能力（图片自由排版、智能抠图、素材装饰、富文本），并支持基本账号与个人中心。远期对接云存储与实体打印。本期原型聚焦「本地上传 + 账号 + 电子相册编辑」核心体验验证。</strong></p>
+<p><strong>像手机图库一样集中管理本地上传照片，再按旅游等主题归入文件夹，并可在文件夹与明信片收纳册之间无缝切换浏览；在此基础上提供手账式电子相册编辑美化能力。本期以 Web + 小程序双形态原型验证，不含云存储。</strong></p>
 <h2 id="2-目标用户与需求">2. 目标用户与需求</h2>
 <h3 id="21-核心需求产品愿景">2.1 核心需求（产品愿景）</h3>
 <table>
@@ -351,7 +368,7 @@
 </thead>
 <tbody><tr>
 <td>照片收纳</td>
-<td>以主题为单元整理、浏览与管理照片，支持文件夹式与明信片册式两种呈现。</td>
+<td>所有导入照片默认进入「全部照片」图库；用户可从中选取照片建立旅游等主题的<strong>文件夹</strong>；文件夹支持<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>浏览。</td>
 </tr>
 <tr>
 <td>电子相册制作</td>
@@ -424,34 +441,38 @@
 </thead>
 <tbody><tr>
 <td>US-01</td>
-<td><strong>作为</strong>一名希望整理旅行照片的用户，<strong>我希望</strong>按「主题」创建相册并从本地上传照片，<strong>以便</strong>同类照片集中存放、随时回看。</td>
+<td><strong>作为</strong>用户，<strong>我希望</strong>初次导入的照片像手机图库一样统一存入「全部照片」，<strong>以便</strong>先集中管理再按需整理。</td>
 </tr>
 <tr>
 <td>US-02</td>
-<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>将某个主题的相册切换为「明信片收纳册」展示模式，<strong>以便</strong>以更有仪式感的形式浏览与收藏照片。</td>
+<td><strong>作为</strong>旅行归来的用户，<strong>我希望</strong>从全部照片中勾选照片并建立「京都之旅」等主题文件夹，<strong>以便</strong>按旅游主题归类浏览。</td>
 </tr>
 <tr>
 <td>US-03</td>
-<td><strong>作为</strong>注册用户，<strong>我希望</strong>拥有基本账号与个人中心（头像、昵称等），<strong>以便</strong>管理我的主题相册与电子相册作品。</td>
+<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>在主题文件夹与明信片收纳册之间一键无缝切换，<strong>以便</strong>以横版明信片翻页形式回顾旅程，并看到每张照片的<strong>拍摄日期、时间与地点</strong>。</td>
 </tr>
 <tr>
 <td>US-04</td>
-<td><strong>作为</strong>时间碎片化的年轻用户，<strong>我希望</strong>像使用电子手账一样自由排版照片与素材，<strong>以便</strong>在碎片时间持续编辑一本电子相册。</td>
+<td><strong>作为</strong>注册用户，<strong>我希望</strong>拥有基本账号与个人中心（头像、昵称等），<strong>以便</strong>管理我的全部照片、主题文件夹与电子相册作品。</td>
 </tr>
 <tr>
 <td>US-05</td>
-<td><strong>作为</strong>追求作品质感的用户，<strong>我希望</strong>自由调整图片大小、裁剪局部，并圈选画面主体以消除路人和背景，<strong>以便</strong>让内页更干净、更突出主体。</td>
+<td><strong>作为</strong>时间碎片化的年轻用户，<strong>我希望</strong>像使用电子手账一样自由排版照片与素材，<strong>以便</strong>在碎片时间持续编辑一本电子相册。</td>
 </tr>
 <tr>
 <td>US-06</td>
-<td><strong>作为</strong>注重装饰效果的用户，<strong>我希望</strong>使用平台内置的矢量图、插画和小贴纸装点内页，<strong>以便</strong>让电子相册更有个性。</td>
+<td><strong>作为</strong>追求作品质感的用户，<strong>我希望</strong>自由调整图片大小、裁剪局部，并圈选画面主体以消除路人和背景，<strong>以便</strong>让内页更干净、更突出主体。</td>
 </tr>
 <tr>
 <td>US-07</td>
-<td><strong>作为</strong>需要记录文字的用户，<strong>我希望</strong>添加并编辑文本（字体、大小、粗细、花体、下划线、删除线、颜色等），<strong>以便</strong>为相册配上标题、说明与心情记录。</td>
+<td><strong>作为</strong>注重装饰效果的用户，<strong>我希望</strong>使用平台内置的矢量图、插画和小贴纸装点内页，<strong>以便</strong>让电子相册更有个性。</td>
 </tr>
 <tr>
 <td>US-08</td>
+<td><strong>作为</strong>需要记录文字的用户，<strong>我希望</strong>添加并编辑文本（字体、大小、粗细、花体、下划线、删除线、颜色等），<strong>以便</strong>为相册配上标题、说明与心情记录。</td>
+</tr>
+<tr>
+<td>US-09</td>
 <td><strong>作为</strong>老年用户，<strong>我希望</strong>通过简单几步选择模板并拖拽排版，<strong>以便</strong>轻松「美化相册」而无需学习复杂操作。</td>
 </tr>
 </tbody></table>
@@ -464,15 +485,15 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>US-09</td>
+<td>US-10</td>
 <td><strong>作为</strong>担心本地空间不足的用户，<strong>我希望</strong>照片与作品保存在云端，<strong>以便</strong>不占用本机存储，且换设备后仍能访问（P1）。</td>
 </tr>
 <tr>
-<td>US-10</td>
+<td>US-11</td>
 <td><strong>作为</strong>希望分享作品的用户，<strong>我希望</strong>导出 PDF 或生成分享链接，<strong>以便</strong>将电子相册发给亲友（P1）。</td>
 </tr>
 <tr>
-<td>US-11</td>
+<td>US-12</td>
 <td><strong>作为</strong>希望将数字作品实体化的用户，<strong>我希望</strong>在电子相册完成后选择合作厂商并下单打印，<strong>以便</strong>收到实体相册或明信片（P2）。</td>
 </tr>
 </tbody></table>
@@ -500,6 +521,12 @@
 </tr>
 </tbody></table>
 <h4 id="312-照片收纳本地上传不含云存储">3.1.2 照片收纳（本地上传，不含云存储）</h4>
+<p><strong>收纳逻辑（核心）：</strong></p>
+<pre><code class="language-text">本地上传 → 全部照片（默认图库，类似手机相册）
+                ↓ 用户多选照片
+           建立/加入主题【文件夹】（如「2025 京都之旅」）
+                ↓ 一键切换视图（同一批照片，瞬时无缝）
+           【明信片收纳册】模式</code></pre>
 <table>
 <thead>
 <tr>
@@ -508,34 +535,66 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>主题相册创建</td>
-<td>用户以「主题」为单位新建相册，填写主题名称、封面、可选描述。</td>
+<td>全部照片（默认图库）</td>
+<td>所有<strong>初次导入</strong>的照片统一进入此处，按导入顺序或拍摄时间排列，行为类似手机系统图库。</td>
 </tr>
 <tr>
 <td>本地上传照片</td>
-<td><strong>仅支持从本机选择并读取照片</strong>，不上传至云 OSS；照片暂存于浏览器本地（IndexedDB / Blob）或服务端临时存储。</td>
+<td><strong>仅支持从本机选择并读取照片</strong>；导入时解析 EXIF，提取<strong>拍摄日期、拍摄时间、拍摄地点</strong>；不上传至云 OSS。</td>
 </tr>
 <tr>
-<td>照片展示</td>
-<td>在主题相册内以网格/列表方式浏览已导入照片。</td>
+<td>建立主题文件夹</td>
+<td>用户从「全部照片」中<strong>多选</strong>照片，创建旅游等主题的【文件夹】；同一照片可被归入一个或多个主题文件夹（引用关系，不重复存储文件）。</td>
 </tr>
 <tr>
 <td>文件夹收纳模式</td>
-<td>默认以「文件夹式」组织：主题 → 照片。</td>
+<td>以文件夹列表 + 照片网格/列表展示主题内照片，便于管理与批量操作。</td>
 </tr>
 <tr>
 <td>明信片收纳册模式</td>
-<td>同一主题相册可切换为明信片册式 UI，仅改变呈现。</td>
+<td>同一主题文件夹可<strong>瞬时无缝切换</strong>为此模式；<strong>每页展示 2 张横向摆放的明信片</strong>；左右翻页浏览（参考线框图）；每张照片上方展示<strong>拍摄日期、拍摄时间、拍摄地点</strong>（来自 EXIF，<strong>非导入时间</strong>）。</td>
 </tr>
 <tr>
 <td>模式切换</td>
-<td>文件夹模式与明信片模式一键切换。</td>
+<td>文件夹 ↔ 明信片收纳册：<strong>无刷新、无重新加载</strong>，仅切换视图组件，保持当前主题与浏览位置。</td>
 </tr>
 <tr>
-<td>主题列表与详情</td>
-<td>展示全部主题相册及照片详情。</td>
+<td>主题文件夹列表</td>
+<td>展示用户创建的全部主题文件夹及封面、照片数量。</td>
 </tr>
 </tbody></table>
+<p><strong>明信片收纳册页面规范：</strong></p>
+<table>
+<thead>
+<tr>
+<th>规范项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每页容量</td>
+<td><strong>2 张</strong>横向（landscape）明信片位</td>
+</tr>
+<tr>
+<td>元数据展示</td>
+<td>每张照片<strong>上方</strong>展示：<code>拍摄日期</code> <code>拍摄时间</code> <code>拍摄地点</code></td>
+</tr>
+<tr>
+<td>元数据来源</td>
+<td>读取照片 EXIF（<code>DateTimeOriginal</code>、GPS 逆地理编码）；缺失时展示「未知日期/时间/地点」</td>
+</tr>
+<tr>
+<td>翻页交互</td>
+<td>左右两侧翻页按钮；支持滑动翻页（小程序优先手势，Web 支持按钮 + 键盘方向键）</td>
+</tr>
+<tr>
+<td>跨页展示</td>
+<td>双页展开时可视同册左右两页（共 4 个明信片位），翻页以「页」为单位</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>双形态差异</strong>详见 <a href="#8-%E5%8F%8C%E5%BD%A2%E6%80%81%E9%83%A8%E7%BD%B2web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82">§8 双形态部署：Web 与小程序差异</a>。</p>
+</blockquote>
 <h4 id="313-电子相册编辑美化手账式参考电子手账软件">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</h4>
 <table>
 <thead>
@@ -585,6 +644,9 @@
 <td>翻页预览成品效果，支持全屏演示。</td>
 </tr>
 </tbody></table>
+<blockquote>
+<p><strong>双形态差异</strong>详见 <a href="#8-%E5%8F%8C%E5%BD%A2%E6%80%81%E9%83%A8%E7%BD%B2web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82">§8</a>。</p>
+</blockquote>
 <p><strong>本期原型明确不做：</strong> 云存储（OSS）、跨设备云端同步、导出分享、打印对接。</p>
 <h3 id="32-p1-mvp-扩展云能力与分发">3.2 P1 — MVP 扩展（云能力与分发）</h3>
 <table>
@@ -652,34 +714,35 @@
     B -->|是| D[个人中心 / 主题相册列表]
     C --> D
 
-    D --> E[新建主题相册]
-    E --> F[填写主题信息]
-    F --> G[从本机选择照片]
-    G --> H[读取并本地暂存]
-    H --> I[主题相册详情]
+    D --> E[本地上传照片]
+    E --> F[解析 EXIF 日期/时间/地点]
+    F --> G[存入全部照片图库]
 
-    I --> J{选择呈现模式}
-    J -->|文件夹模式| K[文件夹式浏览]
-    J -->|明信片册模式| L[明信片册式浏览]
+    G --> H{是否建立主题文件夹}
+    H -->|否| I[继续在全部照片中浏览]
+    H -->|是| J[多选照片并创建主题文件夹]
 
-    K --> M{是否制作电子相册}
-    L --> M
-    M -->|否| N[结束 / 继续添加照片]
-    M -->|是| O[新建电子相册项目]
+    J --> K[进入主题文件夹详情]
+    K --> L{视图模式}
+    L -->|文件夹模式| M[网格/列表浏览]
+    L -->|明信片收纳册| N[每页 2 张横版明信片翻页浏览]
 
-    O --> P[手账式画布编辑]
-    P --> P1[调整图片大小/裁剪]
-    P --> P2[圈选消除路人/背景]
-    P --> P3[添加矢量图/插画/贴纸]
-    P --> P4[富文本编辑]
-    P1 --> Q[自动保存草稿]
-    P2 --> Q
-    P3 --> Q
-    P4 --> Q
-    Q --> R[翻页预览]
-    R --> S{是否继续编辑}
-    S -->|是| P
-    S -->|否| N</pre>
+    M --> O{一键切换}
+    N --> O
+    O --> L
+
+    M --> P{是否制作电子相册}
+    N --> P
+    P -->|否| Q[结束 / 继续整理]
+    P -->|是| R[新建电子相册项目]
+
+    R --> S[手账式画布编辑]
+    S --> T[自动保存草稿]
+    T --> U[翻页预览]
+    U --> V{是否继续编辑}
+    V -->|是| S
+    V -->|否| Q
+    I --> E</pre>
 <h3 id="42-远期主流程p1p2云同步-分享-打印">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</h3>
 <pre class="mermaid">flowchart TD
     A[用户进入产品] --> B{是否已有账号}
@@ -715,10 +778,11 @@
 
     U->>App: 从本机选择照片文件
     App->>App: 校验格式/大小
+    App->>App: 解析 EXIF（拍摄日期/时间/GPS）
     App->>Local: 写入 Blob / IndexedDB
     Local-->>App: 存储成功
-    App->>App: 生成预览 URL 并关联主题
-    App-->>U: 展示导入结果</pre>
+    App->>App: 写入全部照片图库记录
+    App-->>U: 在全部照片中展示（含拍摄元数据）</pre>
 <h3 id="44-远期照片导入与云存储流程p1">4.4 远期：照片导入与云存储流程（P1）</h3>
 <pre class="mermaid">sequenceDiagram
     participant U as 用户
@@ -799,7 +863,7 @@
 <td>更新时间</td>
 </tr>
 </tbody></table>
-<h3 id="52-主题相册themealbum-p0">5.2 主题相册（ThemeAlbum）— P0</h3>
+<h3 id="52-主题文件夹themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</h3>
 <table>
 <thead>
 <tr>
@@ -810,10 +874,10 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>album_id</td>
+<td>folder_id</td>
 <td>string</td>
 <td>是</td>
-<td>主题相册唯一标识</td>
+<td>主题文件夹唯一标识</td>
 </tr>
 <tr>
 <td>user_id</td>
@@ -843,13 +907,19 @@
 <td>display_mode</td>
 <td>enum</td>
 <td>是</td>
-<td><code>folder</code>（文件夹）| <code>postcard</code>（明信片册）</td>
+<td><code>folder</code>（文件夹）| <code>postcard</code>（明信片收纳册）；切换仅影响视图</td>
+</tr>
+<tr>
+<td>photo_ids</td>
+<td>array</td>
+<td>是</td>
+<td>引用的照片 ID 列表（来自全部照片库）</td>
 </tr>
 <tr>
 <td>photo_count</td>
 <td>number</td>
 <td>是</td>
-<td>照片数量（可冗余统计）</td>
+<td>照片数量（冗余统计）</td>
 </tr>
 <tr>
 <td>created_at</td>
@@ -879,12 +949,6 @@
 <td>string</td>
 <td>是</td>
 <td>照片唯一标识</td>
-</tr>
-<tr>
-<td>album_id</td>
-<td>string</td>
-<td>是</td>
-<td>所属主题相册</td>
 </tr>
 <tr>
 <td>user_id</td>
@@ -926,13 +990,13 @@
 <td>local_blob_key</td>
 <td>string</td>
 <td>是（P0）</td>
-<td>浏览器本地存储键（IndexedDB key 或 Blob 引用）</td>
+<td>本地存储键（IndexedDB / 小程序本地文件路径）</td>
 </tr>
 <tr>
 <td>storage_url</td>
 <td>string</td>
-<td>是（P1）</td>
-<td>云存储访问地址（P1 起替代本地存储）</td>
+<td>否（P1）</td>
+<td>云存储访问地址（P1 起）</td>
 </tr>
 <tr>
 <td>thumbnail_url</td>
@@ -941,22 +1005,46 @@
 <td>缩略图地址</td>
 </tr>
 <tr>
+<td>taken_date</td>
+<td>date</td>
+<td>否</td>
+<td><strong>拍摄日期</strong>（EXIF <code>DateTimeOriginal</code>，非导入时间）</td>
+</tr>
+<tr>
+<td>taken_time</td>
+<td>time</td>
+<td>否</td>
+<td><strong>拍摄时间</strong>（EXIF）</td>
+</tr>
+<tr>
+<td>taken_location</td>
+<td>string</td>
+<td>否</td>
+<td><strong>拍摄地点</strong>（EXIF GPS 逆地理编码）</td>
+</tr>
+<tr>
 <td>taken_at</td>
 <td>datetime</td>
 <td>否</td>
-<td>拍摄时间（EXIF 解析）</td>
+<td>拍摄时间戳（便于排序，由 EXIF 解析）</td>
 </tr>
 <tr>
-<td>sort_order</td>
-<td>number</td>
-<td>否</td>
-<td>相册内排序</td>
-</tr>
-<tr>
-<td>created_at</td>
+<td>imported_at</td>
 <td>datetime</td>
 <td>是</td>
-<td>导入时间</td>
+<td>导入时间（仅用于全部照片库排序，不在明信片册展示）</td>
+</tr>
+<tr>
+<td>in_library</td>
+<td>boolean</td>
+<td>是</td>
+<td>是否在全部照片库中（默认 <code>true</code>）</td>
+</tr>
+<tr>
+<td>folder_ids</td>
+<td>array</td>
+<td>否</td>
+<td>已归入的主题文件夹 ID 列表</td>
 </tr>
 </tbody></table>
 <h3 id="54-电子相册digitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</h3>
@@ -976,10 +1064,10 @@
 <td>电子相册项目 ID</td>
 </tr>
 <tr>
-<td>source_album_id</td>
+<td>source_folder_id</td>
 <td>string</td>
 <td>是</td>
-<td>来源主题相册 ID</td>
+<td>来源主题文件夹 ID</td>
 </tr>
 <tr>
 <td>user_id</td>
@@ -1204,7 +1292,15 @@
 </tr>
 <tr>
 <td>不支持格式（如 HEIC 未转码）</td>
-<td>提示仅支持 JPG/PNG/WebP</td>
+<td>提示仅支持 JPG/PNG/WebP；小程序端注意 iOS 相册 HEIC 兼容</td>
+</tr>
+<tr>
+<td>EXIF 日期/时间/地点缺失</td>
+<td>明信片册与列表中展示「未知日期/时间/地点」，不使用 <code>imported_at</code> 替代</td>
+</tr>
+<tr>
+<td>GPS 逆地理编码失败</td>
+<td>展示「未知地点」；可提供手动编辑地点（P1 可选）</td>
 </tr>
 <tr>
 <td>浏览器本地存储配额不足</td>
@@ -1219,7 +1315,7 @@
 <td>P0 使用 IndexedDB 持久化；若用户清除浏览器数据则照片不可恢复，需提示</td>
 </tr>
 </tbody></table>
-<h3 id="62-模式切换">6.2 模式切换</h3>
+<h3 id="62-模式切换与明信片收纳册">6.2 模式切换与明信片收纳册</h3>
 <table>
 <thead>
 <tr>
@@ -1229,15 +1325,27 @@
 </thead>
 <tbody><tr>
 <td>主题内无照片时切换明信片模式</td>
-<td>允许切换，展示空状态引导上传</td>
+<td>允许切换，展示空明信片册引导从全部照片添加</td>
+</tr>
+<tr>
+<td>文件夹 ↔ 明信片册切换</td>
+<td><strong>瞬时无缝</strong>：保持当前主题、页码/滚动位置，不重新请求数据</td>
 </tr>
 <tr>
 <td>切换模式是否影响电子相册</td>
 <td>不影响；电子相册引用照片源数据，与展示模式解耦</td>
 </tr>
 <tr>
+<td>主题照片数量为奇数</td>
+<td>明信片册最后一页仅展示 1 张，另一侧留白</td>
+</tr>
+<tr>
+<td>照片无横版比例</td>
+<td>以裁剪或留白方式适配横版明信片位，保持版式统一</td>
+</tr>
+<tr>
 <td>明信片模式照片过多</td>
-<td>分页或懒加载，避免一次渲染过多 DOM</td>
+<td>分页懒加载；每页固定 2 张，按 <code>taken_at</code> 或用户排序</td>
 </tr>
 </tbody></table>
 <h3 id="63-电子相册编辑p0">6.3 电子相册编辑（P0）</h3>
@@ -1378,69 +1486,261 @@
 </tr>
 <tr>
 <td>Q2</td>
-<td><strong>「主题」如何定义？</strong> 用户手动创建，还是支持按时间/地点/事件自动聚类？</td>
-<td>相册创建流程、智能能力优先级</td>
+<td><strong>主题文件夹是否支持自动聚类？</strong> 除手动从全部照片多选外，是否按拍摄时间/地点自动建议主题？</td>
+<td>相册创建流程</td>
 <td>产品 + 市场部</td>
-</tr>
-<tr>
-<td>Q3</td>
-<td><strong>明信片收纳册的具体交互是什么？</strong> 翻页动画、卡片堆叠、还是拟物相册本？是否有参考产品？</td>
-<td>UI/UX 设计、开发工作量</td>
-<td>市场部 + 设计</td>
 </tr>
 <tr>
 <td>Q4</td>
 <td><strong>智能消除（路人/背景）的技术方案？</strong> 自研模型、第三方 API，还是原型阶段手动抠图兜底？</td>
-<td>编辑体验、成本、演示效果</td>
+<td>编辑体验、成本</td>
 <td>研发 + 产品</td>
 </tr>
 <tr>
 <td>Q5</td>
 <td><strong>内置素材库的范围？</strong> 首期提供多少矢量图/插画/贴纸？是否分主题包？</td>
-<td>设计工作量、素材版权</td>
+<td>设计工作量</td>
 <td>设计 + 市场部</td>
 </tr>
 <tr>
-<td>Q6</td>
-<td><strong>文件夹模式与明信片模式是否互斥？</strong> 同一主题是否只能二选一，还是仅切换视图？</td>
-<td>数据模型、用户心智</td>
-<td>产品</td>
-</tr>
-<tr>
 <td>Q7</td>
-<td><strong>电子相册与主题相册的关系？</strong> 一个主题是否只能生成一本电子相册，还是可生成多版本？</td>
-<td>数据结构与列表页设计</td>
+<td><strong>电子相册与主题文件夹的关系？</strong> 一个主题是否只能生成一本电子相册，还是可生成多版本？</td>
+<td>数据结构</td>
 <td>产品</td>
 </tr>
 <tr>
 <td>Q8</td>
-<td><strong>打印合作厂商是否已有意向？</strong> 对接 API、SKU、计价、发货谁负责？</td>
-<td>P2 排期与接口设计</td>
+<td><strong>打印合作厂商是否已有意向？</strong></td>
+<td>P2 排期</td>
 <td>商务 + 市场部</td>
 </tr>
 <tr>
-<td>Q9</td>
-<td><strong>原型部署形态？</strong> Web、小程序、还是 App？演示环境域名与访问范围？</td>
-<td>技术选型</td>
-<td>研发 + 运维</td>
+<td>Q10</td>
+<td><strong>P1 云存储预算与合规？</strong></td>
+<td>成本模型、合规</td>
+<td>研发 + 法务</td>
+</tr>
+</tbody></table>
+<h2 id="8-双形态部署web-与小程序差异">8. 双形态部署：Web 与小程序差异</h2>
+<blockquote>
+<p>本期原型同步规划 <strong>Web</strong> 与<strong>微信小程序</strong>两种形态。以下按需求模块列出设计与交互差异，研发与设计需双端对齐核心逻辑、分端适配交互。</p>
+</blockquote>
+<h3 id="81-账号与个人中心">8.1 账号与个人中心</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录方式</td>
+<td>手机号 / 邮箱 + 验证码或密码</td>
+<td>微信授权登录为主；可选绑定手机号</td>
 </tr>
 <tr>
-<td>Q10</td>
-<td><strong>P1 云存储预算与合规？</strong> 国内/海外节点、用户隐私与图片版权归属、免费额度策略？</td>
-<td>成本模型、上线合规</td>
-<td>研发 + 法务</td>
+<td>个人中心入口</td>
+<td>顶部导航栏头像 / 侧边栏</td>
+<td>「我的」Tab 页</td>
+</tr>
+<tr>
+<td>头像修改</td>
+<td>本地上传裁剪</td>
+<td><code>chooseAvatar</code> / 相册选取；注意隐私协议</td>
+</tr>
+<tr>
+<td>会话保持</td>
+<td>Cookie / LocalStorage Token</td>
+<td><code>wx.login</code> + 服务端 session；注意 token 刷新</td>
+</tr>
+</tbody></table>
+<h3 id="82-照片导入与全部照片库">8.2 照片导入与全部照片库</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>选图入口</td>
+<td><code>&lt;input type=&quot;file&quot;&gt;</code> 多选；拖拽上传（可选）</td>
+<td><code>wx.chooseMedia</code> / <code>wx.chooseImage</code>；受微信 API 版本约束</td>
+</tr>
+<tr>
+<td>本地存储</td>
+<td>IndexedDB + Blob URL</td>
+<td>微信临时文件路径 + 本地缓存；<strong>单用户存储上限更严格（约 10MB–200MB 级）</strong></td>
+</tr>
+<tr>
+<td>EXIF 解析</td>
+<td>前端库（如 exifr）直接解析</td>
+<td>部分机型/格式 EXIF 受限；GPS 需用户授权位置信息后才能逆地理编码</td>
+</tr>
+<tr>
+<td>拍摄地点展示</td>
+<td>GPS 逆地理编码 API</td>
+<td>同上；需在隐私政策中说明位置信息用途</td>
+</tr>
+<tr>
+<td>全部照片列表</td>
+<td>虚拟滚动 + 网格；鼠标 hover 操作</td>
+<td>长列表性能优化（分页加载）；长按多选</td>
+</tr>
+</tbody></table>
+<h3 id="83-主题文件夹与明信片收纳册">8.3 主题文件夹与明信片收纳册</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建立文件夹</td>
+<td>全部照片中 Ctrl/Shift 多选 →「添加到文件夹」</td>
+<td>长按进入多选模式 →「建立主题文件夹」</td>
+</tr>
+<tr>
+<td>文件夹 ↔ 明信片册切换</td>
+<td>顶部 Toggle / Tab；<strong>无刷新瞬时切换</strong></td>
+<td>同上；切换动画宜轻量（≤ 300ms）避免卡顿</td>
+</tr>
+<tr>
+<td>明信片册翻页</td>
+<td>左右按钮 + 键盘 ← →</td>
+<td><strong>左右滑动手势</strong>为主；边缘按钮为辅</td>
+</tr>
+<tr>
+<td>每页 2 张横版明信片</td>
+<td>CSS Grid 布局；双页展开可选</td>
+<td>同逻辑；注意窄屏（手机竖屏）下单页展示 2 张时的尺寸适配</td>
+</tr>
+<tr>
+<td>元数据展示</td>
+<td>拍摄日期 / 时间 / 地点排于照片上方</td>
+<td>字号需满足小程序可读性（建议 ≥ 24rpx）；地点过长省略号截断</td>
+</tr>
+<tr>
+<td>空状态</td>
+<td>插图 + 引导文案 + 上传按钮</td>
+<td>同上；按钮触达区域 ≥ 44px</td>
+</tr>
+</tbody></table>
+<h3 id="84-电子相册编辑手账式">8.4 电子相册编辑（手账式）</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>画布交互</td>
+<td>鼠标拖拽、滚轮缩放、右键菜单</td>
+<td>单指拖拽、双指缩放旋转；注意与翻页手势冲突（编辑区与浏览区分层）</td>
+</tr>
+<tr>
+<td>图片裁剪/圈选</td>
+<td>鼠标框选、精细涂抹</td>
+<td>手指涂抹圈选；提供更大触控手柄；圈选消除算力受限时走服务端 API</td>
+</tr>
+<tr>
+<td>素材/贴纸</td>
+<td>拖拽放置；素材面板侧边栏</td>
+<td>底部素材抽屉；点击添加后手指定位</td>
+</tr>
+<tr>
+<td>文本编辑</td>
+<td>富文本工具栏悬浮</td>
+<td>底部固定工具栏；花体字体需确认小程序字体授权</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>Canvas / SVG / WebGL 按复杂度选型</td>
+<td>优先原生组件 + Canvas 2D；限制同页元素数；大图自动降采样</td>
+</tr>
+<tr>
+<td>自动保存</td>
+<td>IndexedDB 草稿</td>
+<td>本地 Storage + 定时同步服务端（若有后端）</td>
+</tr>
+</tbody></table>
+<h3 id="85-通用差异">8.5 通用差异</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>导航结构</td>
+<td>多级路由 + 面包屑</td>
+<td>TabBar + 页面栈；注意页面层级 ≤ 10 层</td>
+</tr>
+<tr>
+<td>分享能力</td>
+<td>P1：复制链接</td>
+<td>P1：微信好友/朋友圈分享卡片（需开通能力）</td>
+</tr>
+<tr>
+<td>离线使用</td>
+<td>Service Worker 可部分离线</td>
+<td>弱网依赖微信缓存；核心贴纸包建议内置</td>
+</tr>
+<tr>
+<td>审核合规</td>
+<td>常规 Web 合规</td>
+<td>需符合微信小程序审核：UGC、隐私、相册权限说明</td>
+</tr>
+<tr>
+<td>原型演示</td>
+<td>浏览器直接访问 URL</td>
+<td>开发者工具 + 真机预览二维码</td>
 </tr>
 </tbody></table>
 <h2 id="附录-a需求来源摘要市场部口语">附录 A：需求来源摘要（市场部口语）</h2>
 <p>市场部同事核心表达：</p>
 <ol>
 <li>产品兼具 <strong>照片收纳</strong> 与 <strong>电子相册编辑排版</strong> 两大能力。  </li>
-<li>收纳侧支持两种模式：<strong>文件夹式</strong> 与 <strong>明信片收纳册式</strong>（个人偏好后者）。  </li>
-<li>以 <strong>主题</strong> 为单位沉淀全部相关照片。  </li>
+<li>收纳侧：全部照片默认图库 → 用户多选建立主题<strong>文件夹</strong> → 可<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>（每页 2 张横版，展示拍摄日期/时间/地点）。  </li>
+<li>以 <strong>主题文件夹</strong> 为单位组织旅行等照片，并可进入电子相册编辑。  </li>
 <li>远期可与 <strong>印刷厂商合作</strong>，用户完成作品后可直接下单打印。  </li>
 <li>正式产品需使用 <strong>云端存储</strong> 照片；<strong>本期原型不含云存储</strong>，照片本地上传，但包含账号与完整编辑能力。  </li>
-<li>当前阶段以 <strong>原型</strong> 为主：验证「收纳 + 手账式编辑美化」完整链路。</li>
+<li>当前阶段以 <strong>Web + 小程序双形态原型</strong> 为主：验证「全部照片 → 主题文件夹 → 明信片册 → 手账式编辑」完整链路。</li>
 </ol>
+<h2 id="附录-c明信片收纳册线框参考">附录 C：明信片收纳册线框参考</h2>
+<p>来源：产品线框图</p>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布局</td>
+<td>相册双页展开；<strong>每页 2 个横向明信片位</strong>（单页 2 张）；左右翻页按钮</td>
+</tr>
+<tr>
+<td>元数据</td>
+<td>每张照片<strong>上方</strong>展示拍摄日期、拍摄时间（非导入时间）</td>
+</tr>
+<tr>
+<td>地点</td>
+<td>拍摄地点展示于元数据区（EXIF GPS 解析）</td>
+</tr>
+<tr>
+<td>切换</td>
+<td>与文件夹模式共用同一主题照片集，视图瞬时切换</td>
+</tr>
+</tbody></table>
 <h2 id="附录-b思维导图信息摘要用户与需求">附录 B：思维导图信息摘要（用户与需求）</h2>
 <p>来源：市场部思维导图「电子相册」</p>
 <p><strong>需求：</strong></p>
