@@ -1,0 +1,2434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>主题相册产品 PRD</title>
+  <style>
+    :root {
+      --bg: #e8e8e8;
+      --panel: #ffffff;
+      --border: #d0d0d0;
+      --text: #1a1a1a;
+      --muted: #666;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --sidebar-width: 300px;
+      --gap: 16px;
+      --radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .layout {
+      display: flex;
+      gap: var(--gap);
+      height: 100vh;
+      padding: var(--gap);
+    }
+
+    .sidebar,
+    .content {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      flex: 0 0 var(--sidebar-width);
+      min-width: 240px;
+      max-width: 360px;
+      padding: 20px 16px;
+    }
+
+    .content {
+      flex: 1 1 auto;
+      padding: 32px 40px 48px;
+      min-width: 0;
+    }
+
+    .sidebar-title {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .toc {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li { margin: 0; }
+
+    .toc a {
+      display: block;
+      padding: 5px 8px;
+      border-radius: 4px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      line-height: 1.45;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .toc a.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .toc-l2 a { font-weight: 600; font-size: 13px; }
+    .toc-l3 a { padding-left: 16px; font-size: 12px; color: #444; }
+    .toc-l4 a { padding-left: 28px; font-size: 11px; color: var(--muted); }
+    .toc-l3 a.active,
+    .toc-l4 a.active { color: var(--accent); }
+
+    .content h1 {
+      margin-top: 0;
+      font-size: 28px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .content h2 {
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+      font-size: 22px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+      scroll-margin-top: 12px;
+    }
+
+    .content h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-size: 17px;
+      color: #333;
+      scroll-margin-top: 12px;
+    }
+
+    .content h4 {
+      margin-top: 1.25em;
+      margin-bottom: 0.4em;
+      font-size: 15px;
+      color: #444;
+      scroll-margin-top: 12px;
+    }
+
+    .content p,
+    .content li {
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .content blockquote {
+      margin: 1em 0;
+      padding: 12px 16px;
+      border-left: 4px solid var(--accent);
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0 1.5em;
+      font-size: 14px;
+    }
+
+    .content th,
+    .content td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .content th {
+      background: #f5f5f5;
+      font-weight: 600;
+    }
+
+    .content tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .content pre {
+      background: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .content pre.mermaid {
+      background: #fff;
+      text-align: center;
+    }
+
+    .content code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .content em {
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        flex: 0 0 auto;
+        max-width: none;
+        max-height: 280px;
+      }
+
+      .content {
+        min-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <p class="sidebar-title">目录</p>
+      <ul class="toc">
+<li class="toc-l2"><a href="#文档信息" data-target="文档信息">文档信息</a></li>
+<li class="toc-l2"><a href="#修订记录" data-target="修订记录">修订记录</a></li>
+<li class="toc-l2"><a href="#1-一句话价值主张" data-target="1-一句话价值主张">1. 一句话价值主张</a></li>
+<li class="toc-l2"><a href="#2-目标用户与需求" data-target="2-目标用户与需求">2. 目标用户与需求</a></li>
+  <li class="toc-l3"><a href="#21-核心需求产品愿景" data-target="21-核心需求产品愿景">2.1 核心需求（产品愿景）</a></li>
+  <li class="toc-l3"><a href="#22-目标用户画像" data-target="22-目标用户画像">2.2 目标用户画像</a></li>
+    <li class="toc-l4"><a href="#共性特征" data-target="共性特征">共性特征</a></li>
+    <li class="toc-l4"><a href="#年轻人" data-target="年轻人">年轻人</a></li>
+    <li class="toc-l4"><a href="#老年人" data-target="老年人">老年人</a></li>
+  <li class="toc-l3"><a href="#23-用户故事" data-target="23-用户故事">2.3 用户故事</a></li>
+    <li class="toc-l4"><a href="#231-本期原型p0web-网页端" data-target="231-本期原型p0web-网页端">2.3.1 本期原型（P0：Web 网页端）</a></li>
+    <li class="toc-l4"><a href="#232-下一阶段与远期p1p2" data-target="232-下一阶段与远期p1p2">2.3.2 下一阶段与远期（P1/P2）</a></li>
+<li class="toc-l2"><a href="#3-功能清单" data-target="3-功能清单">3. 功能清单</a></li>
+  <li class="toc-l3"><a href="#31-p0-本期原型web-网页端" data-target="31-p0-本期原型web-网页端">3.1 P0 — 本期原型（Web 网页端）</a></li>
+    <li class="toc-l4"><a href="#311-账号与个人中心" data-target="311-账号与个人中心">3.1.1 账号与个人中心</a></li>
+    <li class="toc-l4"><a href="#312-照片收纳本地上传不含云存储" data-target="312-照片收纳本地上传不含云存储">3.1.2 照片收纳（本地上传，不含云存储）</a></li>
+    <li class="toc-l4"><a href="#313-电子相册编辑美化手账式参考电子手账软件" data-target="313-电子相册编辑美化手账式参考电子手账软件">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</a></li>
+  <li class="toc-l3"><a href="#32-p1-下一原型阶段与-mvp-扩展" data-target="32-p1-下一原型阶段与-mvp-扩展">3.2 P1 — 下一原型阶段与 MVP 扩展</a></li>
+  <li class="toc-l3"><a href="#33-p2-远期能力商业化与深度能力" data-target="33-p2-远期能力商业化与深度能力">3.3 P2 — 远期能力（商业化与深度能力）</a></li>
+<li class="toc-l2"><a href="#4-核心流程图" data-target="4-核心流程图">4. 核心流程图</a></li>
+  <li class="toc-l3"><a href="#41-本期原型主流程p0web-网页端" data-target="41-本期原型主流程p0web-网页端">4.1 本期原型主流程（P0：Web 网页端）</a></li>
+  <li class="toc-l3"><a href="#42-远期主流程p1p2云同步-分享-打印" data-target="42-远期主流程p1p2云同步-分享-打印">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</a></li>
+  <li class="toc-l3"><a href="#43-本期原型本地上传照片流程p0" data-target="43-本期原型本地上传照片流程p0">4.3 本期原型：本地上传照片流程（P0）</a></li>
+  <li class="toc-l3"><a href="#44-远期照片导入与云存储流程p1" data-target="44-远期照片导入与云存储流程p1">4.4 远期：照片导入与云存储流程（P1）</a></li>
+<li class="toc-l2"><a href="#5-关键数据字段定义" data-target="5-关键数据字段定义">5. 关键数据字段定义</a></li>
+  <li class="toc-l3"><a href="#51-用户user-p0" data-target="51-用户user-p0">5.1 用户（User）— P0</a></li>
+  <li class="toc-l3"><a href="#52-主题文件夹themefolder-p0" data-target="52-主题文件夹themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</a></li>
+  <li class="toc-l3"><a href="#53-照片photo-p0" data-target="53-照片photo-p0">5.3 照片（Photo）— P0</a></li>
+  <li class="toc-l3"><a href="#54-电子相册digitalalbum-p0" data-target="54-电子相册digitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</a></li>
+  <li class="toc-l3"><a href="#55-画布元素canvaselement-p0" data-target="55-画布元素canvaselement-p0">5.5 画布元素（CanvasElement）— P0</a></li>
+  <li class="toc-l3"><a href="#56-素材资源asset-p0" data-target="56-素材资源asset-p0">5.6 素材资源（Asset）— P0</a></li>
+  <li class="toc-l3"><a href="#57-打印订单printorder-p2-规划" data-target="57-打印订单printorder-p2-规划">5.7 打印订单（PrintOrder）— P2 规划</a></li>
+<li class="toc-l2"><a href="#6-异常场景与边界条件" data-target="6-异常场景与边界条件">6. 异常场景与边界条件</a></li>
+  <li class="toc-l3"><a href="#61-照片导入p0本地上传" data-target="61-照片导入p0本地上传">6.1 照片导入（P0：本地上传）</a></li>
+  <li class="toc-l3"><a href="#62-模式切换与明信片收纳册" data-target="62-模式切换与明信片收纳册">6.2 模式切换与明信片收纳册</a></li>
+  <li class="toc-l3"><a href="#63-电子相册编辑p0" data-target="63-电子相册编辑p0">6.3 电子相册编辑（P0）</a></li>
+  <li class="toc-l3"><a href="#64-账号与个人中心p0" data-target="64-账号与个人中心p0">6.4 账号与个人中心（P0）</a></li>
+  <li class="toc-l3"><a href="#65-云存储与数据安全p1-起" data-target="65-云存储与数据安全p1-起">6.5 云存储与数据安全（P1 起）</a></li>
+  <li class="toc-l3"><a href="#66-原型阶段特有限制" data-target="66-原型阶段特有限制">6.6 原型阶段特有限制</a></li>
+<li class="toc-l2"><a href="#7-web-页面原型规范indexhtml" data-target="7-web-页面原型规范indexhtml">7. Web 页面原型规范（index.html）</a></li>
+  <li class="toc-l3"><a href="#71-原型文件与同步机制" data-target="71-原型文件与同步机制">7.1 原型文件与同步机制</a></li>
+  <li class="toc-l3"><a href="#72-技术栈要求" data-target="72-技术栈要求">7.2 技术栈要求</a></li>
+  <li class="toc-l3"><a href="#73-布局与页面结构" data-target="73-布局与页面结构">7.3 布局与页面结构</a></li>
+  <li class="toc-l3"><a href="#74-视觉风格与元素规范" data-target="74-视觉风格与元素规范">7.4 视觉风格与元素规范</a></li>
+  <li class="toc-l3"><a href="#75-初版交互实现说明ui-v10" data-target="75-初版交互实现说明ui-v10">7.5 初版交互实现说明（UI-V1.0）</a></li>
+  <li class="toc-l3"><a href="#76-indexhtml-修订记录" data-target="76-indexhtml-修订记录">7.6 index.html 修订记录</a></li>
+  <li class="toc-l3"><a href="#77-页面原型设计待澄清项" data-target="77-页面原型设计待澄清项">7.7 页面原型设计待澄清项</a></li>
+<li class="toc-l2"><a href="#8-下一阶段规划web-与小程序差异p1" data-target="8-下一阶段规划web-与小程序差异p1">8. 下一阶段规划：Web 与小程序差异（P1）</a></li>
+  <li class="toc-l3"><a href="#81-账号与个人中心" data-target="81-账号与个人中心">8.1 账号与个人中心</a></li>
+  <li class="toc-l3"><a href="#82-照片导入与全部照片库" data-target="82-照片导入与全部照片库">8.2 照片导入与全部照片库</a></li>
+  <li class="toc-l3"><a href="#83-主题文件夹与明信片收纳册" data-target="83-主题文件夹与明信片收纳册">8.3 主题文件夹与明信片收纳册</a></li>
+  <li class="toc-l3"><a href="#84-电子相册编辑手账式" data-target="84-电子相册编辑手账式">8.4 电子相册编辑（手账式）</a></li>
+  <li class="toc-l3"><a href="#85-电子相册预览拟真翻页" data-target="85-电子相册预览拟真翻页">8.5 电子相册【预览】拟真翻页</a></li>
+  <li class="toc-l3"><a href="#86-通用差异" data-target="86-通用差异">8.6 通用差异</a></li>
+<li class="toc-l2"><a href="#9-待进一步澄清的问题" data-target="9-待进一步澄清的问题">9. 待进一步澄清的问题</a></li>
+<li class="toc-l2"><a href="#附录-a需求来源摘要市场部口语" data-target="附录-a需求来源摘要市场部口语">附录 A：需求来源摘要（市场部口语）</a></li>
+<li class="toc-l2"><a href="#附录-b思维导图信息摘要用户与需求" data-target="附录-b思维导图信息摘要用户与需求">附录 B：思维导图信息摘要（用户与需求）</a></li>
+<li class="toc-l2"><a href="#附录-c明信片收纳册线框参考" data-target="附录-c明信片收纳册线框参考">附录 C：明信片收纳册线框参考</a></li>
+      </ul>
+    </aside>
+    <main class="content" id="main-content">
+<h1 id="主题相册产品-prd">主题相册产品 PRD</h1>
+<!-- PRD_TOC_START -->
+<h2 id="目录">目录</h2>
+<blockquote>
+<p>由 <code>npm run sync-prd</code> 根据下文标题自动生成，支持点击快速定位。</p>
+</blockquote>
+<ul>
+<li><a href="#%E6%96%87%E6%A1%A3%E4%BF%A1%E6%81%AF">文档信息</a></li>
+<li><a href="#%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">修订记录</a></li>
+<li><a href="#1-%E4%B8%80%E5%8F%A5%E8%AF%9D%E4%BB%B7%E5%80%BC%E4%B8%BB%E5%BC%A0">1. 一句话价值主张</a></li>
+<li><a href="#2-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">2. 目标用户与需求</a><ul>
+<li><a href="#21-%E6%A0%B8%E5%BF%83%E9%9C%80%E6%B1%82%E4%BA%A7%E5%93%81%E6%84%BF%E6%99%AF">2.1 核心需求（产品愿景）</a></li>
+<li><a href="#22-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E7%94%BB%E5%83%8F">2.2 目标用户画像</a><ul>
+<li><a href="#%E5%85%B1%E6%80%A7%E7%89%B9%E5%BE%81">共性特征</a></li>
+<li><a href="#%E5%B9%B4%E8%BD%BB%E4%BA%BA">年轻人</a></li>
+<li><a href="#%E8%80%81%E5%B9%B4%E4%BA%BA">老年人</a></li>
+</ul>
+</li>
+<li><a href="#23-%E7%94%A8%E6%88%B7%E6%95%85%E4%BA%8B">2.3 用户故事</a><ul>
+<li><a href="#231-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8Bp0web-%E7%BD%91%E9%A1%B5%E7%AB%AF">2.3.1 本期原型（P0：Web 网页端）</a></li>
+<li><a href="#232-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5%E4%B8%8E%E8%BF%9C%E6%9C%9Fp1p2">2.3.2 下一阶段与远期（P1/P2）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#3-%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95">3. 功能清单</a><ul>
+<li><a href="#31-p0-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8Bweb-%E7%BD%91%E9%A1%B5%E7%AB%AF">3.1 P0 — 本期原型（Web 网页端）</a><ul>
+<li><a href="#311-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">3.1.1 账号与个人中心</a></li>
+<li><a href="#312-%E7%85%A7%E7%89%87%E6%94%B6%E7%BA%B3%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E4%B8%8D%E5%90%AB%E4%BA%91%E5%AD%98%E5%82%A8">3.1.2 照片收纳（本地上传，不含云存储）</a></li>
+<li><a href="#313-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E7%BE%8E%E5%8C%96%E6%89%8B%E8%B4%A6%E5%BC%8F%E5%8F%82%E8%80%83%E7%94%B5%E5%AD%90%E6%89%8B%E8%B4%A6%E8%BD%AF%E4%BB%B6">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</a></li>
+</ul>
+</li>
+<li><a href="#32-p1-%E4%B8%8B%E4%B8%80%E5%8E%9F%E5%9E%8B%E9%98%B6%E6%AE%B5%E4%B8%8E-mvp-%E6%89%A9%E5%B1%95">3.2 P1 — 下一原型阶段与 MVP 扩展</a></li>
+<li><a href="#33-p2-%E8%BF%9C%E6%9C%9F%E8%83%BD%E5%8A%9B%E5%95%86%E4%B8%9A%E5%8C%96%E4%B8%8E%E6%B7%B1%E5%BA%A6%E8%83%BD%E5%8A%9B">3.3 P2 — 远期能力（商业化与深度能力）</a></li>
+</ul>
+</li>
+<li><a href="#4-%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E5%9B%BE">4. 核心流程图</a><ul>
+<li><a href="#41-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E4%B8%BB%E6%B5%81%E7%A8%8Bp0web-%E7%BD%91%E9%A1%B5%E7%AB%AF">4.1 本期原型主流程（P0：Web 网页端）</a></li>
+<li><a href="#42-%E8%BF%9C%E6%9C%9F%E4%B8%BB%E6%B5%81%E7%A8%8Bp1p2%E4%BA%91%E5%90%8C%E6%AD%A5-%E5%88%86%E4%BA%AB-%E6%89%93%E5%8D%B0">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</a></li>
+<li><a href="#43-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E7%85%A7%E7%89%87%E6%B5%81%E7%A8%8Bp0">4.3 本期原型：本地上传照片流程（P0）</a></li>
+<li><a href="#44-%E8%BF%9C%E6%9C%9F%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E4%BA%91%E5%AD%98%E5%82%A8%E6%B5%81%E7%A8%8Bp1">4.4 远期：照片导入与云存储流程（P1）</a></li>
+</ul>
+</li>
+<li><a href="#5-%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E5%AE%9A%E4%B9%89">5. 关键数据字段定义</a><ul>
+<li><a href="#51-%E7%94%A8%E6%88%B7user-p0">5.1 用户（User）— P0</a></li>
+<li><a href="#52-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</a></li>
+<li><a href="#53-%E7%85%A7%E7%89%87photo-p0">5.3 照片（Photo）— P0</a></li>
+<li><a href="#54-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8Cdigitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</a></li>
+<li><a href="#55-%E7%94%BB%E5%B8%83%E5%85%83%E7%B4%A0canvaselement-p0">5.5 画布元素（CanvasElement）— P0</a></li>
+<li><a href="#56-%E7%B4%A0%E6%9D%90%E8%B5%84%E6%BA%90asset-p0">5.6 素材资源（Asset）— P0</a></li>
+<li><a href="#57-%E6%89%93%E5%8D%B0%E8%AE%A2%E5%8D%95printorder-p2-%E8%A7%84%E5%88%92">5.7 打印订单（PrintOrder）— P2 规划</a></li>
+</ul>
+</li>
+<li><a href="#6-%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6">6. 异常场景与边界条件</a><ul>
+<li><a href="#61-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5p0%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0">6.1 照片导入（P0：本地上传）</a></li>
+<li><a href="#62-%E6%A8%A1%E5%BC%8F%E5%88%87%E6%8D%A2%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">6.2 模式切换与明信片收纳册</a></li>
+<li><a href="#63-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91p0">6.3 电子相册编辑（P0）</a></li>
+<li><a href="#64-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83p0">6.4 账号与个人中心（P0）</a></li>
+<li><a href="#65-%E4%BA%91%E5%AD%98%E5%82%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8p1-%E8%B5%B7">6.5 云存储与数据安全（P1 起）</a></li>
+<li><a href="#66-%E5%8E%9F%E5%9E%8B%E9%98%B6%E6%AE%B5%E7%89%B9%E6%9C%89%E9%99%90%E5%88%B6">6.6 原型阶段特有限制</a></li>
+</ul>
+</li>
+<li><a href="#7-web-%E9%A1%B5%E9%9D%A2%E5%8E%9F%E5%9E%8B%E8%A7%84%E8%8C%83indexhtml">7. Web 页面原型规范（index.html）</a><ul>
+<li><a href="#71-%E5%8E%9F%E5%9E%8B%E6%96%87%E4%BB%B6%E4%B8%8E%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6">7.1 原型文件与同步机制</a></li>
+<li><a href="#72-%E6%8A%80%E6%9C%AF%E6%A0%88%E8%A6%81%E6%B1%82">7.2 技术栈要求</a></li>
+<li><a href="#73-%E5%B8%83%E5%B1%80%E4%B8%8E%E9%A1%B5%E9%9D%A2%E7%BB%93%E6%9E%84">7.3 布局与页面结构</a></li>
+<li><a href="#74-%E8%A7%86%E8%A7%89%E9%A3%8E%E6%A0%BC%E4%B8%8E%E5%85%83%E7%B4%A0%E8%A7%84%E8%8C%83">7.4 视觉风格与元素规范</a></li>
+<li><a href="#75-%E5%88%9D%E7%89%88%E4%BA%A4%E4%BA%92%E5%AE%9E%E7%8E%B0%E8%AF%B4%E6%98%8Eui-v10">7.5 初版交互实现说明（UI-V1.0）</a></li>
+<li><a href="#76-indexhtml-%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">7.6 index.html 修订记录</a></li>
+<li><a href="#77-%E9%A1%B5%E9%9D%A2%E5%8E%9F%E5%9E%8B%E8%AE%BE%E8%AE%A1%E5%BE%85%E6%BE%84%E6%B8%85%E9%A1%B9">7.7 页面原型设计待澄清项</a></li>
+</ul>
+</li>
+<li><a href="#8-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5%E8%A7%84%E5%88%92web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82p1">8. 下一阶段规划：Web 与小程序差异（P1）</a><ul>
+<li><a href="#81-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">8.1 账号与个人中心</a></li>
+<li><a href="#82-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%85%A8%E9%83%A8%E7%85%A7%E7%89%87%E5%BA%93">8.2 照片导入与全部照片库</a></li>
+<li><a href="#83-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">8.3 主题文件夹与明信片收纳册</a></li>
+<li><a href="#84-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E6%89%8B%E8%B4%A6%E5%BC%8F">8.4 电子相册编辑（手账式）</a></li>
+<li><a href="#85-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E9%A2%84%E8%A7%88%E6%8B%9F%E7%9C%9F%E7%BF%BB%E9%A1%B5">8.5 电子相册【预览】拟真翻页</a></li>
+<li><a href="#86-%E9%80%9A%E7%94%A8%E5%B7%AE%E5%BC%82">8.6 通用差异</a></li>
+</ul>
+</li>
+<li><a href="#9-%E5%BE%85%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%BE%84%E6%B8%85%E7%9A%84%E9%97%AE%E9%A2%98">9. 待进一步澄清的问题</a></li>
+<li><a href="#%E9%99%84%E5%BD%95-a%E9%9C%80%E6%B1%82%E6%9D%A5%E6%BA%90%E6%91%98%E8%A6%81%E5%B8%82%E5%9C%BA%E9%83%A8%E5%8F%A3%E8%AF%AD">附录 A：需求来源摘要（市场部口语）</a></li>
+<li><a href="#%E9%99%84%E5%BD%95-b%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BF%A1%E6%81%AF%E6%91%98%E8%A6%81%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">附录 B：思维导图信息摘要（用户与需求）</a></li>
+<li><a href="#%E9%99%84%E5%BD%95-c%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C%E7%BA%BF%E6%A1%86%E5%8F%82%E8%80%83">附录 C：明信片收纳册线框参考</a></li>
+</ul>
+<!-- PRD_TOC_END --><h2 id="文档信息">文档信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文档状态</td>
+<td>第三版（V3.0）</td>
+</tr>
+<tr>
+<td>产品代号</td>
+<td>主题相册（暂定）</td>
+</tr>
+<tr>
+<td>目标阶段</td>
+<td>可交互原型（Prototype）</td>
+</tr>
+<tr>
+<td>本期部署</td>
+<td><strong>Web 网页端</strong>（本期实现重点）</td>
+</tr>
+<tr>
+<td>下阶段部署</td>
+<td>微信小程序（下一原型阶段，见 P1）</td>
+</tr>
+<tr>
+<td>页面原型</td>
+<td><code>index.html</code>（修订记录见 <a href="#76-indexhtml-%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">§7.6</a>）</td>
+</tr>
+<tr>
+<td>撰写人</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>来源</td>
+<td>市场部口语需求整理</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>同步说明</strong>：<code>PRD.md</code> 为唯一编辑源。修改后请运行 <code>npm run sync-prd</code> 同步生成 <code>PRD.html</code>；若同时修改 <code>index.html</code>，请同步更新 <a href="#76-indexhtml-%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">§7.6 index.html 修订记录</a>。</p>
+</blockquote>
+<h2 id="修订记录">修订记录</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>修订时间（北京时间）</th>
+<th>修订人</th>
+<th>修订摘要</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1.0</td>
+<td>2026-08-14 10:30</td>
+<td>产品</td>
+<td><strong>初版生成</strong>：基于市场部口语需求，完成价值主张、用户故事、功能清单（P0/P1/P2）、核心流程图、数据字段、异常场景及待澄清项的基础整理。</td>
+</tr>
+<tr>
+<td>V2.0</td>
+<td>2026-08-14 13:47</td>
+<td>产品</td>
+<td><strong>补全修订记录</strong>（此前版本未落盘修订历史，本次一并补齐）；细化双模式收纳（文件夹 / 明信片册）的产品定义；明确「收纳」与「电子相册编辑」两条能力线及阶段边界；补充原型阶段云存储与部署约束；完善 Mermaid 流程图、数据字段表与异常场景；扩展待澄清项至 8 条。</td>
+</tr>
+<tr>
+<td>V2.1</td>
+<td>2026-08-14 13:52</td>
+<td>产品</td>
+<td>整理标题层级；新增「文档信息」章节；功能清单子节改为 3.1–3.3 编号；新增 <code>PRD.html</code> 双栏目录预览页及 <code>npm run sync-prd</code> 同步脚本。</td>
+</tr>
+<tr>
+<td>V2.2</td>
+<td>2026-08-14 14:02</td>
+<td>产品</td>
+<td>根据思维导图补充目标用户画像（年轻人 / 老年人）及共性需求；明确本期原型仅支持本地上传照片，电子相册制作、云存储等能力下调至 P1/P2 远期规划；同步更新功能清单、流程图、数据字段与异常场景。</td>
+</tr>
+<tr>
+<td>V2.3</td>
+<td>2026-08-14 14:10</td>
+<td>产品</td>
+<td><strong>修正原型范围</strong>：本期不含云存储，但包含基本账号/个人中心，以及完整电子相册编辑美化能力（手账式排版、图片编辑、素材装饰、文本编辑）；云存储、导出分享、打印仍属 P1/P2。</td>
+</tr>
+<tr>
+<td>V2.4</td>
+<td>2026-08-14 14:25</td>
+<td>产品</td>
+<td>明确部署形态为 Web + 小程序双形态，新增各需求下双形态设计/交互差异说明；重构照片收纳逻辑（全部照片库 → 主题文件夹）；细化明信片收纳册交互（每页 2 张横版明信片、展示拍摄日期/时间/地点、与文件夹模式无缝切换）。</td>
+</tr>
+<tr>
+<td>V2.5</td>
+<td>2026-08-14 15:11</td>
+<td>产品</td>
+<td>明确导入时间写入每张照片信息；明信片收纳册内在拍摄地点/时间下方展示导入年月日；电子相册编辑时随时可进入【预览】，拟真翻页模拟实物效果。</td>
+</tr>
+<tr>
+<td>V2.6</td>
+<td>2026-08-14 15:19</td>
+<td>产品</td>
+<td>整理全文标题层级（h2–h4）；新增/完善可点击「目录」章节；同步脚本支持四级标题目录与 HTML 侧栏；附录 B/C 顺序调整。</td>
+</tr>
+<tr>
+<td>V2.7</td>
+<td>2026-08-14 15:22</td>
+<td>产品</td>
+<td>将「目录」章节移至【文档信息】之前，作为 PRD 开篇导航。</td>
+</tr>
+<tr>
+<td>V2.8</td>
+<td>2026-08-14 15:34</td>
+<td>产品</td>
+<td>调整章节顺序：§7 双形态部署、§8 待澄清问题；新增 Q8–Q12 共 5 条双形态部署相关待澄清项。</td>
+</tr>
+<tr>
+<td>V2.9</td>
+<td>2026-08-14 15:37</td>
+<td>产品</td>
+<td><strong>明确本期原型以 Web 网页端为实现重点</strong>；微信小程序下调至 P1 下一原型阶段；§8 调整为下一阶段双端差异规划；更新功能边界、待澄清项与异常场景。</td>
+</tr>
+<tr>
+<td>V3.0</td>
+<td>2026-08-14 16:55</td>
+<td>产品</td>
+<td>新增 <strong>§7 Web 页面原型规范</strong>（技术栈、视觉风格、布局交互、设计待澄清项）；新增 <code>index.html</code> 修订记录追踪（§7.6）；原 §7/§8 顺延为 §8/§9。</td>
+</tr>
+</tbody></table>
+<h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
+<p><strong>像手机图库一样集中管理本地上传照片，再按旅游等主题归入文件夹，并可在文件夹与明信片收纳册之间无缝切换浏览；在此基础上提供手账式电子相册编辑美化能力。本期以 Web 网页端原型验证核心链路，不含云存储；微信小程序为下一原型阶段（P1）。</strong></p>
+<h2 id="2-目标用户与需求">2. 目标用户与需求</h2>
+<h3 id="21-核心需求产品愿景">2.1 核心需求（产品愿景）</h3>
+<table>
+<thead>
+<tr>
+<th>需求方向</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>照片收纳</td>
+<td>所有导入照片默认进入「全部照片」图库；用户可从中选取照片建立旅游等主题的<strong>文件夹</strong>；文件夹支持<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>浏览。</td>
+</tr>
+<tr>
+<td>电子相册制作</td>
+<td>在已收纳照片基础上进行美观排版，<strong>交互参考电子手账软件</strong>，支持图片自由编辑、素材装饰与富文本，视觉风格可参考 Zine（独立杂志）。</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>本期原型实现：<strong>Web 网页端</strong>的本地上传照片收纳 + 基本账号/个人中心 + 电子相册编辑美化；<strong>不含云存储</strong>（待 P1）；<strong>不含微信小程序</strong>（下一原型阶段，见 P1 与 §8）。页面可交互原型见 <code>index.html</code> 及 <a href="#7-web-%E9%A1%B5%E9%9D%A2%E5%8E%9F%E5%9E%8B%E8%A7%84%E8%8C%83indexhtml">§7</a>。</p>
+</blockquote>
+<h3 id="22-目标用户画像">2.2 目标用户画像</h3>
+<h4 id="共性特征">共性特征</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>时间场景</td>
+<td>用户<strong>无法空出大量整块时间</strong>，希望在通勤、等待等<strong>碎片时间</strong>也能完成相册相关操作。</td>
+</tr>
+<tr>
+<td>操作预期</td>
+<td><strong>操作便捷、快速上手</strong>，降低学习成本，减少复杂步骤。</td>
+</tr>
+</tbody></table>
+<h4 id="年轻人">年轻人</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心诉求</td>
+<td>追求<strong>时尚潮流感</strong>的定制 Zine，希望作品有设计感、可分享、能表达个性。</td>
+</tr>
+<tr>
+<td>产品侧重</td>
+<td>丰富模板、潮流版式、高自由度手账式排版；明信片册模式可作为核心展示形态之一。</td>
+</tr>
+</tbody></table>
+<h4 id="老年人">老年人</h4>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心诉求</td>
+<td><strong>简单上手</strong>，能轻松完成「美化相册」，不需要专业设计知识。</td>
+</tr>
+<tr>
+<td>产品侧重</td>
+<td>大字号、步骤少、默认模板一键生成；文件夹模式降低认知负担。</td>
+</tr>
+</tbody></table>
+<h3 id="23-用户故事">2.3 用户故事</h3>
+<h4 id="231-本期原型p0web-网页端">2.3.1 本期原型（P0：Web 网页端）</h4>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-00</td>
+<td><strong>作为</strong>产品验证者，<strong>我希望</strong>在浏览器中完成全部核心流程演示，<strong>以便</strong>本期集中验证 Web 端体验与交互细节。</td>
+</tr>
+<tr>
+<td>US-01</td>
+<td><strong>作为</strong>用户，<strong>我希望</strong>初次导入的照片像手机图库一样统一存入「全部照片」，<strong>以便</strong>先集中管理再按需整理。</td>
+</tr>
+<tr>
+<td>US-02</td>
+<td><strong>作为</strong>旅行归来的用户，<strong>我希望</strong>从全部照片中勾选照片并建立「京都之旅」等主题文件夹，<strong>以便</strong>按旅游主题归类浏览。</td>
+</tr>
+<tr>
+<td>US-03</td>
+<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>在主题文件夹与明信片收纳册之间一键无缝切换，<strong>以便</strong>以横版明信片翻页形式回顾旅程，看到拍摄日期/时间/地点，并在其下方看到该照片的导入年月日。</td>
+</tr>
+<tr>
+<td>US-04</td>
+<td><strong>作为</strong>注册用户，<strong>我希望</strong>拥有基本账号与个人中心（头像、昵称等），<strong>以便</strong>管理我的全部照片、主题文件夹与电子相册作品。</td>
+</tr>
+<tr>
+<td>US-05</td>
+<td><strong>作为</strong>时间碎片化的年轻用户，<strong>我希望</strong>像使用电子手账一样自由排版照片与素材，<strong>以便</strong>在碎片时间持续编辑一本电子相册。</td>
+</tr>
+<tr>
+<td>US-06</td>
+<td><strong>作为</strong>追求作品质感的用户，<strong>我希望</strong>自由调整图片大小、裁剪局部，并圈选画面主体以消除路人和背景，<strong>以便</strong>让内页更干净、更突出主体。</td>
+</tr>
+<tr>
+<td>US-07</td>
+<td><strong>作为</strong>注重装饰效果的用户，<strong>我希望</strong>使用平台内置的矢量图、插画和小贴纸装点内页，<strong>以便</strong>让电子相册更有个性。</td>
+</tr>
+<tr>
+<td>US-08</td>
+<td><strong>作为</strong>需要记录文字的用户，<strong>我希望</strong>添加并编辑文本（字体、大小、粗细、花体、下划线、删除线、颜色等），<strong>以便</strong>为相册配上标题、说明与心情记录。</td>
+</tr>
+<tr>
+<td>US-09</td>
+<td><strong>作为</strong>正在制作电子相册的用户，<strong>我希望</strong>随时点击【预览】查看拟真翻页效果，<strong>以便</strong>模拟实物相册成品并及时调整排版。</td>
+</tr>
+<tr>
+<td>US-10</td>
+<td><strong>作为</strong>老年用户，<strong>我希望</strong>通过简单几步选择模板并拖拽排版，<strong>以便</strong>轻松「美化相册」而无需学习复杂操作。</td>
+</tr>
+</tbody></table>
+<h4 id="232-下一阶段与远期p1p2">2.3.2 下一阶段与远期（P1/P2）</h4>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-14</td>
+<td><strong>作为</strong>移动端用户，<strong>我希望</strong>在微信小程序中使用已验证的核心能力，<strong>以便</strong>在手机上完成收纳与编辑（P1，下一原型阶段）。</td>
+</tr>
+<tr>
+<td>US-11</td>
+<td><strong>作为</strong>担心本地空间不足的用户，<strong>我希望</strong>照片与作品保存在云端，<strong>以便</strong>不占用本机存储，且换设备后仍能访问（P1）。</td>
+</tr>
+<tr>
+<td>US-12</td>
+<td><strong>作为</strong>希望分享作品的用户，<strong>我希望</strong>导出 PDF 或生成分享链接，<strong>以便</strong>将电子相册发给亲友（P1）。</td>
+</tr>
+<tr>
+<td>US-13</td>
+<td><strong>作为</strong>希望将数字作品实体化的用户，<strong>我希望</strong>在电子相册完成后选择合作厂商并下单打印，<strong>以便</strong>收到实体相册或明信片（P2）。</td>
+</tr>
+</tbody></table>
+<h2 id="3-功能清单">3. 功能清单</h2>
+<h3 id="31-p0-本期原型web-网页端">3.1 P0 — 本期原型（Web 网页端）</h3>
+<blockquote>
+<p><strong>实现范围</strong>：本期所有功能均在 <strong>Web 浏览器</strong>中交付与演示；交互按鼠标 + 键盘优化（拖拽、滚轮、快捷键等）。页面结构与视觉规范见 <a href="#7-web-%E9%A1%B5%E9%9D%A2%E5%8E%9F%E5%9E%8B%E8%A7%84%E8%8C%83indexhtml">§7 Web 页面原型规范</a>。</p>
+</blockquote>
+<h4 id="311-账号与个人中心">3.1.1 账号与个人中心</h4>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>注册 / 登录</td>
+<td>支持手机号或邮箱注册登录（原型可采用简化鉴权）。</td>
+</tr>
+<tr>
+<td>个人中心</td>
+<td>展示与编辑基本信息：头像、昵称、账号 ID 等。</td>
+</tr>
+<tr>
+<td>我的作品入口</td>
+<td>个人中心可查看「全部照片」「我的主题文件夹」「我的电子相册」列表。</td>
+</tr>
+</tbody></table>
+<h4 id="312-照片收纳本地上传不含云存储">3.1.2 照片收纳（本地上传，不含云存储）</h4>
+<p><strong>收纳逻辑（核心）：</strong></p>
+<pre><code class="language-text">本地上传 → 全部照片（默认图库，类似手机相册）
+                ↓ 用户多选照片
+           建立/加入主题【文件夹】（如「2025 京都之旅」）
+                ↓ 一键切换视图（同一批照片，瞬时无缝）
+           【明信片收纳册】模式</code></pre>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全部照片（默认图库）</td>
+<td>所有<strong>初次导入</strong>的照片统一进入此处，按导入顺序或拍摄时间排列，行为类似手机系统图库。</td>
+</tr>
+<tr>
+<td>本地上传照片</td>
+<td><strong>仅支持从本机选择并读取照片</strong>；导入时解析 EXIF（拍摄日期、拍摄时间、拍摄地点），并<strong>记录导入时间</strong>写入照片信息；不上传至云 OSS。</td>
+</tr>
+<tr>
+<td>建立主题文件夹</td>
+<td>用户从「全部照片」中<strong>多选</strong>照片，创建旅游等主题的【文件夹】；同一照片可被归入一个或多个主题文件夹（引用关系，不重复存储文件）。</td>
+</tr>
+<tr>
+<td>文件夹收纳模式</td>
+<td>以文件夹列表 + 照片网格/列表展示主题内照片，便于管理与批量操作；列表可展示拍摄与导入元数据。</td>
+</tr>
+<tr>
+<td>明信片收纳册模式</td>
+<td>同一主题文件夹可<strong>瞬时无缝切换</strong>为此模式；<strong>每页展示 2 张横向摆放的明信片</strong>；左右翻页浏览（参考线框图）。</td>
+</tr>
+<tr>
+<td>模式切换</td>
+<td>文件夹 ↔ 明信片收纳册：<strong>无刷新、无重新加载</strong>，仅切换视图组件，保持当前主题与浏览位置。</td>
+</tr>
+<tr>
+<td>主题文件夹列表</td>
+<td>展示用户创建的全部主题文件夹及封面、照片数量。</td>
+</tr>
+</tbody></table>
+<p><strong>明信片收纳册页面规范：</strong></p>
+<table>
+<thead>
+<tr>
+<th>规范项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>每页容量</td>
+<td><strong>2 张</strong>横向（landscape）明信片位</td>
+</tr>
+<tr>
+<td>元数据布局</td>
+<td><strong>照片上方</strong>：<code>拍摄日期</code> → <code>拍摄时间</code> → <code>拍摄地点</code>（自上而下）；<strong>照片下方</strong>：<code>导入年月日</code>（如 <code>2025-08-14</code>，位于拍摄地点与时间信息的下方）</td>
+</tr>
+<tr>
+<td>拍摄元数据</td>
+<td>读取照片 EXIF（<code>DateTimeOriginal</code>、GPS 逆地理编码）；缺失时展示「未知日期/时间/地点」</td>
+</tr>
+<tr>
+<td>导入时间</td>
+<td>取 <code>imported_at</code> 的年月日；<strong>每张导入照片均记录</strong>；仅在明信片收纳册视图的照片下方展示</td>
+</tr>
+<tr>
+<td>翻页交互</td>
+<td>左右翻页按钮 + 键盘方向键 ← →</td>
+</tr>
+<tr>
+<td>跨页展示</td>
+<td>双页展开时可视同册左右两页（共 4 个明信片位），翻页以「页」为单位</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>小程序触控交互与双端差异见 <a href="#8-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5%E8%A7%84%E5%88%92web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82p1">§8 下一阶段规划（P1）</a>。</p>
+</blockquote>
+<h4 id="313-电子相册编辑美化手账式参考电子手账软件">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</h4>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>电子相册创建</td>
+<td>基于某一主题相册照片，新建「电子相册」项目，支持多页画布。</td>
+</tr>
+<tr>
+<td>画布自由排版</td>
+<td>类手账/电子手账交互：拖拽、缩放、旋转、层级调整（置顶/置底）。</td>
+</tr>
+<tr>
+<td>图片大小调整</td>
+<td>用户可自由拉伸、缩放图片元素，保持或打破宽高比（可配置）。</td>
+</tr>
+<tr>
+<td>图片裁剪</td>
+<td>支持框选裁剪，保留画面局部区域。</td>
+</tr>
+<tr>
+<td>智能圈选与消除</td>
+<td>用户可圈选/涂抹画面中的关键物体或区域，<strong>消除路人、杂物及背景</strong>（原型可采用 AI 抠图 / inpainting 能力或简化实现）。</td>
+</tr>
+<tr>
+<td>内置素材库</td>
+<td>平台提供<strong>矢量图、插画、小贴纸</strong>等装饰素材，可拖拽至内页任意位置。</td>
+</tr>
+<tr>
+<td>文本编辑</td>
+<td>支持添加文本框，并提供常见富文本能力：<strong>字体选择、字号、粗细、斜体/花体、下划线、删除线、字体颜色</strong>等。</td>
+</tr>
+<tr>
+<td>页面管理</td>
+<td>新增/删除/复制/排序内页；支持碎片时间分次编辑。</td>
+</tr>
+<tr>
+<td>自动保存草稿</td>
+<td>编辑过程自动保存，防止意外丢失。</td>
+</tr>
+<tr>
+<td>【预览】拟真翻页</td>
+<td>编辑过程中<strong>随时可点击【预览】<strong>进入预览界面，<strong>模拟实物相册</strong>浏览体验，包含</strong>拟真翻页动效</strong>（纸张弯曲、阴影、页角卷起等）；预览基于当前最新编辑状态实时渲染，退出预览后回到编辑画布继续修改。</td>
+</tr>
+</tbody></table>
+<p><strong>【预览】界面规范：</strong></p>
+<table>
+<thead>
+<tr>
+<th>规范项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>入口</td>
+<td>编辑页顶部/底部常驻【预览】按钮，任意编辑阶段可点击</td>
+</tr>
+<tr>
+<td>拟真效果</td>
+<td>模拟实体相册/手账本：双页展开、拟真翻页动画、页厚与光影</td>
+</tr>
+<tr>
+<td>交互</td>
+<td>左右翻页（按钮 / 滑动 / 键盘）；支持全屏沉浸模式</td>
+</tr>
+<tr>
+<td>数据同步</td>
+<td>预览内容与当前草稿一致；返回编辑时不丢失未保存改动（依赖自动保存）</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>预览前可对当前页做轻量渲染缓存，避免每次进入全量重绘</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>小程序端编辑与预览适配见 <a href="#8-%E4%B8%8B%E4%B8%80%E9%98%B6%E6%AE%B5%E8%A7%84%E5%88%92web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82p1">§8</a>。</p>
+</blockquote>
+<p><strong>本期原型明确不做：</strong> 微信小程序、云存储（OSS）、跨设备云端同步、导出分享、打印对接。</p>
+<h3 id="32-p1-下一原型阶段与-mvp-扩展">3.2 P1 — 下一原型阶段与 MVP 扩展</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>微信小程序原型</strong></td>
+<td><strong>下一原型阶段重点</strong>：将 Web 端已验证的收纳、明信片册、手账式编辑等能力移植/适配至微信小程序；含触控交互、微信登录、本地缓存策略与审核合规。</td>
+</tr>
+<tr>
+<td>云端照片与作品存储</td>
+<td>照片及电子相册项目上传至云存储，解决本地空间不足与跨设备同步；<strong>与小程序阶段强相关，建议同期推进</strong>。</td>
+</tr>
+<tr>
+<td>双端账号打通</td>
+<td>Web 账号与微信登录绑定，支持跨端访问同一用户数据（依赖云存储）。</td>
+</tr>
+<tr>
+<td>电子相册导出/分享</td>
+<td>导出为 PDF 或生成只读分享链接；小程序端支持微信分享卡片。</td>
+</tr>
+<tr>
+<td>老年人友好模式</td>
+<td>简化操作流程：大字号、步骤引导、默认模板一键生成。</td>
+</tr>
+<tr>
+<td>更多模板与素材</td>
+<td>扩充 Zine / 手账风格页模板与素材包。</td>
+</tr>
+</tbody></table>
+<h3 id="33-p2-远期能力商业化与深度能力">3.3 P2 — 远期能力（商业化与深度能力）</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>合作厂商打印对接</td>
+<td>与印刷厂商 API 对接，用户从电子相册一键下单实体印刷（相册本、明信片等）。</td>
+</tr>
+<tr>
+<td>订单与物流</td>
+<td>下单、支付、生产状态、物流跟踪。</td>
+</tr>
+<tr>
+<td>高级设计能力</td>
+<td>更多潮流模板、自定义字体、品牌贴纸、动效页等。</td>
+</tr>
+<tr>
+<td>协作与共创</td>
+<td>多人共建同一主题相册或共同编辑电子相册。</td>
+</tr>
+<tr>
+<td>智能辅助</td>
+<td>AI 选图、自动排版、按时间线生成初稿等。</td>
+</tr>
+<tr>
+<td>存储套餐与商业化</td>
+<td>免费额度 + 付费扩容；打印分成等商业模式。</td>
+</tr>
+</tbody></table>
+<h2 id="4-核心流程图">4. 核心流程图</h2>
+<h3 id="41-本期原型主流程p0web-网页端">4.1 本期原型主流程（P0：Web 网页端）</h3>
+<pre class="mermaid">flowchart TD
+    A[用户进入 Web 原型] --> B{是否已登录}
+    B -->|否| C[注册/登录]
+    B -->|是| D[个人中心 / 主题相册列表]
+    C --> D
+
+    D --> E[本地上传照片]
+    E --> F[解析 EXIF + 记录导入时间]
+    F --> G[存入全部照片图库]
+
+    G --> H{是否建立主题文件夹}
+    H -->|否| I[继续在全部照片中浏览]
+    H -->|是| J[多选照片并创建主题文件夹]
+
+    J --> K[进入主题文件夹详情]
+    K --> L{视图模式}
+    L -->|文件夹模式| M[网格/列表浏览]
+    L -->|明信片收纳册| N[每页 2 张横版明信片翻页浏览]
+
+    M --> O{一键切换}
+    N --> O
+    O --> L
+
+    M --> P{是否制作电子相册}
+    N --> P
+    P -->|否| Q[结束 / 继续整理]
+    P -->|是| R[新建电子相册项目]
+
+    R --> S[手账式画布编辑]
+    S --> S1{点击预览}
+    S1 -->|是| S2[拟真翻页预览界面]
+    S2 --> S3[返回继续编辑]
+    S3 --> S
+    S --> T[自动保存草稿]
+    T --> V{是否继续编辑}
+    V -->|是| S
+    V -->|否| Q
+    I --> E</pre>
+<h3 id="42-远期主流程p1p2云同步-分享-打印">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</h3>
+<pre class="mermaid">flowchart TD
+    A[用户进入产品] --> B{是否已有账号}
+    B -->|否| C[注册/登录]
+    B -->|是| D[主题相册列表]
+    C --> D
+
+    D --> E[新建主题相册]
+    E --> F[填写主题信息]
+    F --> G[导入照片至云端 P1]
+    G --> H[主题相册详情]
+
+    H --> I{选择呈现模式}
+    I -->|文件夹模式| J[文件夹式浏览与管理]
+    I -->|明信片册模式| K[明信片册式翻页浏览]
+
+    J --> L[制作/编辑电子相册]
+    K --> L
+    L --> M[预览]
+    M --> N[导出/分享 P1]
+
+    N --> O{是否实体打印 P2}
+    O -->|否| P[结束]
+    O -->|是| Q[选择合作厂商与规格]
+    Q --> R[下单支付]
+    R --> S[生产与物流]
+    S --> P</pre>
+<h3 id="43-本期原型本地上传照片流程p0">4.3 本期原型：本地上传照片流程（P0）</h3>
+<pre class="mermaid">sequenceDiagram
+    participant U as 用户
+    participant App as 前端应用
+    participant Local as 浏览器本地存储
+
+    U->>App: 从本机选择照片文件
+    App->>App: 校验格式/大小
+    App->>App: 解析 EXIF（拍摄日期/时间/GPS）
+    App->>App: 记录 imported_at 导入时间
+    App->>Local: 写入 Blob / IndexedDB
+    Local-->>App: 存储成功
+    App->>App: 写入全部照片图库记录（含拍摄与导入元数据）
+    App-->>U: 在全部照片中展示（含拍摄元数据）</pre>
+<h3 id="44-远期照片导入与云存储流程p1">4.4 远期：照片导入与云存储流程（P1）</h3>
+<pre class="mermaid">sequenceDiagram
+    participant U as 用户
+    participant App as 前端应用
+    participant API as 后端服务
+    participant OSS as 云对象存储
+
+    U->>App: 选择照片文件
+    App->>App: 本地校验格式/大小
+    App->>API: 请求上传凭证/预签名 URL
+    API->>OSS: 生成上传地址
+    API-->>App: 返回上传 URL
+    App->>OSS: 直传照片文件
+    OSS-->>App: 上传成功
+    App->>API: 写入照片元数据并关联主题
+    API-->>App: 返回照片记录
+    App-->>U: 展示导入结果</pre>
+<h2 id="5-关键数据字段定义">5. 关键数据字段定义</h2>
+<blockquote>
+<p>以下字段按产品全量愿景定义。标有阶段标注的字段在对应阶段才需要实现。</p>
+</blockquote>
+<h3 id="51-用户user-p0">5.1 用户（User）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>用户唯一标识</td>
+</tr>
+<tr>
+<td>nickname</td>
+<td>string</td>
+<td>否</td>
+<td>昵称</td>
+</tr>
+<tr>
+<td>email / phone</td>
+<td>string</td>
+<td>是（其一）</td>
+<td>登录账号</td>
+</tr>
+<tr>
+<td>avatar_url</td>
+<td>string</td>
+<td>否</td>
+<td>头像地址</td>
+</tr>
+<tr>
+<td>storage_used_bytes</td>
+<td>number</td>
+<td>否</td>
+<td>已用云存储容量（P1 起启用）</td>
+</tr>
+<tr>
+<td>storage_quota_bytes</td>
+<td>number</td>
+<td>否</td>
+<td>存储配额上限（P1 起启用）</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>注册时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="52-主题文件夹themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>folder_id</td>
+<td>string</td>
+<td>是</td>
+<td>主题文件夹唯一标识</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>title</td>
+<td>string</td>
+<td>是</td>
+<td>主题名称，如「2025 京都之旅」</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td>否</td>
+<td>主题描述</td>
+</tr>
+<tr>
+<td>cover_photo_id</td>
+<td>string</td>
+<td>否</td>
+<td>封面照片 ID</td>
+</tr>
+<tr>
+<td>display_mode</td>
+<td>enum</td>
+<td>是</td>
+<td><code>folder</code>（文件夹）| <code>postcard</code>（明信片收纳册）；切换仅影响视图</td>
+</tr>
+<tr>
+<td>photo_ids</td>
+<td>array</td>
+<td>是</td>
+<td>引用的照片 ID 列表（来自全部照片库）</td>
+</tr>
+<tr>
+<td>photo_count</td>
+<td>number</td>
+<td>是</td>
+<td>照片数量（冗余统计）</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>创建时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="53-照片photo-p0">5.3 照片（Photo）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>photo_id</td>
+<td>string</td>
+<td>是</td>
+<td>照片唯一标识</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>file_name</td>
+<td>string</td>
+<td>是</td>
+<td>原始文件名</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>string</td>
+<td>是</td>
+<td>如 image/jpeg、image/png</td>
+</tr>
+<tr>
+<td>file_size_bytes</td>
+<td>number</td>
+<td>是</td>
+<td>文件大小</td>
+</tr>
+<tr>
+<td>width</td>
+<td>number</td>
+<td>否</td>
+<td>图片宽度（像素）</td>
+</tr>
+<tr>
+<td>height</td>
+<td>number</td>
+<td>否</td>
+<td>图片高度（像素）</td>
+</tr>
+<tr>
+<td>local_blob_key</td>
+<td>string</td>
+<td>是（P0）</td>
+<td>本地存储键（Web：IndexedDB + Blob URL）</td>
+</tr>
+<tr>
+<td>storage_url</td>
+<td>string</td>
+<td>否（P1）</td>
+<td>云存储访问地址（P1 起）</td>
+</tr>
+<tr>
+<td>thumbnail_url</td>
+<td>string</td>
+<td>否</td>
+<td>缩略图地址</td>
+</tr>
+<tr>
+<td>taken_date</td>
+<td>date</td>
+<td>否</td>
+<td><strong>拍摄日期</strong>（EXIF <code>DateTimeOriginal</code>，非导入时间）</td>
+</tr>
+<tr>
+<td>taken_time</td>
+<td>time</td>
+<td>否</td>
+<td><strong>拍摄时间</strong>（EXIF）</td>
+</tr>
+<tr>
+<td>taken_location</td>
+<td>string</td>
+<td>否</td>
+<td><strong>拍摄地点</strong>（EXIF GPS 逆地理编码）</td>
+</tr>
+<tr>
+<td>taken_at</td>
+<td>datetime</td>
+<td>否</td>
+<td>拍摄时间戳（便于排序，由 EXIF 解析）</td>
+</tr>
+<tr>
+<td>imported_at</td>
+<td>datetime</td>
+<td>是</td>
+<td><strong>导入时间</strong>（系统记录，每张导入照片必有）；全部照片库排序可用；明信片收纳册中展示其<strong>年月日</strong>于拍摄地点/时间下方</td>
+</tr>
+<tr>
+<td>imported_date</td>
+<td>date</td>
+<td>是</td>
+<td>导入日期（由 <code>imported_at</code> 派生，便于明信片册展示）</td>
+</tr>
+<tr>
+<td>in_library</td>
+<td>boolean</td>
+<td>是</td>
+<td>是否在全部照片库中（默认 <code>true</code>）</td>
+</tr>
+<tr>
+<td>folder_ids</td>
+<td>array</td>
+<td>否</td>
+<td>已归入的主题文件夹 ID 列表</td>
+</tr>
+</tbody></table>
+<h3 id="54-电子相册digitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>digital_album_id</td>
+<td>string</td>
+<td>是</td>
+<td>电子相册项目 ID</td>
+</tr>
+<tr>
+<td>source_folder_id</td>
+<td>string</td>
+<td>是</td>
+<td>来源主题文件夹 ID</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>title</td>
+<td>string</td>
+<td>是</td>
+<td>电子相册标题</td>
+</tr>
+<tr>
+<td>style</td>
+<td>enum</td>
+<td>否</td>
+<td>风格标签，如 <code>zine</code>、<code>journal</code>（手账）</td>
+</tr>
+<tr>
+<td>pages</td>
+<td>json</td>
+<td>是</td>
+<td>页面列表，每页包含画布元素（见 5.5）</td>
+</tr>
+<tr>
+<td>status</td>
+<td>enum</td>
+<td>是</td>
+<td><code>draft</code> | <code>preview_ready</code></td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>创建时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="55-画布元素canvaselement-p0">5.5 画布元素（CanvasElement）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>element_id</td>
+<td>string</td>
+<td>是</td>
+<td>元素唯一标识</td>
+</tr>
+<tr>
+<td>page_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属内页 ID</td>
+</tr>
+<tr>
+<td>type</td>
+<td>enum</td>
+<td>是</td>
+<td><code>image</code> | <code>text</code> | <code>sticker</code> | <code>vector</code> | <code>illustration</code></td>
+</tr>
+<tr>
+<td>transform</td>
+<td>json</td>
+<td>是</td>
+<td>位置 (x,y)、缩放、旋转、层级 z-index</td>
+</tr>
+<tr>
+<td>image_edit</td>
+<td>json</td>
+<td>否</td>
+<td>图片专属：裁剪区域、抠图/消除蒙版、原图引用</td>
+</tr>
+<tr>
+<td>text_style</td>
+<td>json</td>
+<td>否</td>
+<td>文本专属：内容、字体、字号、粗细、斜体、下划线、删除线、颜色</td>
+</tr>
+<tr>
+<td>asset_id</td>
+<td>string</td>
+<td>否</td>
+<td>素材库资源 ID（贴纸/矢量图/插画）</td>
+</tr>
+<tr>
+<td>photo_id</td>
+<td>string</td>
+<td>否</td>
+<td>引用的主题相册照片 ID</td>
+</tr>
+</tbody></table>
+<h3 id="56-素材资源asset-p0">5.6 素材资源（Asset）— P0</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>asset_id</td>
+<td>string</td>
+<td>是</td>
+<td>素材唯一标识</td>
+</tr>
+<tr>
+<td>type</td>
+<td>enum</td>
+<td>是</td>
+<td><code>vector</code> | <code>illustration</code> | <code>sticker</code></td>
+</tr>
+<tr>
+<td>name</td>
+<td>string</td>
+<td>是</td>
+<td>素材名称</td>
+</tr>
+<tr>
+<td>file_url</td>
+<td>string</td>
+<td>是</td>
+<td>素材文件地址（SVG/PNG 等）</td>
+</tr>
+<tr>
+<td>tags</td>
+<td>array</td>
+<td>否</td>
+<td>分类标签，便于检索</td>
+</tr>
+<tr>
+<td>is_builtin</td>
+<td>boolean</td>
+<td>是</td>
+<td>是否为平台内置素材</td>
+</tr>
+</tbody></table>
+<h3 id="57-打印订单printorder-p2-规划">5.7 打印订单（PrintOrder）— P2 规划</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>order_id</td>
+<td>string</td>
+<td>是</td>
+<td>订单 ID</td>
+</tr>
+<tr>
+<td>digital_album_id</td>
+<td>string</td>
+<td>是</td>
+<td>关联电子相册</td>
+</tr>
+<tr>
+<td>vendor_id</td>
+<td>string</td>
+<td>是</td>
+<td>合作厂商</td>
+</tr>
+<tr>
+<td>product_spec</td>
+<td>json</td>
+<td>是</td>
+<td>规格（尺寸、材质、页数等）</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>number</td>
+<td>是</td>
+<td>订单金额</td>
+</tr>
+<tr>
+<td>status</td>
+<td>enum</td>
+<td>是</td>
+<td><code>pending</code> | <code>paid</code> | <code>producing</code> | <code>shipped</code> | <code>completed</code> | <code>cancelled</code></td>
+</tr>
+<tr>
+<td>shipping_address</td>
+<td>json</td>
+<td>是</td>
+<td>收货地址</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>下单时间</td>
+</tr>
+</tbody></table>
+<h2 id="6-异常场景与边界条件">6. 异常场景与边界条件</h2>
+<h3 id="61-照片导入p0本地上传">6.1 照片导入（P0：本地上传）</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单张文件超过大小上限</td>
+<td>前端拦截并提示；建议上限原型阶段 10–20MB/张</td>
+</tr>
+<tr>
+<td>不支持格式（如 HEIC 未转码）</td>
+<td>提示仅支持 JPG/PNG/WebP</td>
+</tr>
+<tr>
+<td>EXIF 日期/时间/地点缺失</td>
+<td>明信片册展示「未知日期/时间/地点」；<strong>不使用</strong> <code>imported_at</code> 替代拍摄信息</td>
+</tr>
+<tr>
+<td>导入时间展示</td>
+<td>明信片收纳册中，导入年月日固定显示在<strong>照片下方</strong>（拍摄日期/时间/地点在照片上方）；文件夹模式可在详情中展示完整 <code>imported_at</code></td>
+</tr>
+<tr>
+<td>GPS 逆地理编码失败</td>
+<td>展示「未知地点」；可提供手动编辑地点（P1 可选）</td>
+</tr>
+<tr>
+<td>浏览器本地存储配额不足</td>
+<td>提示用户清理已导入照片或缩减导入数量</td>
+</tr>
+<tr>
+<td>单次批量导入数量过多</td>
+<td>限制单次最多 N 张（如 50），超出分批导入</td>
+</tr>
+<tr>
+<td>刷新页面后数据丢失</td>
+<td>P0 使用 IndexedDB 持久化；若用户清除浏览器数据则照片不可恢复，需提示</td>
+</tr>
+</tbody></table>
+<h3 id="62-模式切换与明信片收纳册">6.2 模式切换与明信片收纳册</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主题内无照片时切换明信片模式</td>
+<td>允许切换，展示空明信片册引导从全部照片添加</td>
+</tr>
+<tr>
+<td>文件夹 ↔ 明信片册切换</td>
+<td><strong>瞬时无缝</strong>：保持当前主题、页码/滚动位置，不重新请求数据</td>
+</tr>
+<tr>
+<td>切换模式是否影响电子相册</td>
+<td>不影响；电子相册引用照片源数据，与展示模式解耦</td>
+</tr>
+<tr>
+<td>主题照片数量为奇数</td>
+<td>明信片册最后一页仅展示 1 张，另一侧留白</td>
+</tr>
+<tr>
+<td>照片无横版比例</td>
+<td>以裁剪或留白方式适配横版明信片位，保持版式统一</td>
+</tr>
+<tr>
+<td>明信片模式照片过多</td>
+<td>分页懒加载；每页固定 2 张，按 <code>taken_at</code> 或用户排序</td>
+</tr>
+</tbody></table>
+<h3 id="63-电子相册编辑p0">6.3 电子相册编辑（P0）</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>源主题照片被删除</td>
+<td>编辑页标记缺失位，提示替换图片</td>
+</tr>
+<tr>
+<td>未保存离开编辑页</td>
+<td>弹窗确认；编辑过程<strong>自动保存草稿</strong>，支持碎片时间分次编辑</td>
+</tr>
+<tr>
+<td>智能消除处理失败或超时</td>
+<td>提示用户重试或手动裁剪替代；原型可降级为简单抠图</td>
+</tr>
+<tr>
+<td>圈选区域过小或过大</td>
+<td>给出最小/最大选区提示，引导用户重新圈选</td>
+</tr>
+<tr>
+<td>素材库加载失败</td>
+<td>展示重试按钮；内置核心贴纸包可做离线缓存</td>
+</tr>
+<tr>
+<td>文本超出画布边界</td>
+<td>自动换行或提示用户缩小字号/调整文本框</td>
+</tr>
+<tr>
+<td>老年用户操作迷失</td>
+<td>提供步骤引导与「一键套用模板」兜底路径</td>
+</tr>
+<tr>
+<td>画布元素过多导致卡顿</td>
+<td>限制单页元素上限；超出时提示拆分页面</td>
+</tr>
+<tr>
+<td>预览渲染失败或超时</td>
+<td>提示重试；可降级为无动画的静态翻页预览</td>
+</tr>
+<tr>
+<td>预览与编辑状态不一致</td>
+<td>进入预览前强制同步最新草稿；预览页只读，不可直接编辑</td>
+</tr>
+</tbody></table>
+<h3 id="64-账号与个人中心p0">6.4 账号与个人中心（P0）</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录态过期</td>
+<td>引导重新登录；本地草稿暂存，登录后恢复</td>
+</tr>
+<tr>
+<td>头像上传失败</td>
+<td>保留默认头像并提示重试</td>
+</tr>
+<tr>
+<td>昵称含敏感词</td>
+<td>前端校验并提示修改</td>
+</tr>
+</tbody></table>
+<h3 id="65-云存储与数据安全p1-起">6.5 云存储与数据安全（P1 起）</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>云存储服务不可用</td>
+<td>上传失败提示，记录错误日志；只读场景可展示缓存缩略图</td>
+</tr>
+<tr>
+<td>上传中断 / 网络失败</td>
+<td>支持重试；已上传部分不重复计费存储（按 photo_id 去重）</td>
+</tr>
+<tr>
+<td>存储配额已满</td>
+<td>阻止上传，提示清理照片或升级容量</td>
+</tr>
+<tr>
+<td>数据损坏 / 丢失</td>
+<td>依赖云厂商冗余；关键元数据 DB 与 OSS 分离备份</td>
+</tr>
+<tr>
+<td>用户注销账号</td>
+<td>按合规要求删除或匿名化用户数据及 OSS 对象</td>
+</tr>
+</tbody></table>
+<h3 id="66-原型阶段特有限制">6.6 原型阶段特有限制</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>仅 Web 网页端</td>
+<td>本期不开发微信小程序；所有功能以浏览器演示为准</td>
+</tr>
+<tr>
+<td>不含云存储</td>
+<td>照片与作品不做 OSS 云端同步；换设备或清缓存后本地数据可能不可恢复，需提示用户</td>
+</tr>
+<tr>
+<td>无导出分享</td>
+<td>相关入口不展示或灰显「即将上线」（P1）</td>
+</tr>
+<tr>
+<td>无正式生产部署环境</td>
+<td>使用演示环境 / 临时域名；明确标注「原型」</td>
+</tr>
+<tr>
+<td>打印能力未接入</td>
+<td>P2 功能入口灰显或展示「即将上线」占位</td>
+</tr>
+<tr>
+<td>智能消除能力受限</td>
+<td>原型阶段可采用第三方 AI API 或简化算法，效果与性能需在演示时管理预期</td>
+</tr>
+</tbody></table>
+<h2 id="7-web-页面原型规范indexhtml">7. Web 页面原型规范（index.html）</h2>
+<blockquote>
+<p>本节归纳 <strong>Web 可交互页面原型</strong>（<code>index.html</code>）的元素要求、风格与技术栈，并记录初版 UI/交互设计决策及待澄清项。<br><strong>同步机制</strong>：<code>PRD.md</code> 为唯一编辑源；修改 <code>index.html</code> 后须在 <strong>§7.6 修订记录</strong> 中追加版本行，并执行 <code>npm run sync-prd</code> 同步 <code>PRD.html</code>。</p>
+</blockquote>
+<h3 id="71-原型文件与同步机制">7.1 原型文件与同步机制</h3>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>原型文件</td>
+<td><code>index.html</code>（单文件，CSS / JS 内联）</td>
+</tr>
+<tr>
+<td>关联文档</td>
+<td>本节（§7）；功能需求以 §3 为准</td>
+</tr>
+<tr>
+<td>PRD 同步</td>
+<td>修改 <code>PRD.md</code> → <code>npm run sync-prd</code> → 更新 <code>PRD.html</code></td>
+</tr>
+<tr>
+<td>原型修订同步</td>
+<td>修改 <code>index.html</code> → 在 §7.6 追加修订行（版本号 / 时间 / 摘要）→ <code>npm run sync-prd</code></td>
+</tr>
+<tr>
+<td>版本号规则</td>
+<td>页面原型使用 <code>UI-Vx.y</code>，与 PRD 文档版本（V3.0 等）独立编号</td>
+</tr>
+</tbody></table>
+<h3 id="72-技术栈要求">7.2 技术栈要求</h3>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>要求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文件形态</td>
+<td><strong>单文件 HTML</strong>，所有 CSS、JavaScript 内联于 <code>index.html</code></td>
+</tr>
+<tr>
+<td>样式框架</td>
+<td><strong>Tailwind CSS</strong>（CDN 引入）</td>
+</tr>
+<tr>
+<td>字体</td>
+<td><strong>Inter</strong>（Google Fonts CDN）</td>
+</tr>
+<tr>
+<td>脚本</td>
+<td><strong>原生 JavaScript</strong>，不使用 React / Vue 等框架</td>
+</tr>
+<tr>
+<td>图表</td>
+<td><strong>Chart.js</strong>（CDN），用于首页活动统计等数据可视化</td>
+</tr>
+<tr>
+<td>数据持久化（原型）</td>
+<td><code>localStorage</code> 模拟本地上传照片（对应 PRD P0 本地上传、不含云存储）</td>
+</tr>
+<tr>
+<td>运行方式</td>
+<td>浏览器直接打开 <code>index.html</code> 或静态服务器访问</td>
+</tr>
+</tbody></table>
+<h3 id="73-布局与页面结构">7.3 布局与页面结构</h3>
+<table>
+<thead>
+<tr>
+<th>区域</th>
+<th>元素与行为</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>左侧边栏</strong></td>
+<td>固定宽度导航；依次包含 <strong>【我的作品】【图库】【电子相册】</strong>；底部为用户头像区（个人中心占位）</td>
+</tr>
+<tr>
+<td><strong>顶部栏</strong></td>
+<td><strong>搜索框</strong>（全局搜索占位）+ <strong>上传照片</strong> 按钮</td>
+</tr>
+<tr>
+<td><strong>首页</strong></td>
+<td>欢迎区 + 功能说明插画；<strong>【图库】【电子相册】</strong> 两大入口卡片；Chart.js 活动图 + 数据概览</td>
+</tr>
+<tr>
+<td><strong>我的作品</strong></td>
+<td>照片 / 文件夹 / 电子相册数量统计；最近主题文件夹快捷入口</td>
+</tr>
+<tr>
+<td><strong>图库</strong></td>
+<td>Tab：<strong>全部照片</strong> | <strong>主题文件夹</strong>；视图切换：<strong>网格 / 列表</strong>；文件夹详情下：<strong>文件夹 / 明信片册</strong> 模式切换</td>
+</tr>
+<tr>
+<td><strong>电子相册</strong></td>
+<td>作品列表 → 手账式编辑画布（工具栏 + 画布 + 页缩略图）→ <strong>【预览】</strong> 拟真翻页弹窗</td>
+</tr>
+</tbody></table>
+<p><strong>核心跳转路径：</strong></p>
+<pre><code class="language-text">首页 / 侧栏 → 图库 → 全部照片（网格/列表）→ 主题文件夹 → 文件夹详情 → 明信片册翻页
+首页 / 侧栏 → 电子相册 → 作品列表 → 编辑画布 → 预览</code></pre>
+<h3 id="74-视觉风格与元素规范">7.4 视觉风格与元素规范</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>规范</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>设计风格参考</td>
+<td><strong>Linear</strong>、<strong>Notion</strong>：克制、简约、信息层次清晰</td>
+</tr>
+<tr>
+<td>主色</td>
+<td><code>#BFE1F2</code>（品牌色）；辅助色 <code>#8ECAE6</code>、<code>#E8F6FC</code>；文字色 <code>#1E3A4C</code></td>
+</tr>
+<tr>
+<td>背景</td>
+<td>页面底 <code>#F7F9FB</code>；卡片白底 + 细边框 <code>slate-200</code></td>
+</tr>
+<tr>
+<td>字体</td>
+<td>Inter；标题 semibold，正文 regular，辅助信息小字号灰色</td>
+</tr>
+<tr>
+<td>圆角</td>
+<td>卡片 <code>rounded-2xl</code>，按钮 <code>rounded-lg</code>，照片 <code>rounded-xl</code></td>
+</tr>
+<tr>
+<td>阴影</td>
+<td>轻阴影（soft / card），悬停微抬升</td>
+</tr>
+<tr>
+<td>插画</td>
+<td>扁平风简约 SVG（相册叠放、空状态相机等），提升灵动度、避免花哨</td>
+</tr>
+<tr>
+<td>信息密度</td>
+<td>留白充足；首页双卡片 + 统计区；图库以照片网格为主</td>
+</tr>
+</tbody></table>
+<h3 id="75-初版交互实现说明ui-v10">7.5 初版交互实现说明（UI-V1.0）</h3>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>已实现</th>
+<th>未实现 / 占位</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>导航</td>
+<td>侧栏三项切换视图；首页卡片跳转</td>
+<td>—</td>
+</tr>
+<tr>
+<td>上传</td>
+<td>本地上传写入 localStorage；示例照片预置</td>
+<td>EXIF 解析、拍摄地点逆地理编码</td>
+</tr>
+<tr>
+<td>图库·全部照片</td>
+<td>网格 / 列表切换；搜索过滤</td>
+<td>多选建立文件夹</td>
+</tr>
+<tr>
+<td>图库·主题文件夹</td>
+<td>预设文件夹列表；进入详情</td>
+<td>新建 / 编辑 / 删除文件夹</td>
+</tr>
+<tr>
+<td>图库·明信片册</td>
+<td>每页 2 张横版；元数据上下布局；翻页</td>
+<td>双页展开 4 位；键盘 ← →</td>
+</tr>
+<tr>
+<td>电子相册</td>
+<td>列表、编辑页骨架、预览弹窗</td>
+<td>真实拖拽排版、裁剪、贴纸、富文本、智能消除</td>
+</tr>
+<tr>
+<td>账号</td>
+<td>侧栏「访客用户」占位</td>
+<td>登录 / 注册 / 个人资料编辑</td>
+</tr>
+</tbody></table>
+<h3 id="76-indexhtml-修订记录">7.6 index.html 修订记录</h3>
+<!-- INDEX_REV_START --><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>修订时间（北京时间）</th>
+<th>修订人</th>
+<th>修订摘要</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UI-V1.0</td>
+<td>2026-08-14 16:55</td>
+<td>产品 / 设计</td>
+<td><strong>初版生成</strong>：单文件 <code>index.html</code>；侧栏【我的作品/图库/电子相册】+ 顶部搜索；首页双入口卡片 + Chart.js 活动图；图库全部照片（网格/列表）、主题文件夹、明信片册模式；电子相册列表与手账式编辑骨架、预览弹窗；Linear/Notion 风格，主色 #BFE1F2，Inter 字体。</td>
+</tr>
+<tr>
+<td>UI-V1.1</td>
+<td>2026-08-14 17:05</td>
+<td>研发</td>
+<td><strong>修复示例图</strong>：替换失效的 Unsplash 图片链接（京都塔、伏见稻荷）；新增 localStorage 缓存迁移，自动修复旧版示例图 URL。</td>
+</tr>
+</tbody></table>
+<!-- INDEX_REV_END --><blockquote>
+<p>修改 <code>index.html</code> 后请在本表追加一行，并执行 <code>npm run sync-prd</code>。<code>index.html</code> 文件头注释 <code>原型版本：UI-Vx.y</code> 应与最新版本号保持一致。</p>
+</blockquote>
+<h3 id="77-页面原型设计待澄清项">7.7 页面原型设计待澄清项</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>问题</th>
+<th>当前初版处理</th>
+<th>影响范围</th>
+<th>建议澄清方</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>D1</td>
+<td><strong>默认落地页是哪个？</strong> 打开应用后先进首页、我的作品还是图库？</td>
+<td>默认「欢迎首页」</td>
+<td>信息架构、首屏路径</td>
+<td>产品 + 设计</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><strong>侧栏与首页入口是否冗余？</strong> 图库/电子相册在侧栏与首页重复出现</td>
+<td>两侧均保留</td>
+<td>导航层级</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><strong>「我的作品」是否包含个人中心？</strong> 头像区是否可点击进入资料编辑</td>
+<td>仅统计仪表盘 + 快捷入口</td>
+<td>账号功能范围</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>D4</td>
+<td><strong>主题文件夹创建流程</strong></td>
+<td>使用 2 个预设文件夹；未做多选照片 → 新建</td>
+<td>核心收纳流程</td>
+<td>产品 + 设计</td>
+</tr>
+<tr>
+<td>D5</td>
+<td><strong>明信片册双页展开</strong></td>
+<td>单页 2 张；未实现书本双页共 4 位</td>
+<td>与附录 C 线框一致性</td>
+<td>设计</td>
+</tr>
+<tr>
+<td>D6</td>
+<td><strong>明信片册键盘翻页</strong></td>
+<td>仅按钮翻页</td>
+<td>Web 无障碍与 PRD 键盘要求</td>
+<td>研发</td>
+</tr>
+<tr>
+<td>D7</td>
+<td><strong>新建电子相册是否必须绑定主题文件夹？</strong></td>
+<td>直接进入空白编辑画布</td>
+<td>数据模型、选图来源</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>D8</td>
+<td><strong>手账编辑器工具完整度</strong></td>
+<td>工具栏图标占位；无真实拖拽/裁剪/贴纸/富文本</td>
+<td>编辑体验验证深度</td>
+<td>产品 + 设计</td>
+</tr>
+<tr>
+<td>D9</td>
+<td><strong>搜索框作用域</strong></td>
+<td>仅过滤图库内照片</td>
+<td>全局搜索 vs 页内搜索</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>D10</td>
+<td><strong>Chart.js 数据是否对接真实统计？</strong></td>
+<td>静态 mock 数据</td>
+<td>首页信息真实性</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>D11</td>
+<td><strong>老年人友好模式 UI</strong></td>
+<td>未单独设计大字号/引导流</td>
+<td>用户画像覆盖</td>
+<td>设计</td>
+</tr>
+<tr>
+<td>D12</td>
+<td><strong>响应式断点与最小宽度</strong></td>
+<td>Tailwind 默认断点；侧边栏固定 224px</td>
+<td>小屏 / 平板布局</td>
+<td>设计 + 研发</td>
+</tr>
+</tbody></table>
+<h2 id="8-下一阶段规划web-与小程序差异p1">8. 下一阶段规划：Web 与小程序差异（P1）</h2>
+<blockquote>
+<p><strong>说明</strong>：本节为**下一原型阶段（P1）**的双端规划参考，<strong>不属于本期 Web 原型交付范围</strong>。本期仅需按 Web 列实现；待 Web 核心链路验证通过后，再按本节差异适配小程序。</p>
+</blockquote>
+<h3 id="81-账号与个人中心">8.1 账号与个人中心</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>登录方式</td>
+<td>手机号 / 邮箱 + 验证码或密码</td>
+<td>微信授权登录为主；可选绑定手机号</td>
+</tr>
+<tr>
+<td>个人中心入口</td>
+<td>顶部导航栏头像 / 侧边栏</td>
+<td>「我的」Tab 页</td>
+</tr>
+<tr>
+<td>头像修改</td>
+<td>本地上传裁剪</td>
+<td><code>chooseAvatar</code> / 相册选取；注意隐私协议</td>
+</tr>
+<tr>
+<td>会话保持</td>
+<td>Cookie / LocalStorage Token</td>
+<td><code>wx.login</code> + 服务端 session；注意 token 刷新</td>
+</tr>
+</tbody></table>
+<h3 id="82-照片导入与全部照片库">8.2 照片导入与全部照片库</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>选图入口</td>
+<td><code>&lt;input type=&quot;file&quot;&gt;</code> 多选；拖拽上传（可选）</td>
+<td><code>wx.chooseMedia</code> / <code>wx.chooseImage</code>；受微信 API 版本约束</td>
+</tr>
+<tr>
+<td>本地存储</td>
+<td>IndexedDB + Blob URL</td>
+<td>微信临时文件路径 + 本地缓存；<strong>单用户存储上限更严格（约 10MB–200MB 级）</strong></td>
+</tr>
+<tr>
+<td>EXIF 解析</td>
+<td>前端库（如 exifr）直接解析</td>
+<td>部分机型/格式 EXIF 受限；GPS 需用户授权位置信息后才能逆地理编码</td>
+</tr>
+<tr>
+<td>拍摄地点展示</td>
+<td>GPS 逆地理编码 API</td>
+<td>同上；需在隐私政策中说明位置信息用途</td>
+</tr>
+<tr>
+<td>全部照片列表</td>
+<td>虚拟滚动 + 网格；鼠标 hover 操作</td>
+<td>长列表性能优化（分页加载）；长按多选</td>
+</tr>
+</tbody></table>
+<h3 id="83-主题文件夹与明信片收纳册">8.3 主题文件夹与明信片收纳册</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>建立文件夹</td>
+<td>全部照片中 Ctrl/Shift 多选 →「添加到文件夹」</td>
+<td>长按进入多选模式 →「建立主题文件夹」</td>
+</tr>
+<tr>
+<td>文件夹 ↔ 明信片册切换</td>
+<td>顶部 Toggle / Tab；<strong>无刷新瞬时切换</strong></td>
+<td>同上；切换动画宜轻量（≤ 300ms）避免卡顿</td>
+</tr>
+<tr>
+<td>明信片册翻页</td>
+<td>左右按钮 + 键盘 ← →</td>
+<td><strong>左右滑动手势</strong>为主；边缘按钮为辅</td>
+</tr>
+<tr>
+<td>每页 2 张横版明信片</td>
+<td>CSS Grid 布局；双页展开可选</td>
+<td>同逻辑；注意窄屏（手机竖屏）下单页展示 2 张时的尺寸适配</td>
+</tr>
+<tr>
+<td>元数据展示</td>
+<td>照片上方：拍摄日期/时间/地点；照片下方：导入年月日</td>
+<td>同上；导入日期字号可略小、颜色略浅以区分层级</td>
+</tr>
+<tr>
+<td>空状态</td>
+<td>插图 + 引导文案 + 上传按钮</td>
+<td>同上；按钮触达区域 ≥ 44px</td>
+</tr>
+</tbody></table>
+<h3 id="84-电子相册编辑手账式">8.4 电子相册编辑（手账式）</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>画布交互</td>
+<td>鼠标拖拽、滚轮缩放、右键菜单</td>
+<td>单指拖拽、双指缩放旋转；注意与翻页手势冲突（编辑区与浏览区分层）</td>
+</tr>
+<tr>
+<td>图片裁剪/圈选</td>
+<td>鼠标框选、精细涂抹</td>
+<td>手指涂抹圈选；提供更大触控手柄；圈选消除算力受限时走服务端 API</td>
+</tr>
+<tr>
+<td>素材/贴纸</td>
+<td>拖拽放置；素材面板侧边栏</td>
+<td>底部素材抽屉；点击添加后手指定位</td>
+</tr>
+<tr>
+<td>文本编辑</td>
+<td>富文本工具栏悬浮</td>
+<td>底部固定工具栏；花体字体需确认小程序字体授权</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>Canvas / SVG / WebGL 按复杂度选型</td>
+<td>优先原生组件 + Canvas 2D；限制同页元素数；大图自动降采样</td>
+</tr>
+<tr>
+<td>自动保存</td>
+<td>IndexedDB 草稿</td>
+<td>本地 Storage + 定时同步服务端（若有后端）</td>
+</tr>
+</tbody></table>
+<h3 id="85-电子相册预览拟真翻页">8.5 电子相册【预览】拟真翻页</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>预览入口</td>
+<td>编辑页常驻【预览】按钮</td>
+<td>同上，置于底部工具栏上方</td>
+</tr>
+<tr>
+<td>拟真翻页</td>
+<td>CSS 3D Transform / Canvas 翻页动画；支持页角拖拽（可选）</td>
+<td>同逻辑；优先使用 Canvas 2D 或原生动画 API，控制帧率 ≥ 30fps</td>
+</tr>
+<tr>
+<td>实物模拟</td>
+<td>双页展开、书脊阴影、纸张厚度与弯曲</td>
+<td>竖屏单手滑动翻页；横屏可双页展开</td>
+</tr>
+<tr>
+<td>退出预览</td>
+<td>Esc /「返回编辑」按钮</td>
+<td>左上角返回；保留编辑页滚动位置</td>
+</tr>
+<tr>
+<td>性能降级</td>
+<td>低性能设备可关闭弯曲动画，保留滑动切页</td>
+<td>微信开发者工具与真机分别测试；大图自动降采样</td>
+</tr>
+</tbody></table>
+<h3 id="86-通用差异">8.6 通用差异</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>导航结构</td>
+<td>多级路由 + 面包屑</td>
+<td>TabBar + 页面栈；注意页面层级 ≤ 10 层</td>
+</tr>
+<tr>
+<td>分享能力</td>
+<td>P1：复制链接</td>
+<td>P1：微信好友/朋友圈分享卡片（需开通能力）</td>
+</tr>
+<tr>
+<td>离线使用</td>
+<td>Service Worker 可部分离线</td>
+<td>弱网依赖微信缓存；核心贴纸包建议内置</td>
+</tr>
+<tr>
+<td>审核合规</td>
+<td>常规 Web 合规</td>
+<td>需符合微信小程序审核：UGC、隐私、相册权限说明</td>
+</tr>
+<tr>
+<td>原型演示</td>
+<td>浏览器直接访问 URL</td>
+<td>开发者工具 + 真机预览二维码</td>
+</tr>
+</tbody></table>
+<h2 id="9-待进一步澄清的问题">9. 待进一步澄清的问题</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>问题</th>
+<th>影响范围</th>
+<th>建议澄清方</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Q1</td>
+<td><strong>年轻人与老年人的功能差异如何平衡？</strong> 是统一产品两套 UI 主题，还是分模式切换？</td>
+<td>信息架构、模板设计</td>
+<td>产品 + 设计</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td><strong>主题文件夹是否支持自动聚类？</strong> 除手动从全部照片多选外，是否按拍摄时间/地点自动建议主题？</td>
+<td>相册创建流程</td>
+<td>产品 + 市场部</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td><strong>智能消除（路人/背景）的技术方案？</strong> 自研模型、第三方 API，还是原型阶段手动抠图兜底？</td>
+<td>编辑体验、成本</td>
+<td>研发 + 产品</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td><strong>内置素材库的范围？</strong> 首期提供多少矢量图/插画/贴纸？是否分主题包？</td>
+<td>设计工作量</td>
+<td>设计 + 市场部</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td><strong>电子相册与主题文件夹的关系？</strong> 一个主题是否只能生成一本电子相册，还是可生成多版本？</td>
+<td>数据结构</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>Q6</td>
+<td><strong>打印合作厂商是否已有意向？</strong></td>
+<td>P2 排期</td>
+<td>商务 + 市场部</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td><strong>P1 云存储预算与合规？</strong></td>
+<td>成本模型、合规</td>
+<td>研发 + 法务</td>
+</tr>
+<tr>
+<td>Q8</td>
+<td><del>双端功能是否必须完全对等？</del> <strong>已明确：本期 Web 优先，小程序为 P1 下一原型阶段。</strong> 待澄清：小程序首期范围是否全量对标 Web，还是分模块分期（如先收纳后编辑）？</td>
+<td>P1 排期</td>
+<td>产品 + 研发</td>
+</tr>
+<tr>
+<td>Q9</td>
+<td><strong>双端账号与数据如何打通？</strong> 微信登录的小程序用户能否在 Web 端访问同一账号与作品？（P1，依赖云存储）</td>
+<td>账号体系、架构</td>
+<td>研发 + 产品</td>
+</tr>
+<tr>
+<td>Q10</td>
+<td><strong>小程序本地存储上限下如何约束照片？</strong> 单用户最多导入多少张、单张大小上限多少？是否需自动压缩？（P1）</td>
+<td>小程序体验</td>
+<td>研发 + 产品</td>
+</tr>
+<tr>
+<td>Q11</td>
+<td><strong>双端 UI 是否共用一套设计系统？</strong>（P1 小程序启动前需明确）</td>
+<td>设计效率</td>
+<td>设计 + 产品</td>
+</tr>
+<tr>
+<td>Q12</td>
+<td><strong>小程序审核与隐私合规边界？</strong> 相册权限、位置信息、UGC 审核责任方？（P1 上线前需明确）</td>
+<td>合规</td>
+<td>法务 + 研发</td>
+</tr>
+</tbody></table>
+<h2 id="附录-a需求来源摘要市场部口语">附录 A：需求来源摘要（市场部口语）</h2>
+<p>市场部同事核心表达：</p>
+<ol>
+<li>产品兼具 <strong>照片收纳</strong> 与 <strong>电子相册编辑排版</strong> 两大能力。  </li>
+<li>收纳侧：全部照片默认图库 → 用户多选建立主题<strong>文件夹</strong> → 可<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>（每页 2 张横版；拍摄日期/时间/地点在照片上方，导入年月日在下方）。  </li>
+<li>以 <strong>主题文件夹</strong> 为单位组织旅行等照片，并可进入电子相册编辑。  </li>
+<li>远期可与 <strong>印刷厂商合作</strong>，用户完成作品后可直接下单打印。  </li>
+<li>正式产品需使用 <strong>云端存储</strong> 照片；<strong>本期原型不含云存储</strong>，照片本地上传，但包含账号与完整编辑能力。  </li>
+<li>当前阶段以 <strong>Web 网页端原型</strong> 为主：验证「全部照片 → 主题文件夹 → 明信片册 → 手账式编辑」完整链路；<strong>微信小程序为下一原型阶段（P1）</strong>。</li>
+</ol>
+<h2 id="附录-b思维导图信息摘要用户与需求">附录 B：思维导图信息摘要（用户与需求）</h2>
+<p>来源：市场部思维导图「电子相册」</p>
+<p><strong>需求：</strong></p>
+<ul>
+<li>照片收纳</li>
+<li>电子相册制作（美观，参考 Zine 独立杂志风格）</li>
+</ul>
+<p><strong>用户共性：</strong></p>
+<ul>
+<li>无法空出大量整块时间，希望在碎片时间也能制作</li>
+<li>操作便捷，能快速上手</li>
+</ul>
+<p><strong>适用群体：</strong></p>
+<table>
+<thead>
+<tr>
+<th>群体</th>
+<th>核心诉求</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>年轻人</td>
+<td>时尚潮流感强的定制 Zine</td>
+</tr>
+<tr>
+<td>老年人</td>
+<td>简单上手，美化相册</td>
+</tr>
+</tbody></table>
+<h2 id="附录-c明信片收纳册线框参考">附录 C：明信片收纳册线框参考</h2>
+<p>来源：产品线框图</p>
+<table>
+<thead>
+<tr>
+<th>元素</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>布局</td>
+<td>相册双页展开；<strong>每页 2 个横向明信片位</strong>（单页 2 张）；左右翻页按钮</td>
+</tr>
+<tr>
+<td>拍摄元数据</td>
+<td>照片<strong>上方</strong>：拍摄日期、拍摄时间、拍摄地点（EXIF）</td>
+</tr>
+<tr>
+<td>导入时间</td>
+<td>照片<strong>下方</strong>：导入年月日（<code>imported_at</code> 派生，位于拍摄信息下方）</td>
+</tr>
+<tr>
+<td>切换</td>
+<td>与文件夹模式共用同一主题照片集，视图瞬时切换</td>
+</tr>
+</tbody></table>
+<p><em>文档结束</em></p>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+    const contentEl = document.querySelector('.content');
+    const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+    const headings = tocLinks
+      .map((link) => document.getElementById(link.dataset.target))
+      .filter(Boolean);
+
+    function setActive(id) {
+      tocLinks.forEach((link) => {
+        link.classList.toggle('active', link.dataset.target === id);
+        if (link.dataset.target === id) {
+          link.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      });
+    }
+
+    tocLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(link.dataset.target);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setActive(link.dataset.target);
+          history.replaceState(null, '', '#' + link.dataset.target);
+        }
+      });
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible.length > 0) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { root: contentEl, rootMargin: '-8% 0px -75% 0px', threshold: [0, 0.1, 0.25] }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+
+    const hash = location.hash.slice(1);
+    if (hash) {
+      setActive(hash);
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView();
+    } else if (headings.length) {
+      setActive(headings[0].id);
+    }
+  </script>
+</body>
+</html>
