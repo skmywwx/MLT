@@ -264,7 +264,8 @@
   <li class="toc-l3"><a href="#82-照片导入与全部照片库" data-target="82-照片导入与全部照片库">8.2 照片导入与全部照片库</a></li>
   <li class="toc-l3"><a href="#83-主题文件夹与明信片收纳册" data-target="83-主题文件夹与明信片收纳册">8.3 主题文件夹与明信片收纳册</a></li>
   <li class="toc-l3"><a href="#84-电子相册编辑手账式" data-target="84-电子相册编辑手账式">8.4 电子相册编辑（手账式）</a></li>
-  <li class="toc-l3"><a href="#85-通用差异" data-target="85-通用差异">8.5 通用差异</a></li>
+  <li class="toc-l3"><a href="#85-电子相册预览拟真翻页" data-target="85-电子相册预览拟真翻页">8.5 电子相册【预览】拟真翻页</a></li>
+  <li class="toc-l3"><a href="#86-通用差异" data-target="86-通用差异">8.6 通用差异</a></li>
 <li class="toc-l2"><a href="#附录-a需求来源摘要市场部口语" data-target="附录-a需求来源摘要市场部口语">附录 A：需求来源摘要（市场部口语）</a></li>
 <li class="toc-l2"><a href="#附录-c明信片收纳册线框参考" data-target="附录-c明信片收纳册线框参考">附录 C：明信片收纳册线框参考</a></li>
 <li class="toc-l2"><a href="#附录-b思维导图信息摘要用户与需求" data-target="附录-b思维导图信息摘要用户与需求">附录 B：思维导图信息摘要（用户与需求）</a></li>
@@ -282,7 +283,7 @@
 </thead>
 <tbody><tr>
 <td>文档状态</td>
-<td>第二版（V2.4）</td>
+<td>第二版（V2.5）</td>
 </tr>
 <tr>
 <td>产品代号</td>
@@ -353,6 +354,12 @@
 <td>2026-08-14 14:25</td>
 <td>产品</td>
 <td>明确部署形态为 Web + 小程序双形态，新增各需求下双形态设计/交互差异说明；重构照片收纳逻辑（全部照片库 → 主题文件夹）；细化明信片收纳册交互（每页 2 张横版明信片、展示拍摄日期/时间/地点、与文件夹模式无缝切换）。</td>
+</tr>
+<tr>
+<td>V2.5</td>
+<td>2026-08-14 15:11</td>
+<td>产品</td>
+<td>明确导入时间写入每张照片信息；明信片收纳册内在拍摄地点/时间下方展示导入年月日；电子相册编辑时随时可进入【预览】，拟真翻页模拟实物效果。</td>
 </tr>
 </tbody></table>
 <h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
@@ -449,7 +456,7 @@
 </tr>
 <tr>
 <td>US-03</td>
-<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>在主题文件夹与明信片收纳册之间一键无缝切换，<strong>以便</strong>以横版明信片翻页形式回顾旅程，并看到每张照片的<strong>拍摄日期、时间与地点</strong>。</td>
+<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>在主题文件夹与明信片收纳册之间一键无缝切换，<strong>以便</strong>以横版明信片翻页形式回顾旅程，看到拍摄日期/时间/地点，并在其下方看到该照片的导入年月日。</td>
 </tr>
 <tr>
 <td>US-04</td>
@@ -473,6 +480,10 @@
 </tr>
 <tr>
 <td>US-09</td>
+<td><strong>作为</strong>正在制作电子相册的用户，<strong>我希望</strong>随时点击【预览】查看拟真翻页效果，<strong>以便</strong>模拟实物相册成品并及时调整排版。</td>
+</tr>
+<tr>
+<td>US-10</td>
 <td><strong>作为</strong>老年用户，<strong>我希望</strong>通过简单几步选择模板并拖拽排版，<strong>以便</strong>轻松「美化相册」而无需学习复杂操作。</td>
 </tr>
 </tbody></table>
@@ -485,15 +496,15 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>US-10</td>
+<td>US-11</td>
 <td><strong>作为</strong>担心本地空间不足的用户，<strong>我希望</strong>照片与作品保存在云端，<strong>以便</strong>不占用本机存储，且换设备后仍能访问（P1）。</td>
 </tr>
 <tr>
-<td>US-11</td>
+<td>US-12</td>
 <td><strong>作为</strong>希望分享作品的用户，<strong>我希望</strong>导出 PDF 或生成分享链接，<strong>以便</strong>将电子相册发给亲友（P1）。</td>
 </tr>
 <tr>
-<td>US-12</td>
+<td>US-13</td>
 <td><strong>作为</strong>希望将数字作品实体化的用户，<strong>我希望</strong>在电子相册完成后选择合作厂商并下单打印，<strong>以便</strong>收到实体相册或明信片（P2）。</td>
 </tr>
 </tbody></table>
@@ -540,7 +551,7 @@
 </tr>
 <tr>
 <td>本地上传照片</td>
-<td><strong>仅支持从本机选择并读取照片</strong>；导入时解析 EXIF，提取<strong>拍摄日期、拍摄时间、拍摄地点</strong>；不上传至云 OSS。</td>
+<td><strong>仅支持从本机选择并读取照片</strong>；导入时解析 EXIF（拍摄日期、拍摄时间、拍摄地点），并<strong>记录导入时间</strong>写入照片信息；不上传至云 OSS。</td>
 </tr>
 <tr>
 <td>建立主题文件夹</td>
@@ -548,11 +559,11 @@
 </tr>
 <tr>
 <td>文件夹收纳模式</td>
-<td>以文件夹列表 + 照片网格/列表展示主题内照片，便于管理与批量操作。</td>
+<td>以文件夹列表 + 照片网格/列表展示主题内照片，便于管理与批量操作；列表可展示拍摄与导入元数据。</td>
 </tr>
 <tr>
 <td>明信片收纳册模式</td>
-<td>同一主题文件夹可<strong>瞬时无缝切换</strong>为此模式；<strong>每页展示 2 张横向摆放的明信片</strong>；左右翻页浏览（参考线框图）；每张照片上方展示<strong>拍摄日期、拍摄时间、拍摄地点</strong>（来自 EXIF，<strong>非导入时间</strong>）。</td>
+<td>同一主题文件夹可<strong>瞬时无缝切换</strong>为此模式；<strong>每页展示 2 张横向摆放的明信片</strong>；左右翻页浏览（参考线框图）。</td>
 </tr>
 <tr>
 <td>模式切换</td>
@@ -576,12 +587,16 @@
 <td><strong>2 张</strong>横向（landscape）明信片位</td>
 </tr>
 <tr>
-<td>元数据展示</td>
-<td>每张照片<strong>上方</strong>展示：<code>拍摄日期</code> <code>拍摄时间</code> <code>拍摄地点</code></td>
+<td>元数据布局（自上而下）</td>
+<td>① 照片区域 ② 其<strong>上方</strong>：<code>拍摄日期</code> <code>拍摄时间</code> <code>拍摄地点</code> ③ 其<strong>下方</strong>（位于拍摄地点与时间之后）：<code>导入年月日</code>（如 <code>2025-08-14</code>）</td>
 </tr>
 <tr>
-<td>元数据来源</td>
+<td>拍摄元数据</td>
 <td>读取照片 EXIF（<code>DateTimeOriginal</code>、GPS 逆地理编码）；缺失时展示「未知日期/时间/地点」</td>
+</tr>
+<tr>
+<td>导入时间</td>
+<td>取 <code>imported_at</code> 的年月日部分；<strong>每张导入照片均记录</strong>，仅在明信片收纳册视图按上述位置展示</td>
 </tr>
 <tr>
 <td>翻页交互</td>
@@ -640,8 +655,37 @@
 <td>编辑过程自动保存，防止意外丢失。</td>
 </tr>
 <tr>
-<td>电子相册预览</td>
-<td>翻页预览成品效果，支持全屏演示。</td>
+<td>【预览】拟真翻页</td>
+<td>编辑过程中<strong>随时可点击【预览】<strong>进入预览界面，<strong>模拟实物相册</strong>浏览体验，包含</strong>拟真翻页动效</strong>（纸张弯曲、阴影、页角卷起等）；预览基于当前最新编辑状态实时渲染，退出预览后回到编辑画布继续修改。</td>
+</tr>
+</tbody></table>
+<p><strong>【预览】界面规范：</strong></p>
+<table>
+<thead>
+<tr>
+<th>规范项</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>入口</td>
+<td>编辑页顶部/底部常驻【预览】按钮，任意编辑阶段可点击</td>
+</tr>
+<tr>
+<td>拟真效果</td>
+<td>模拟实体相册/手账本：双页展开、拟真翻页动画、页厚与光影</td>
+</tr>
+<tr>
+<td>交互</td>
+<td>左右翻页（按钮 / 滑动 / 键盘）；支持全屏沉浸模式</td>
+</tr>
+<tr>
+<td>数据同步</td>
+<td>预览内容与当前草稿一致；返回编辑时不丢失未保存改动（依赖自动保存）</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>预览前可对当前页做轻量渲染缓存，避免每次进入全量重绘</td>
 </tr>
 </tbody></table>
 <blockquote>
@@ -715,7 +759,7 @@
     C --> D
 
     D --> E[本地上传照片]
-    E --> F[解析 EXIF 日期/时间/地点]
+    E --> F[解析 EXIF + 记录导入时间]
     F --> G[存入全部照片图库]
 
     G --> H{是否建立主题文件夹}
@@ -737,9 +781,12 @@
     P -->|是| R[新建电子相册项目]
 
     R --> S[手账式画布编辑]
+    S --> S1{点击预览}
+    S1 -->|是| S2[拟真翻页预览界面]
+    S2 --> S3[返回继续编辑]
+    S3 --> S
     S --> T[自动保存草稿]
-    T --> U[翻页预览]
-    U --> V{是否继续编辑}
+    T --> V{是否继续编辑}
     V -->|是| S
     V -->|否| Q
     I --> E</pre>
@@ -779,9 +826,10 @@
     U->>App: 从本机选择照片文件
     App->>App: 校验格式/大小
     App->>App: 解析 EXIF（拍摄日期/时间/GPS）
+    App->>App: 记录 imported_at 导入时间
     App->>Local: 写入 Blob / IndexedDB
     Local-->>App: 存储成功
-    App->>App: 写入全部照片图库记录
+    App->>App: 写入全部照片图库记录（含拍摄与导入元数据）
     App-->>U: 在全部照片中展示（含拍摄元数据）</pre>
 <h3 id="44-远期照片导入与云存储流程p1">4.4 远期：照片导入与云存储流程（P1）</h3>
 <pre class="mermaid">sequenceDiagram
@@ -1032,7 +1080,13 @@
 <td>imported_at</td>
 <td>datetime</td>
 <td>是</td>
-<td>导入时间（仅用于全部照片库排序，不在明信片册展示）</td>
+<td><strong>导入时间</strong>（系统记录，每张导入照片必有）；全部照片库排序可用；明信片收纳册中展示其<strong>年月日</strong>于拍摄地点/时间下方</td>
+</tr>
+<tr>
+<td>imported_date</td>
+<td>date</td>
+<td>是</td>
+<td>导入日期（由 <code>imported_at</code> 派生，便于明信片册展示）</td>
 </tr>
 <tr>
 <td>in_library</td>
@@ -1296,7 +1350,11 @@
 </tr>
 <tr>
 <td>EXIF 日期/时间/地点缺失</td>
-<td>明信片册与列表中展示「未知日期/时间/地点」，不使用 <code>imported_at</code> 替代</td>
+<td>明信片册展示「未知日期/时间/地点」；<strong>不使用</strong> <code>imported_at</code> 替代拍摄信息</td>
+</tr>
+<tr>
+<td>导入时间展示</td>
+<td>明信片收纳册中，导入年月日固定显示在拍摄地点与时间<strong>下方</strong>；文件夹模式可在详情中展示完整 <code>imported_at</code></td>
 </tr>
 <tr>
 <td>GPS 逆地理编码失败</td>
@@ -1387,6 +1445,14 @@
 <tr>
 <td>画布元素过多导致卡顿</td>
 <td>限制单页元素上限；超出时提示拆分页面</td>
+</tr>
+<tr>
+<td>预览渲染失败或超时</td>
+<td>提示重试；可降级为无动画的静态翻页预览</td>
+</tr>
+<tr>
+<td>预览与编辑状态不一致</td>
+<td>进入预览前强制同步最新草稿；预览页只读，不可直接编辑</td>
 </tr>
 </tbody></table>
 <h3 id="64-账号与个人中心p0">6.4 账号与个人中心（P0）</h3>
@@ -1621,8 +1687,8 @@
 </tr>
 <tr>
 <td>元数据展示</td>
-<td>拍摄日期 / 时间 / 地点排于照片上方</td>
-<td>字号需满足小程序可读性（建议 ≥ 24rpx）；地点过长省略号截断</td>
+<td>拍摄日期/时间/地点在照片上方；<strong>导入年月日在拍摄地点与时间下方</strong></td>
+<td>同上；导入日期字号可略小、颜色略浅以区分层级</td>
 </tr>
 <tr>
 <td>空状态</td>
@@ -1670,7 +1736,42 @@
 <td>本地 Storage + 定时同步服务端（若有后端）</td>
 </tr>
 </tbody></table>
-<h3 id="85-通用差异">8.5 通用差异</h3>
+<h3 id="85-电子相册预览拟真翻页">8.5 电子相册【预览】拟真翻页</h3>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Web</th>
+<th>小程序</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>预览入口</td>
+<td>编辑页常驻【预览】按钮</td>
+<td>同上，置于底部工具栏上方</td>
+</tr>
+<tr>
+<td>拟真翻页</td>
+<td>CSS 3D Transform / Canvas 翻页动画；支持页角拖拽（可选）</td>
+<td>同逻辑；优先使用 Canvas 2D 或原生动画 API，控制帧率 ≥ 30fps</td>
+</tr>
+<tr>
+<td>实物模拟</td>
+<td>双页展开、书脊阴影、纸张厚度与弯曲</td>
+<td>竖屏单手滑动翻页；横屏可双页展开</td>
+</tr>
+<tr>
+<td>退出预览</td>
+<td>Esc /「返回编辑」按钮</td>
+<td>左上角返回；保留编辑页滚动位置</td>
+</tr>
+<tr>
+<td>性能降级</td>
+<td>低性能设备可关闭弯曲动画，保留滑动切页</td>
+<td>微信开发者工具与真机分别测试；大图自动降采样</td>
+</tr>
+</tbody></table>
+<h3 id="86-通用差异">8.6 通用差异</h3>
 <table>
 <thead>
 <tr>
@@ -1709,7 +1810,7 @@
 <p>市场部同事核心表达：</p>
 <ol>
 <li>产品兼具 <strong>照片收纳</strong> 与 <strong>电子相册编辑排版</strong> 两大能力。  </li>
-<li>收纳侧：全部照片默认图库 → 用户多选建立主题<strong>文件夹</strong> → 可<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>（每页 2 张横版，展示拍摄日期/时间/地点）。  </li>
+<li>收纳侧：全部照片默认图库 → 用户多选建立主题<strong>文件夹</strong> → 可<strong>瞬时无缝切换</strong>为<strong>明信片收纳册</strong>（每页 2 张横版；拍摄日期/时间/地点在照片上方，导入年月日在下方）。  </li>
 <li>以 <strong>主题文件夹</strong> 为单位组织旅行等照片，并可进入电子相册编辑。  </li>
 <li>远期可与 <strong>印刷厂商合作</strong>，用户完成作品后可直接下单打印。  </li>
 <li>正式产品需使用 <strong>云端存储</strong> 照片；<strong>本期原型不含云存储</strong>，照片本地上传，但包含账号与完整编辑能力。  </li>
@@ -1729,12 +1830,12 @@
 <td>相册双页展开；<strong>每页 2 个横向明信片位</strong>（单页 2 张）；左右翻页按钮</td>
 </tr>
 <tr>
-<td>元数据</td>
-<td>每张照片<strong>上方</strong>展示拍摄日期、拍摄时间（非导入时间）</td>
+<td>拍摄元数据</td>
+<td>每张照片<strong>上方</strong>：拍摄日期、拍摄时间、拍摄地点（EXIF）</td>
 </tr>
 <tr>
-<td>地点</td>
-<td>拍摄地点展示于元数据区（EXIF GPS 解析）</td>
+<td>导入时间</td>
+<td>每张照片<strong>下方</strong>（拍摄地点与时间之后）：导入年月日（<code>imported_at</code> 派生）</td>
 </tr>
 <tr>
 <td>切换</td>
