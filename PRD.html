@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>主题相册产品 PRD</title>
+  <style>
+    :root {
+      --bg: #e8e8e8;
+      --panel: #ffffff;
+      --border: #d0d0d0;
+      --text: #1a1a1a;
+      --muted: #666;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --sidebar-width: 280px;
+      --gap: 16px;
+      --radius: 4px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .layout {
+      display: flex;
+      gap: var(--gap);
+      height: 100vh;
+      padding: var(--gap);
+    }
+
+    .sidebar,
+    .content {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    .sidebar {
+      flex: 0 0 var(--sidebar-width);
+      min-width: 220px;
+      max-width: 320px;
+      padding: 20px 16px;
+    }
+
+    .content {
+      flex: 1 1 auto;
+      padding: 32px 40px 48px;
+      min-width: 0;
+    }
+
+    .sidebar-title {
+      margin: 0 0 16px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .toc {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li { margin: 0; }
+
+    .toc a {
+      display: block;
+      padding: 6px 8px;
+      border-radius: 4px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      line-height: 1.45;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .toc a.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .toc-l3 a {
+      padding-left: 20px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .toc-l3 a.active { color: var(--accent); }
+
+    .content h1 {
+      margin-top: 0;
+      font-size: 28px;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 12px;
+    }
+
+    .content h2 {
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+      font-size: 22px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 8px;
+    }
+
+    .content h3 {
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+      font-size: 17px;
+      color: #333;
+    }
+
+    .content p,
+    .content li {
+      line-height: 1.7;
+      font-size: 15px;
+    }
+
+    .content blockquote {
+      margin: 1em 0;
+      padding: 12px 16px;
+      border-left: 4px solid var(--accent);
+      background: #f8fafc;
+      color: #334155;
+    }
+
+    .content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0 1.5em;
+      font-size: 14px;
+    }
+
+    .content th,
+    .content td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .content th {
+      background: #f5f5f5;
+      font-weight: 600;
+    }
+
+    .content tr:nth-child(even) td {
+      background: #fafafa;
+    }
+
+    .content pre {
+      background: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      padding: 16px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .content pre.mermaid {
+      background: #fff;
+      text-align: center;
+    }
+
+    .content code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 0.9em;
+    }
+
+    .content hr {
+      border: none;
+      border-top: 1px solid #e5e5e5;
+      margin: 2em 0;
+    }
+
+    .content em {
+      color: var(--muted);
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .sidebar {
+        flex: 0 0 auto;
+        max-width: none;
+        max-height: 240px;
+      }
+
+      .content {
+        min-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="文档目录">
+      <p class="sidebar-title">目录</p>
+      <ul class="toc">
+<li class="toc-l2"><a href="#文档信息" data-target="文档信息">文档信息</a></li>
+<li class="toc-l2"><a href="#修订记录" data-target="修订记录">修订记录</a></li>
+<li class="toc-l2"><a href="#1-一句话价值主张" data-target="1-一句话价值主张">1. 一句话价值主张</a></li>
+<li class="toc-l2"><a href="#2-用户故事" data-target="2-用户故事">2. 用户故事</a></li>
+  <li class="toc-l3"><a href="#21-普通用户照片收纳" data-target="21-普通用户照片收纳">2.1 普通用户（照片收纳）</a></li>
+  <li class="toc-l3"><a href="#22-创作者用户电子相册设计" data-target="22-创作者用户电子相册设计">2.2 创作者用户（电子相册设计）</a></li>
+  <li class="toc-l3"><a href="#23-潜在付费-打印用户" data-target="23-潜在付费-打印用户">2.3 潜在付费 / 打印用户</a></li>
+  <li class="toc-l3"><a href="#24-运营-产品原型阶段" data-target="24-运营-产品原型阶段">2.4 运营 / 产品（原型阶段）</a></li>
+<li class="toc-l2"><a href="#3-功能清单" data-target="3-功能清单">3. 功能清单</a></li>
+  <li class="toc-l3"><a href="#31-p0-原型必须实现验证核心价值" data-target="31-p0-原型必须实现验证核心价值">3.1 P0 — 原型必须实现（验证核心价值）</a></li>
+  <li class="toc-l3"><a href="#32-p1-原型增强-mvp-扩展验证第二曲线" data-target="32-p1-原型增强-mvp-扩展验证第二曲线">3.2 P1 — 原型增强 / MVP 扩展（验证第二曲线）</a></li>
+  <li class="toc-l3"><a href="#33-p2-远期能力本期原型不实现仅规划" data-target="33-p2-远期能力本期原型不实现仅规划">3.3 P2 — 远期能力（本期原型不实现，仅规划）</a></li>
+<li class="toc-l2"><a href="#4-核心流程图" data-target="4-核心流程图">4. 核心流程图</a></li>
+  <li class="toc-l3"><a href="#41-主流程从收纳到远期打印" data-target="41-主流程从收纳到远期打印">4.1 主流程：从收纳到（远期）打印</a></li>
+  <li class="toc-l3"><a href="#42-照片导入与云存储流程p0" data-target="42-照片导入与云存储流程p0">4.2 照片导入与云存储流程（P0）</a></li>
+<li class="toc-l2"><a href="#5-关键数据字段定义" data-target="5-关键数据字段定义">5. 关键数据字段定义</a></li>
+  <li class="toc-l3"><a href="#51-用户user" data-target="51-用户user">5.1 用户（User）</a></li>
+  <li class="toc-l3"><a href="#52-主题相册themealbum" data-target="52-主题相册themealbum">5.2 主题相册（ThemeAlbum）</a></li>
+  <li class="toc-l3"><a href="#53-照片photo" data-target="53-照片photo">5.3 照片（Photo）</a></li>
+  <li class="toc-l3"><a href="#54-电子相册digitalalbum-p1" data-target="54-电子相册digitalalbum-p1">5.4 电子相册（DigitalAlbum）— P1</a></li>
+  <li class="toc-l3"><a href="#55-打印订单printorder-p2-规划" data-target="55-打印订单printorder-p2-规划">5.5 打印订单（PrintOrder）— P2 规划</a></li>
+<li class="toc-l2"><a href="#6-异常场景与边界条件" data-target="6-异常场景与边界条件">6. 异常场景与边界条件</a></li>
+  <li class="toc-l3"><a href="#61-照片导入" data-target="61-照片导入">6.1 照片导入</a></li>
+  <li class="toc-l3"><a href="#62-模式切换" data-target="62-模式切换">6.2 模式切换</a></li>
+  <li class="toc-l3"><a href="#63-电子相册编辑p1" data-target="63-电子相册编辑p1">6.3 电子相册编辑（P1）</a></li>
+  <li class="toc-l3"><a href="#64-云存储与数据安全" data-target="64-云存储与数据安全">6.4 云存储与数据安全</a></li>
+  <li class="toc-l3"><a href="#65-原型阶段特有限制" data-target="65-原型阶段特有限制">6.5 原型阶段特有限制</a></li>
+<li class="toc-l2"><a href="#7-待进一步澄清的问题" data-target="7-待进一步澄清的问题">7. 待进一步澄清的问题</a></li>
+<li class="toc-l2"><a href="#附录需求来源摘要口语还原" data-target="附录需求来源摘要口语还原">附录：需求来源摘要（口语还原）</a></li>
+      </ul>
+    </aside>
+    <main class="content" id="main-content">
+<h1 id="主题相册产品-prd">主题相册产品 PRD</h1>
+<h2 id="文档信息">文档信息</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>文档状态</td>
+<td>第二版（V2.1）</td>
+</tr>
+<tr>
+<td>产品代号</td>
+<td>主题相册（暂定）</td>
+</tr>
+<tr>
+<td>目标阶段</td>
+<td>可交互原型（Prototype）</td>
+</tr>
+<tr>
+<td>撰写人</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>来源</td>
+<td>市场部口语需求整理</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>同步说明</strong>：<code>PRD.md</code> 为唯一编辑源。修改后请运行 <code>npm run sync-prd</code> 同步生成 <code>PRD.html</code>。</p>
+</blockquote>
+<h2 id="修订记录">修订记录</h2>
+<table>
+<thead>
+<tr>
+<th>版本</th>
+<th>修订时间（北京时间）</th>
+<th>修订人</th>
+<th>修订摘要</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>V1.0</td>
+<td>2026-08-14 10:30</td>
+<td>产品</td>
+<td><strong>初版生成</strong>：基于市场部口语需求，完成价值主张、用户故事、功能清单（P0/P1/P2）、核心流程图、数据字段、异常场景及待澄清项的基础整理。</td>
+</tr>
+<tr>
+<td>V2.0</td>
+<td>2026-08-14 13:47</td>
+<td>产品</td>
+<td><strong>补全修订记录</strong>（此前版本未落盘修订历史，本次一并补齐）；细化双模式收纳（文件夹 / 明信片册）的产品定义；明确「收纳」与「电子相册编辑」两条能力线及阶段边界；补充原型阶段云存储与部署约束；完善 Mermaid 流程图、数据字段表与异常场景；扩展待澄清项至 8 条。</td>
+</tr>
+<tr>
+<td>V2.1</td>
+<td>2026-08-14 13:52</td>
+<td>产品</td>
+<td>整理标题层级；新增「文档信息」章节；功能清单子节改为 3.1–3.3 编号；新增 <code>PRD.html</code> 双栏目录预览页及 <code>npm run sync-prd</code> 同步脚本。</td>
+</tr>
+</tbody></table>
+<h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
+<p><strong>以「主题」为单位收纳与管理照片，支持文件夹与明信片册两种呈现方式，并可在同一产品内完成电子相册排版设计，未来可一键对接合作厂商实现实体打印。</strong></p>
+<h2 id="2-用户故事">2. 用户故事</h2>
+<h3 id="21-普通用户照片收纳">2.1 普通用户（照片收纳）</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-01</td>
+<td><strong>作为</strong>一名希望整理旅行照片的用户，<strong>我希望</strong>按「主题」（如「2025 京都之旅」）创建相册并导入照片，<strong>以便</strong>同类照片集中存放、随时回看，而不是散落在手机相册里。</td>
+</tr>
+<tr>
+<td>US-02</td>
+<td><strong>作为</strong>喜欢明信片风格的用户，<strong>我希望</strong>将某个主题的相册切换为「明信片收纳册」展示模式，<strong>以便</strong>以更有仪式感的形式浏览与收藏照片。</td>
+</tr>
+<tr>
+<td>US-03</td>
+<td><strong>作为</strong>担心本地空间不足的用户，<strong>我希望</strong>照片上传后保存在云端相册中，<strong>以便</strong>不占用本机存储，且换设备后仍能访问历史照片。</td>
+</tr>
+</tbody></table>
+<h3 id="22-创作者用户电子相册设计">2.2 创作者用户（电子相册设计）</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-04</td>
+<td><strong>作为</strong>想制作纪念册的用户，<strong>我希望</strong>在已收纳的主题照片基础上进入「电子相册编辑」，选择版式并排版，<strong>以便</strong>生成可分享的电子相册作品。</td>
+</tr>
+<tr>
+<td>US-05</td>
+<td><strong>作为</strong>对排版没有专业基础的用户，<strong>我希望</strong>系统提供预设模板与拖拽式编辑能力，<strong>以便</strong>快速完成一本主题电子相册，而不必使用复杂设计软件。</td>
+</tr>
+</tbody></table>
+<h3 id="23-潜在付费-打印用户">2.3 潜在付费 / 打印用户</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-06</td>
+<td><strong>作为</strong>希望将数字作品实体化的用户，<strong>我希望</strong>在电子相册完成后选择合作厂商并下单打印，<strong>以便</strong>收到实体相册或明信片，作为礼物或纪念。</td>
+</tr>
+</tbody></table>
+<h3 id="24-运营-产品原型阶段">2.4 运营 / 产品（原型阶段）</h3>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>用户故事</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>US-07</td>
+<td><strong>作为</strong>产品验证者，<strong>我希望</strong>在无需完整生产部署的前提下完成可演示原型，<strong>以便</strong>向内部或合作方展示核心体验与商业模式可行性。</td>
+</tr>
+</tbody></table>
+<h2 id="3-功能清单">3. 功能清单</h2>
+<h3 id="31-p0-原型必须实现验证核心价值">3.1 P0 — 原型必须实现（验证核心价值）</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主题相册创建</td>
+<td>用户以「主题」为单位新建相册，填写主题名称、封面、可选描述。</td>
+</tr>
+<tr>
+<td>照片导入与展示</td>
+<td>支持从本地上传导入照片，在主题相册内以网格/列表方式浏览。</td>
+</tr>
+<tr>
+<td>文件夹收纳模式</td>
+<td>默认以「文件夹式」组织：主题 → 照片，结构清晰，便于管理。</td>
+</tr>
+<tr>
+<td>明信片收纳册模式</td>
+<td>同一主题相册可切换为明信片册式 UI（翻页/卡片叠放等视觉），仅改变呈现，不改变底层数据。</td>
+</tr>
+<tr>
+<td>模式切换</td>
+<td>用户在文件夹模式与明信片模式间一键切换，状态与主题绑定。</td>
+</tr>
+<tr>
+<td>云端照片存储（原型级）</td>
+<td>照片上传至云存储（可租用第三方对象存储），原型阶段控制单用户容量上限与总存储配额。</td>
+</tr>
+<tr>
+<td>主题列表与详情</td>
+<td>展示用户全部主题相册，进入后可查看该主题下全部照片。</td>
+</tr>
+</tbody></table>
+<h3 id="32-p1-原型增强-mvp-扩展验证第二曲线">3.2 P1 — 原型增强 / MVP 扩展（验证第二曲线）</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>电子相册创建</td>
+<td>基于某一主题相册的照片，新建「电子相册」项目。</td>
+</tr>
+<tr>
+<td>版式模板</td>
+<td>提供若干预设页模板（封面、单图、多图、文字页等）。</td>
+</tr>
+<tr>
+<td>基础排版编辑</td>
+<td>拖拽调整图片位置、替换照片、编辑标题/说明文字。</td>
+</tr>
+<tr>
+<td>电子相册预览</td>
+<td>翻页预览成品效果，支持全屏演示。</td>
+</tr>
+<tr>
+<td>电子相册导出/分享</td>
+<td>导出为 PDF 或生成只读分享链接（原型可先实现其一）。</td>
+</tr>
+<tr>
+<td>用户账号体系</td>
+<td>注册/登录，保证主题与照片跨会话、跨设备归属同一用户。</td>
+</tr>
+</tbody></table>
+<h3 id="33-p2-远期能力本期原型不实现仅规划">3.3 P2 — 远期能力（本期原型不实现，仅规划）</h3>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>合作厂商打印对接</td>
+<td>与印刷厂商 API 对接，用户从电子相册一键下单实体印刷（相册本、明信片等）。</td>
+</tr>
+<tr>
+<td>订单与物流</td>
+<td>下单、支付、生产状态、物流跟踪。</td>
+</tr>
+<tr>
+<td>高级设计能力</td>
+<td>更多模板、自定义字体、品牌贴纸、动效页等。</td>
+</tr>
+<tr>
+<td>协作与共创</td>
+<td>多人共建同一主题相册或共同编辑电子相册。</td>
+</tr>
+<tr>
+<td>智能辅助</td>
+<td>AI 选图、自动排版、按时间线生成初稿等。</td>
+</tr>
+<tr>
+<td>存储套餐与商业化</td>
+<td>免费额度 + 付费扩容；打印分成等商业模式。</td>
+</tr>
+</tbody></table>
+<h2 id="4-核心流程图">4. 核心流程图</h2>
+<h3 id="41-主流程从收纳到远期打印">4.1 主流程：从收纳到（远期）打印</h3>
+<pre class="mermaid">flowchart TD
+    A[用户进入产品] --> B{是否已有账号}
+    B -->|否| C[注册/登录]
+    B -->|是| D[主题相册列表]
+    C --> D
+
+    D --> E[新建主题相册]
+    E --> F[填写主题信息]
+    F --> G[导入照片至云端]
+    G --> H[主题相册详情]
+
+    H --> I{选择呈现模式}
+    I -->|文件夹模式| J[文件夹式浏览与管理]
+    I -->|明信片册模式| K[明信片册式翻页浏览]
+
+    J --> L{是否制作电子相册}
+    K --> L
+    L -->|否| H
+    L -->|是| M[基于主题创建电子相册项目]
+
+    M --> N[选择版式模板]
+    N --> O[排版编辑]
+    O --> P[预览电子相册]
+    P --> Q{是否满意}
+    Q -->|否| O
+    Q -->|是| R[导出/分享]
+
+    R --> S{是否实体打印}
+    S -->|否| T[结束]
+    S -->|是 P2| U[选择合作厂商与规格]
+    U --> V[下单支付]
+    V --> W[生产与物流]
+    W --> T</pre>
+<h3 id="42-照片导入与云存储流程p0">4.2 照片导入与云存储流程（P0）</h3>
+<pre class="mermaid">sequenceDiagram
+    participant U as 用户
+    participant App as 前端应用
+    participant API as 后端服务
+    participant OSS as 云对象存储
+
+    U->>App: 选择照片文件
+    App->>App: 本地校验格式/大小
+    App->>API: 请求上传凭证/预签名 URL
+    API->>OSS: 生成上传地址
+    API-->>App: 返回上传 URL
+    App->>OSS: 直传照片文件
+    OSS-->>App: 上传成功
+    App->>API: 写入照片元数据并关联主题
+    API-->>App: 返回照片记录
+    App-->>U: 展示导入结果</pre>
+<h2 id="5-关键数据字段定义">5. 关键数据字段定义</h2>
+<h3 id="51-用户user">5.1 用户（User）</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>用户唯一标识</td>
+</tr>
+<tr>
+<td>nickname</td>
+<td>string</td>
+<td>否</td>
+<td>昵称</td>
+</tr>
+<tr>
+<td>email / phone</td>
+<td>string</td>
+<td>是（其一）</td>
+<td>登录账号</td>
+</tr>
+<tr>
+<td>avatar_url</td>
+<td>string</td>
+<td>否</td>
+<td>头像地址</td>
+</tr>
+<tr>
+<td>storage_used_bytes</td>
+<td>number</td>
+<td>是</td>
+<td>已用云存储容量（字节）</td>
+</tr>
+<tr>
+<td>storage_quota_bytes</td>
+<td>number</td>
+<td>是</td>
+<td>存储配额上限（原型可设固定值）</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>注册时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="52-主题相册themealbum">5.2 主题相册（ThemeAlbum）</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>album_id</td>
+<td>string</td>
+<td>是</td>
+<td>主题相册唯一标识</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>title</td>
+<td>string</td>
+<td>是</td>
+<td>主题名称，如「2025 京都之旅」</td>
+</tr>
+<tr>
+<td>description</td>
+<td>string</td>
+<td>否</td>
+<td>主题描述</td>
+</tr>
+<tr>
+<td>cover_photo_id</td>
+<td>string</td>
+<td>否</td>
+<td>封面照片 ID</td>
+</tr>
+<tr>
+<td>display_mode</td>
+<td>enum</td>
+<td>是</td>
+<td><code>folder</code>（文件夹）| <code>postcard</code>（明信片册）</td>
+</tr>
+<tr>
+<td>photo_count</td>
+<td>number</td>
+<td>是</td>
+<td>照片数量（可冗余统计）</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>创建时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="53-照片photo">5.3 照片（Photo）</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>photo_id</td>
+<td>string</td>
+<td>是</td>
+<td>照片唯一标识</td>
+</tr>
+<tr>
+<td>album_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属主题相册</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>file_name</td>
+<td>string</td>
+<td>是</td>
+<td>原始文件名</td>
+</tr>
+<tr>
+<td>mime_type</td>
+<td>string</td>
+<td>是</td>
+<td>如 image/jpeg、image/png</td>
+</tr>
+<tr>
+<td>file_size_bytes</td>
+<td>number</td>
+<td>是</td>
+<td>文件大小</td>
+</tr>
+<tr>
+<td>width</td>
+<td>number</td>
+<td>否</td>
+<td>图片宽度（像素）</td>
+</tr>
+<tr>
+<td>height</td>
+<td>number</td>
+<td>否</td>
+<td>图片高度（像素）</td>
+</tr>
+<tr>
+<td>storage_url</td>
+<td>string</td>
+<td>是</td>
+<td>云存储访问地址（或 key）</td>
+</tr>
+<tr>
+<td>thumbnail_url</td>
+<td>string</td>
+<td>否</td>
+<td>缩略图地址</td>
+</tr>
+<tr>
+<td>taken_at</td>
+<td>datetime</td>
+<td>否</td>
+<td>拍摄时间（EXIF 解析）</td>
+</tr>
+<tr>
+<td>sort_order</td>
+<td>number</td>
+<td>否</td>
+<td>相册内排序</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>导入时间</td>
+</tr>
+</tbody></table>
+<h3 id="54-电子相册digitalalbum-p1">5.4 电子相册（DigitalAlbum）— P1</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>digital_album_id</td>
+<td>string</td>
+<td>是</td>
+<td>电子相册项目 ID</td>
+</tr>
+<tr>
+<td>source_album_id</td>
+<td>string</td>
+<td>是</td>
+<td>来源主题相册 ID</td>
+</tr>
+<tr>
+<td>user_id</td>
+<td>string</td>
+<td>是</td>
+<td>所属用户</td>
+</tr>
+<tr>
+<td>title</td>
+<td>string</td>
+<td>是</td>
+<td>电子相册标题</td>
+</tr>
+<tr>
+<td>template_id</td>
+<td>string</td>
+<td>否</td>
+<td>使用的模板套件</td>
+</tr>
+<tr>
+<td>pages</td>
+<td>json</td>
+<td>是</td>
+<td>页面结构与排版数据</td>
+</tr>
+<tr>
+<td>status</td>
+<td>enum</td>
+<td>是</td>
+<td><code>draft</code> | <code>published</code></td>
+</tr>
+<tr>
+<td>share_url</td>
+<td>string</td>
+<td>否</td>
+<td>分享链接</td>
+</tr>
+<tr>
+<td>export_url</td>
+<td>string</td>
+<td>否</td>
+<td>导出文件地址</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>创建时间</td>
+</tr>
+<tr>
+<td>updated_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>更新时间</td>
+</tr>
+</tbody></table>
+<h3 id="55-打印订单printorder-p2-规划">5.5 打印订单（PrintOrder）— P2 规划</h3>
+<table>
+<thead>
+<tr>
+<th>字段名</th>
+<th>类型</th>
+<th>必填</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>order_id</td>
+<td>string</td>
+<td>是</td>
+<td>订单 ID</td>
+</tr>
+<tr>
+<td>digital_album_id</td>
+<td>string</td>
+<td>是</td>
+<td>关联电子相册</td>
+</tr>
+<tr>
+<td>vendor_id</td>
+<td>string</td>
+<td>是</td>
+<td>合作厂商</td>
+</tr>
+<tr>
+<td>product_spec</td>
+<td>json</td>
+<td>是</td>
+<td>规格（尺寸、材质、页数等）</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>number</td>
+<td>是</td>
+<td>订单金额</td>
+</tr>
+<tr>
+<td>status</td>
+<td>enum</td>
+<td>是</td>
+<td><code>pending</code> | <code>paid</code> | <code>producing</code> | <code>shipped</code> | <code>completed</code> | <code>cancelled</code></td>
+</tr>
+<tr>
+<td>shipping_address</td>
+<td>json</td>
+<td>是</td>
+<td>收货地址</td>
+</tr>
+<tr>
+<td>created_at</td>
+<td>datetime</td>
+<td>是</td>
+<td>下单时间</td>
+</tr>
+</tbody></table>
+<h2 id="6-异常场景与边界条件">6. 异常场景与边界条件</h2>
+<h3 id="61-照片导入">6.1 照片导入</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>单张文件超过大小上限</td>
+<td>前端拦截并提示；建议上限原型阶段 10–20MB/张</td>
+</tr>
+<tr>
+<td>不支持格式（如 HEIC 未转码）</td>
+<td>提示仅支持 JPG/PNG/WebP；或后端自动转码（P1）</td>
+</tr>
+<tr>
+<td>上传中断 / 网络失败</td>
+<td>支持重试；已上传部分不重复计费存储（按 photo_id 去重）</td>
+</tr>
+<tr>
+<td>存储配额已满</td>
+<td>阻止上传，提示清理照片或（远期）升级容量</td>
+</tr>
+<tr>
+<td>单次批量导入数量过多</td>
+<td>限制单次最多 N 张（如 50），超出分批导入</td>
+</tr>
+</tbody></table>
+<h3 id="62-模式切换">6.2 模式切换</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主题内无照片时切换明信片模式</td>
+<td>允许切换，展示空状态引导上传</td>
+</tr>
+<tr>
+<td>切换模式是否影响电子相册</td>
+<td>不影响；电子相册引用照片源数据，与展示模式解耦</td>
+</tr>
+<tr>
+<td>明信片模式照片过多</td>
+<td>分页或懒加载，避免一次渲染过多 DOM</td>
+</tr>
+</tbody></table>
+<h3 id="63-电子相册编辑p1">6.3 电子相册编辑（P1）</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>源主题照片被删除</td>
+<td>编辑页标记缺失位，提示替换图片</td>
+</tr>
+<tr>
+<td>未保存离开编辑页</td>
+<td>弹窗确认是否保存草稿</td>
+</tr>
+<tr>
+<td>并发生成导出任务</td>
+<td>队列处理，避免重复导出</td>
+</tr>
+</tbody></table>
+<h3 id="64-云存储与数据安全">6.4 云存储与数据安全</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>云存储服务不可用</td>
+<td>上传失败提示，记录错误日志；只读场景可展示缓存缩略图</td>
+</tr>
+<tr>
+<td>数据损坏 / 丢失</td>
+<td>依赖云厂商冗余；关键元数据 DB 与 OSS 分离备份（生产要求）</td>
+</tr>
+<tr>
+<td>用户注销账号</td>
+<td>按合规要求删除或匿名化用户数据及 OSS 对象</td>
+</tr>
+</tbody></table>
+<h3 id="65-原型阶段特有限制">6.5 原型阶段特有限制</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>处理策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>无正式生产部署环境</td>
+<td>使用演示环境 / 临时域名；明确标注「原型」</td>
+</tr>
+<tr>
+<td>云存储成本可控</td>
+<td>单用户配额、总容量上限、定期清理测试数据</td>
+</tr>
+<tr>
+<td>打印能力未接入</td>
+<td>P2 功能入口可灰显或展示「即将上线」占位</td>
+</tr>
+</tbody></table>
+<h2 id="7-待进一步澄清的问题">7. 待进一步澄清的问题</h2>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>问题</th>
+<th>影响范围</th>
+<th>建议澄清方</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Q1</td>
+<td><strong>目标用户是谁？</strong> C 端个人用户、家庭用户，还是 B 端（婚庆、旅行社、设计师）？</td>
+<td>功能深度、模板风格、商业模式</td>
+<td>市场部 + 业务负责人</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td><strong>「主题」如何定义？</strong> 用户手动创建，还是支持按时间/地点/事件自动聚类？</td>
+<td>相册创建流程、智能能力优先级</td>
+<td>产品 + 市场部</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td><strong>明信片收纳册的具体交互是什么？</strong> 翻页动画、卡片堆叠、还是拟物相册本？是否有参考产品？</td>
+<td>UI/UX 设计、开发工作量</td>
+<td>市场部 + 设计</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td><strong>文件夹模式与明信片模式是否互斥？</strong> 同一主题是否只能二选一，还是仅切换视图？（当前 PRD 按「视图切换」理解）</td>
+<td>数据模型、用户心智</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td><strong>电子相册与主题相册的关系？</strong> 一个主题是否只能生成一本电子相册，还是可生成多版本？</td>
+<td>数据结构与列表页设计</td>
+<td>产品</td>
+</tr>
+<tr>
+<td>Q6</td>
+<td><strong>打印合作厂商是否已有意向？</strong> 对接 API、SKU、计价、发货谁负责？</td>
+<td>P2 排期与接口设计</td>
+<td>商务 + 市场部</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td><strong>原型部署形态？</strong> Web、小程序、还是 App？演示环境域名与访问范围？</td>
+<td>技术选型、云存储方案</td>
+<td>研发 + 运维</td>
+</tr>
+<tr>
+<td>Q8</td>
+<td><strong>云存储预算与合规？</strong> 国内/海外节点、用户隐私与图片版权归属、免费额度策略？</td>
+<td>成本模型、上线合规</td>
+<td>研发 + 法务</td>
+</tr>
+</tbody></table>
+<h2 id="附录需求来源摘要口语还原">附录：需求来源摘要（口语还原）</h2>
+<p>市场部同事核心表达：</p>
+<ol>
+<li>产品兼具 <strong>照片收纳</strong> 与 <strong>电子相册编辑排版</strong> 两大能力。  </li>
+<li>收纳侧支持两种模式：<strong>文件夹式</strong> 与 <strong>明信片收纳册式</strong>（个人偏好后者）。  </li>
+<li>以 <strong>主题</strong> 为单位沉淀全部相关照片。  </li>
+<li>远期可与 <strong>印刷厂商合作</strong>，用户完成链接/作品后可直接下单打印。  </li>
+<li>必须使用 <strong>云端存储</strong> 照片，本地方案空间与成本不可持续，且存在数据损耗风险。  </li>
+<li>当前阶段以 <strong>原型</strong> 为主：部署环境未定，云存储成本需在原型中做限额与验证。</li>
+</ol>
+<p><em>文档结束</em></p>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+    const tocLinks = Array.from(document.querySelectorAll('.toc a'));
+    const headings = tocLinks
+      .map((link) => document.getElementById(link.dataset.target))
+      .filter(Boolean);
+
+    function setActive(id) {
+      tocLinks.forEach((link) => {
+        link.classList.toggle('active', link.dataset.target === id);
+      });
+    }
+
+    tocLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = document.getElementById(link.dataset.target);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setActive(link.dataset.target);
+          history.replaceState(null, '', '#' + link.dataset.target);
+        }
+      });
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible.length > 0) {
+          setActive(visible[0].target.id);
+        }
+      },
+      { root: document.querySelector('.content'), rootMargin: '-10% 0px -70% 0px', threshold: [0, 0.25, 0.5] }
+    );
+
+    headings.forEach((h) => observer.observe(h));
+
+    const hash = location.hash.slice(1);
+    if (hash) {
+      setActive(hash);
+      const el = document.getElementById(hash);
+      if (el) el.scrollIntoView();
+    } else if (headings.length) {
+      setActive(headings[0].id);
+    }
+  </script>
+</body>
+</html>
