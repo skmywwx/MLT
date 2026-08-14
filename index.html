@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- 原型版本：UI-V1.0 | 修订记录见 PRD.md §7.6 -->
+<!-- 原型版本：UI-V1.1 | 修订记录见 PRD.md §7.6 -->
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
@@ -315,7 +315,7 @@
     let postcardPage = 0;
 
     const folders = [
-      { id: 'f1', title: '2025 京都之旅', photoIds: [], cover: 'https://images.unsplash.com/photo-1493976040374-85c8e912f137?w=400&q=80', count: 12 },
+      { id: 'f1', title: '2025 京都之旅', photoIds: [], cover: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&q=80', count: 12 },
       { id: 'f2', title: '夏日海边', photoIds: [], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80', count: 8 },
     ];
 
@@ -324,11 +324,33 @@
     ];
 
     const samplePhotos = [
-      { id: 's1', url: 'https://images.unsplash.com/photo-1493976040374-85c8e912f137?w=600&q=80', name: '京都塔.jpg', takenDate: '2025-03-15', takenTime: '14:32', location: '京都, 日本', importedDate: '2025-08-10' },
-      { id: 's2', url: 'https://images.unsplash.com/photo-1545569341-9f8ffb085801?w=600&q=80', name: '伏见稻荷.jpg', takenDate: '2025-03-16', takenTime: '09:15', location: '伏见稻荷大社', importedDate: '2025-08-10' },
+      { id: 's1', url: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&q=80', name: '京都塔.jpg', takenDate: '2025-03-15', takenTime: '14:32', location: '京都, 日本', importedDate: '2025-08-10' },
+      { id: 's2', url: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&q=80', name: '伏见稻荷.jpg', takenDate: '2025-03-16', takenTime: '09:15', location: '伏见稻荷大社', importedDate: '2025-08-10' },
       { id: 's3', url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80', name: '街景.jpg', takenDate: '2025-03-16', takenTime: '18:40', location: '祇园', importedDate: '2025-08-11' },
       { id: 's4', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80', name: '海滩.jpg', takenDate: '2025-07-20', takenTime: '17:00', location: '三亚', importedDate: '2025-08-12' },
     ];
+
+    const SAMPLE_PHOTO_URLS = {
+      s1: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&q=80',
+      s2: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&q=80',
+    };
+
+    function migrateBrokenSampleUrls(list) {
+      let changed = false;
+      const migrated = list.map((photo) => {
+        const nextUrl = SAMPLE_PHOTO_URLS[photo.id];
+        if (!nextUrl || photo.url === nextUrl) return photo;
+        if (
+          photo.url.includes('photo-1493976040374') ||
+          photo.url.includes('photo-1545569341-9f8ffb085801')
+        ) {
+          changed = true;
+          return { ...photo, url: nextUrl };
+        }
+        return photo;
+      });
+      return { migrated, changed };
+    }
 
     // ─── Init ────────────────────────────────────────────────
     function loadPhotos() {
@@ -336,6 +358,9 @@
         const saved = localStorage.getItem(STORAGE_KEY);
         photos = saved ? JSON.parse(saved) : [...samplePhotos];
       } catch { photos = [...samplePhotos]; }
+      const { migrated, changed } = migrateBrokenSampleUrls(photos);
+      photos = migrated;
+      if (changed) savePhotos();
       updateStats();
     }
 
