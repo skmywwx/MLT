@@ -275,7 +275,82 @@
     </aside>
     <main class="content" id="main-content">
 <h1 id="主题相册产品-prd">主题相册产品 PRD</h1>
-<h2 id="文档信息">文档信息</h2>
+<!-- PRD_TOC_START -->
+<h2 id="目录">目录</h2>
+<blockquote>
+<p>由 <code>npm run sync-prd</code> 根据下文标题自动生成，支持点击快速定位。</p>
+</blockquote>
+<ul>
+<li><a href="#%E6%96%87%E6%A1%A3%E4%BF%A1%E6%81%AF">文档信息</a></li>
+<li><a href="#%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">修订记录</a></li>
+<li><a href="#1-%E4%B8%80%E5%8F%A5%E8%AF%9D%E4%BB%B7%E5%80%BC%E4%B8%BB%E5%BC%A0">1. 一句话价值主张</a></li>
+<li><a href="#2-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">2. 目标用户与需求</a><ul>
+<li><a href="#21-%E6%A0%B8%E5%BF%83%E9%9C%80%E6%B1%82%E4%BA%A7%E5%93%81%E6%84%BF%E6%99%AF">2.1 核心需求（产品愿景）</a></li>
+<li><a href="#22-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E7%94%BB%E5%83%8F">2.2 目标用户画像</a><ul>
+<li><a href="#%E5%85%B1%E6%80%A7%E7%89%B9%E5%BE%81">共性特征</a></li>
+<li><a href="#%E5%B9%B4%E8%BD%BB%E4%BA%BA">年轻人</a></li>
+<li><a href="#%E8%80%81%E5%B9%B4%E4%BA%BA">老年人</a></li>
+</ul>
+</li>
+<li><a href="#23-%E7%94%A8%E6%88%B7%E6%95%85%E4%BA%8B">2.3 用户故事</a><ul>
+<li><a href="#231-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8Bp0">2.3.1 本期原型（P0）</a></li>
+<li><a href="#232-%E8%BF%9C%E6%9C%9F%E7%94%A8%E6%88%B7p1p2">2.3.2 远期用户（P1/P2）</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#3-%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95">3. 功能清单</a><ul>
+<li><a href="#31-p0-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B">3.1 P0 — 本期原型</a><ul>
+<li><a href="#311-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">3.1.1 账号与个人中心</a></li>
+<li><a href="#312-%E7%85%A7%E7%89%87%E6%94%B6%E7%BA%B3%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E4%B8%8D%E5%90%AB%E4%BA%91%E5%AD%98%E5%82%A8">3.1.2 照片收纳（本地上传，不含云存储）</a></li>
+<li><a href="#313-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E7%BE%8E%E5%8C%96%E6%89%8B%E8%B4%A6%E5%BC%8F%E5%8F%82%E8%80%83%E7%94%B5%E5%AD%90%E6%89%8B%E8%B4%A6%E8%BD%AF%E4%BB%B6">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</a></li>
+</ul>
+</li>
+<li><a href="#32-p1-mvp-%E6%89%A9%E5%B1%95%E4%BA%91%E8%83%BD%E5%8A%9B%E4%B8%8E%E5%88%86%E5%8F%91">3.2 P1 — MVP 扩展（云能力与分发）</a></li>
+<li><a href="#33-p2-%E8%BF%9C%E6%9C%9F%E8%83%BD%E5%8A%9B%E5%95%86%E4%B8%9A%E5%8C%96%E4%B8%8E%E6%B7%B1%E5%BA%A6%E8%83%BD%E5%8A%9B">3.3 P2 — 远期能力（商业化与深度能力）</a></li>
+</ul>
+</li>
+<li><a href="#4-%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E5%9B%BE">4. 核心流程图</a><ul>
+<li><a href="#41-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E4%B8%BB%E6%B5%81%E7%A8%8Bp0">4.1 本期原型主流程（P0）</a></li>
+<li><a href="#42-%E8%BF%9C%E6%9C%9F%E4%B8%BB%E6%B5%81%E7%A8%8Bp1p2%E4%BA%91%E5%90%8C%E6%AD%A5-%E5%88%86%E4%BA%AB-%E6%89%93%E5%8D%B0">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</a></li>
+<li><a href="#43-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E7%85%A7%E7%89%87%E6%B5%81%E7%A8%8Bp0">4.3 本期原型：本地上传照片流程（P0）</a></li>
+<li><a href="#44-%E8%BF%9C%E6%9C%9F%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E4%BA%91%E5%AD%98%E5%82%A8%E6%B5%81%E7%A8%8Bp1">4.4 远期：照片导入与云存储流程（P1）</a></li>
+</ul>
+</li>
+<li><a href="#5-%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E5%AE%9A%E4%B9%89">5. 关键数据字段定义</a><ul>
+<li><a href="#51-%E7%94%A8%E6%88%B7user-p0">5.1 用户（User）— P0</a></li>
+<li><a href="#52-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</a></li>
+<li><a href="#53-%E7%85%A7%E7%89%87photo-p0">5.3 照片（Photo）— P0</a></li>
+<li><a href="#54-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8Cdigitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</a></li>
+<li><a href="#55-%E7%94%BB%E5%B8%83%E5%85%83%E7%B4%A0canvaselement-p0">5.5 画布元素（CanvasElement）— P0</a></li>
+<li><a href="#56-%E7%B4%A0%E6%9D%90%E8%B5%84%E6%BA%90asset-p0">5.6 素材资源（Asset）— P0</a></li>
+<li><a href="#57-%E6%89%93%E5%8D%B0%E8%AE%A2%E5%8D%95printorder-p2-%E8%A7%84%E5%88%92">5.7 打印订单（PrintOrder）— P2 规划</a></li>
+</ul>
+</li>
+<li><a href="#6-%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6">6. 异常场景与边界条件</a><ul>
+<li><a href="#61-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5p0%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0">6.1 照片导入（P0：本地上传）</a></li>
+<li><a href="#62-%E6%A8%A1%E5%BC%8F%E5%88%87%E6%8D%A2%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">6.2 模式切换与明信片收纳册</a></li>
+<li><a href="#63-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91p0">6.3 电子相册编辑（P0）</a></li>
+<li><a href="#64-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83p0">6.4 账号与个人中心（P0）</a></li>
+<li><a href="#65-%E4%BA%91%E5%AD%98%E5%82%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8p1-%E8%B5%B7">6.5 云存储与数据安全（P1 起）</a></li>
+<li><a href="#66-%E5%8E%9F%E5%9E%8B%E9%98%B6%E6%AE%B5%E7%89%B9%E6%9C%89%E9%99%90%E5%88%B6">6.6 原型阶段特有限制</a></li>
+</ul>
+</li>
+<li><a href="#7-%E5%BE%85%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%BE%84%E6%B8%85%E7%9A%84%E9%97%AE%E9%A2%98">7. 待进一步澄清的问题</a></li>
+<li><a href="#8-%E5%8F%8C%E5%BD%A2%E6%80%81%E9%83%A8%E7%BD%B2web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82">8. 双形态部署：Web 与小程序差异</a><ul>
+<li><a href="#81-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">8.1 账号与个人中心</a></li>
+<li><a href="#82-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%85%A8%E9%83%A8%E7%85%A7%E7%89%87%E5%BA%93">8.2 照片导入与全部照片库</a></li>
+<li><a href="#83-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">8.3 主题文件夹与明信片收纳册</a></li>
+<li><a href="#84-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E6%89%8B%E8%B4%A6%E5%BC%8F">8.4 电子相册编辑（手账式）</a></li>
+<li><a href="#85-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E9%A2%84%E8%A7%88%E6%8B%9F%E7%9C%9F%E7%BF%BB%E9%A1%B5">8.5 电子相册【预览】拟真翻页</a></li>
+<li><a href="#86-%E9%80%9A%E7%94%A8%E5%B7%AE%E5%BC%82">8.6 通用差异</a></li>
+</ul>
+</li>
+<li><a href="#%E9%99%84%E5%BD%95-a%E9%9C%80%E6%B1%82%E6%9D%A5%E6%BA%90%E6%91%98%E8%A6%81%E5%B8%82%E5%9C%BA%E9%83%A8%E5%8F%A3%E8%AF%AD">附录 A：需求来源摘要（市场部口语）</a></li>
+<li><a href="#%E9%99%84%E5%BD%95-b%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BF%A1%E6%81%AF%E6%91%98%E8%A6%81%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">附录 B：思维导图信息摘要（用户与需求）</a></li>
+<li><a href="#%E9%99%84%E5%BD%95-c%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C%E7%BA%BF%E6%A1%86%E5%8F%82%E8%80%83">附录 C：明信片收纳册线框参考</a></li>
+</ul>
+<!-- PRD_TOC_END --><h2 id="文档信息">文档信息</h2>
 <table>
 <thead>
 <tr>
@@ -285,7 +360,7 @@
 </thead>
 <tbody><tr>
 <td>文档状态</td>
-<td>第二版（V2.6）</td>
+<td>第二版（V2.7）</td>
 </tr>
 <tr>
 <td>产品代号</td>
@@ -369,83 +444,14 @@
 <td>产品</td>
 <td>整理全文标题层级（h2–h4）；新增/完善可点击「目录」章节；同步脚本支持四级标题目录与 HTML 侧栏；附录 B/C 顺序调整。</td>
 </tr>
+<tr>
+<td>V2.7</td>
+<td>2026-08-14 15:22</td>
+<td>产品</td>
+<td>将「目录」章节移至【文档信息】之前，作为 PRD 开篇导航。</td>
+</tr>
 </tbody></table>
-<!-- PRD_TOC_START -->
-<h2 id="目录">目录</h2>
-<blockquote>
-<p>由 <code>npm run sync-prd</code> 根据下文标题自动生成，支持点击快速定位。</p>
-</blockquote>
-<ul>
-<li><a href="#%E6%96%87%E6%A1%A3%E4%BF%A1%E6%81%AF">文档信息</a></li>
-<li><a href="#%E4%BF%AE%E8%AE%A2%E8%AE%B0%E5%BD%95">修订记录</a></li>
-<li><a href="#1-%E4%B8%80%E5%8F%A5%E8%AF%9D%E4%BB%B7%E5%80%BC%E4%B8%BB%E5%BC%A0">1. 一句话价值主张</a></li>
-<li><a href="#2-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">2. 目标用户与需求</a><ul>
-<li><a href="#21-%E6%A0%B8%E5%BF%83%E9%9C%80%E6%B1%82%E4%BA%A7%E5%93%81%E6%84%BF%E6%99%AF">2.1 核心需求（产品愿景）</a></li>
-<li><a href="#22-%E7%9B%AE%E6%A0%87%E7%94%A8%E6%88%B7%E7%94%BB%E5%83%8F">2.2 目标用户画像</a><ul>
-<li><a href="#%E5%85%B1%E6%80%A7%E7%89%B9%E5%BE%81">共性特征</a></li>
-<li><a href="#%E5%B9%B4%E8%BD%BB%E4%BA%BA">年轻人</a></li>
-<li><a href="#%E8%80%81%E5%B9%B4%E4%BA%BA">老年人</a></li>
-</ul>
-</li>
-<li><a href="#23-%E7%94%A8%E6%88%B7%E6%95%85%E4%BA%8B">2.3 用户故事</a><ul>
-<li><a href="#231-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8Bp0">2.3.1 本期原型（P0）</a></li>
-<li><a href="#232-%E8%BF%9C%E6%9C%9F%E7%94%A8%E6%88%B7p1p2">2.3.2 远期用户（P1/P2）</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#3-%E5%8A%9F%E8%83%BD%E6%B8%85%E5%8D%95">3. 功能清单</a><ul>
-<li><a href="#31-p0-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B">3.1 P0 — 本期原型</a><ul>
-<li><a href="#311-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">3.1.1 账号与个人中心</a></li>
-<li><a href="#312-%E7%85%A7%E7%89%87%E6%94%B6%E7%BA%B3%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E4%B8%8D%E5%90%AB%E4%BA%91%E5%AD%98%E5%82%A8">3.1.2 照片收纳（本地上传，不含云存储）</a></li>
-<li><a href="#313-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E7%BE%8E%E5%8C%96%E6%89%8B%E8%B4%A6%E5%BC%8F%E5%8F%82%E8%80%83%E7%94%B5%E5%AD%90%E6%89%8B%E8%B4%A6%E8%BD%AF%E4%BB%B6">3.1.3 电子相册编辑美化（手账式，参考电子手账软件）</a></li>
-</ul>
-</li>
-<li><a href="#32-p1-mvp-%E6%89%A9%E5%B1%95%E4%BA%91%E8%83%BD%E5%8A%9B%E4%B8%8E%E5%88%86%E5%8F%91">3.2 P1 — MVP 扩展（云能力与分发）</a></li>
-<li><a href="#33-p2-%E8%BF%9C%E6%9C%9F%E8%83%BD%E5%8A%9B%E5%95%86%E4%B8%9A%E5%8C%96%E4%B8%8E%E6%B7%B1%E5%BA%A6%E8%83%BD%E5%8A%9B">3.3 P2 — 远期能力（商业化与深度能力）</a></li>
-</ul>
-</li>
-<li><a href="#4-%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B%E5%9B%BE">4. 核心流程图</a><ul>
-<li><a href="#41-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E4%B8%BB%E6%B5%81%E7%A8%8Bp0">4.1 本期原型主流程（P0）</a></li>
-<li><a href="#42-%E8%BF%9C%E6%9C%9F%E4%B8%BB%E6%B5%81%E7%A8%8Bp1p2%E4%BA%91%E5%90%8C%E6%AD%A5-%E5%88%86%E4%BA%AB-%E6%89%93%E5%8D%B0">4.2 远期主流程（P1/P2：云同步 → 分享 → 打印）</a></li>
-<li><a href="#43-%E6%9C%AC%E6%9C%9F%E5%8E%9F%E5%9E%8B%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0%E7%85%A7%E7%89%87%E6%B5%81%E7%A8%8Bp0">4.3 本期原型：本地上传照片流程（P0）</a></li>
-<li><a href="#44-%E8%BF%9C%E6%9C%9F%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E4%BA%91%E5%AD%98%E5%82%A8%E6%B5%81%E7%A8%8Bp1">4.4 远期：照片导入与云存储流程（P1）</a></li>
-</ul>
-</li>
-<li><a href="#5-%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE%E5%AD%97%E6%AE%B5%E5%AE%9A%E4%B9%89">5. 关键数据字段定义</a><ul>
-<li><a href="#51-%E7%94%A8%E6%88%B7user-p0">5.1 用户（User）— P0</a></li>
-<li><a href="#52-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9themefolder-p0">5.2 主题文件夹（ThemeFolder）— P0</a></li>
-<li><a href="#53-%E7%85%A7%E7%89%87photo-p0">5.3 照片（Photo）— P0</a></li>
-<li><a href="#54-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8Cdigitalalbum-p0">5.4 电子相册（DigitalAlbum）— P0</a></li>
-<li><a href="#55-%E7%94%BB%E5%B8%83%E5%85%83%E7%B4%A0canvaselement-p0">5.5 画布元素（CanvasElement）— P0</a></li>
-<li><a href="#56-%E7%B4%A0%E6%9D%90%E8%B5%84%E6%BA%90asset-p0">5.6 素材资源（Asset）— P0</a></li>
-<li><a href="#57-%E6%89%93%E5%8D%B0%E8%AE%A2%E5%8D%95printorder-p2-%E8%A7%84%E5%88%92">5.7 打印订单（PrintOrder）— P2 规划</a></li>
-</ul>
-</li>
-<li><a href="#6-%E5%BC%82%E5%B8%B8%E5%9C%BA%E6%99%AF%E4%B8%8E%E8%BE%B9%E7%95%8C%E6%9D%A1%E4%BB%B6">6. 异常场景与边界条件</a><ul>
-<li><a href="#61-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5p0%E6%9C%AC%E5%9C%B0%E4%B8%8A%E4%BC%A0">6.1 照片导入（P0：本地上传）</a></li>
-<li><a href="#62-%E6%A8%A1%E5%BC%8F%E5%88%87%E6%8D%A2%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">6.2 模式切换与明信片收纳册</a></li>
-<li><a href="#63-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91p0">6.3 电子相册编辑（P0）</a></li>
-<li><a href="#64-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83p0">6.4 账号与个人中心（P0）</a></li>
-<li><a href="#65-%E4%BA%91%E5%AD%98%E5%82%A8%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8p1-%E8%B5%B7">6.5 云存储与数据安全（P1 起）</a></li>
-<li><a href="#66-%E5%8E%9F%E5%9E%8B%E9%98%B6%E6%AE%B5%E7%89%B9%E6%9C%89%E9%99%90%E5%88%B6">6.6 原型阶段特有限制</a></li>
-</ul>
-</li>
-<li><a href="#7-%E5%BE%85%E8%BF%9B%E4%B8%80%E6%AD%A5%E6%BE%84%E6%B8%85%E7%9A%84%E9%97%AE%E9%A2%98">7. 待进一步澄清的问题</a></li>
-<li><a href="#8-%E5%8F%8C%E5%BD%A2%E6%80%81%E9%83%A8%E7%BD%B2web-%E4%B8%8E%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%B7%AE%E5%BC%82">8. 双形态部署：Web 与小程序差异</a><ul>
-<li><a href="#81-%E8%B4%A6%E5%8F%B7%E4%B8%8E%E4%B8%AA%E4%BA%BA%E4%B8%AD%E5%BF%83">8.1 账号与个人中心</a></li>
-<li><a href="#82-%E7%85%A7%E7%89%87%E5%AF%BC%E5%85%A5%E4%B8%8E%E5%85%A8%E9%83%A8%E7%85%A7%E7%89%87%E5%BA%93">8.2 照片导入与全部照片库</a></li>
-<li><a href="#83-%E4%B8%BB%E9%A2%98%E6%96%87%E4%BB%B6%E5%A4%B9%E4%B8%8E%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C">8.3 主题文件夹与明信片收纳册</a></li>
-<li><a href="#84-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E7%BC%96%E8%BE%91%E6%89%8B%E8%B4%A6%E5%BC%8F">8.4 电子相册编辑（手账式）</a></li>
-<li><a href="#85-%E7%94%B5%E5%AD%90%E7%9B%B8%E5%86%8C%E9%A2%84%E8%A7%88%E6%8B%9F%E7%9C%9F%E7%BF%BB%E9%A1%B5">8.5 电子相册【预览】拟真翻页</a></li>
-<li><a href="#86-%E9%80%9A%E7%94%A8%E5%B7%AE%E5%BC%82">8.6 通用差异</a></li>
-</ul>
-</li>
-<li><a href="#%E9%99%84%E5%BD%95-a%E9%9C%80%E6%B1%82%E6%9D%A5%E6%BA%90%E6%91%98%E8%A6%81%E5%B8%82%E5%9C%BA%E9%83%A8%E5%8F%A3%E8%AF%AD">附录 A：需求来源摘要（市场部口语）</a></li>
-<li><a href="#%E9%99%84%E5%BD%95-b%E6%80%9D%E7%BB%B4%E5%AF%BC%E5%9B%BE%E4%BF%A1%E6%81%AF%E6%91%98%E8%A6%81%E7%94%A8%E6%88%B7%E4%B8%8E%E9%9C%80%E6%B1%82">附录 B：思维导图信息摘要（用户与需求）</a></li>
-<li><a href="#%E9%99%84%E5%BD%95-c%E6%98%8E%E4%BF%A1%E7%89%87%E6%94%B6%E7%BA%B3%E5%86%8C%E7%BA%BF%E6%A1%86%E5%8F%82%E8%80%83">附录 C：明信片收纳册线框参考</a></li>
-</ul>
-<!-- PRD_TOC_END --><h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
+<h2 id="1-一句话价值主张">1. 一句话价值主张</h2>
 <p><strong>像手机图库一样集中管理本地上传照片，再按旅游等主题归入文件夹，并可在文件夹与明信片收纳册之间无缝切换浏览；在此基础上提供手账式电子相册编辑美化能力。本期以 Web + 小程序双形态原型验证，不含云存储。</strong></p>
 <h2 id="2-目标用户与需求">2. 目标用户与需求</h2>
 <h3 id="21-核心需求产品愿景">2.1 核心需求（产品愿景）</h3>

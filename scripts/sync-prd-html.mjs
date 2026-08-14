@@ -111,9 +111,14 @@ function injectMarkdownToc(markdown, tocBlock) {
     return markdown.replace(pattern, tocBlock);
   }
 
-  const anchor = '## 1. 一句话价值主张';
+  const anchor = '## 文档信息';
   if (markdown.includes(anchor)) {
     return markdown.replace(anchor, `${tocBlock}\n\n${anchor}`);
+  }
+
+  const fallback = '## 1. 一句话价值主张';
+  if (markdown.includes(fallback)) {
+    return markdown.replace(fallback, `${tocBlock}\n\n${fallback}`);
   }
 
   return `${tocBlock}\n\n${markdown}`;
