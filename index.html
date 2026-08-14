@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<!-- 原型版本：UI-V1.1 | 修订记录见 PRD.md §7.6 -->
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>主题相册</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { DEFAULT: '#BFE1F2', dark: '#8ECAE6', light: '#E8F6FC', ink: '#1E3A4C' },
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          boxShadow: {
+            soft: '0 1px 2px rgba(30,58,76,.06), 0 4px 16px rgba(30,58,76,.04)',
+            card: '0 1px 3px rgba(30,58,76,.08), 0 8px 24px rgba(191,225,242,.35)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    * { font-family: 'Inter', system-ui, sans-serif; }
+    .view { display: none; }
+    .view.active { display: block; }
+    .nav-item.active { background: #BFE1F2; color: #1E3A4C; font-weight: 600; }
+    .nav-item:hover:not(.active) { background: #E8F6FC; }
+    .fade-in { animation: fadeIn .35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .hero-card { transition: transform .2s, box-shadow .2s; }
+    .hero-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(191,225,242,.5); }
+    .photo-grid img { object-fit: cover; }
+    .postcard-slot { aspect-ratio: 4/3; }
+    .canvas-dot { width: 8px; height: 8px; border-radius: 50%; background: #BFE1F2; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #c5d8e3; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-[#F7F9FB] text-slate-800 antialiased min-h-screen">
+
+  <div class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside class="w-56 shrink-0 border-r border-slate-200/80 bg-white flex flex-col">
+      <div class="px-5 py-5 flex items-center gap-2.5 border-b border-slate-100">
+        <div class="w-9 h-9 rounded-xl bg-brand flex items-center justify-center shadow-soft">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E3A4C" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        </div>
+        <div>
+          <div class="font-semibold text-sm text-brand-ink leading-tight">主题相册</div>
+          <div class="text-[10px] text-slate-400">Web 原型</div>
+        </div>
+      </div>
+      <nav class="flex-1 p-3 space-y-1">
+        <button data-nav="works" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+          我的作品
+        </button>
+        <button data-nav="gallery" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          图库
+        </button>
+        <button data-nav="album" class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-600 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          电子相册
+        </button>
+      </nav>
+      <div class="p-4 border-t border-slate-100">
+        <div class="flex items-center gap-2.5 px-2">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-brand to-brand-dark flex items-center justify-center text-xs font-semibold text-brand-ink">我</div>
+          <div class="min-w-0">
+            <div class="text-xs font-medium truncate">访客用户</div>
+            <div class="text-[10px] text-slate-400">个人中心</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col min-w-0">
+      <!-- Top bar -->
+      <header class="h-14 shrink-0 border-b border-slate-200/80 bg-white/80 backdrop-blur-sm flex items-center gap-4 px-6">
+        <div class="flex-1 max-w-md relative">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input id="searchInput" type="search" placeholder="搜索照片、主题文件夹、电子相册…" class="w-full pl-9 pr-4 py-2 text-sm bg-slate-50 border border-slate-200/80 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent placeholder:text-slate-400" />
+        </div>
+        <button id="uploadBtn" class="px-4 py-2 text-sm font-medium bg-brand hover:bg-brand-dark text-brand-ink rounded-lg transition shadow-soft">上传照片</button>
+        <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
+      </header>
+
+      <main class="flex-1 overflow-auto p-6 lg:p-8">
+
+        <!-- HOME -->
+        <section id="view-home" class="view active fade-in max-w-5xl mx-auto">
+          <div class="mb-8">
+            <h1 class="text-2xl font-semibold text-brand-ink tracking-tight">欢迎回来</h1>
+            <p class="text-slate-500 text-sm mt-1">像手机图库一样收纳照片，用手账式排版制作电子相册</p>
+          </div>
+
+          <!-- Hero illustration -->
+          <div class="mb-8 p-6 rounded-2xl bg-gradient-to-r from-brand-light via-white to-brand-light/30 border border-brand/30 flex items-center gap-6 overflow-hidden">
+            <svg class="shrink-0 w-32 h-32 hidden sm:block" viewBox="0 0 120 120" fill="none">
+              <rect x="10" y="20" width="50" height="70" rx="4" fill="#BFE1F2" opacity=".6"/>
+              <rect x="30" y="10" width="50" height="70" rx="4" fill="#8ECAE6" opacity=".8"/>
+              <rect x="50" y="25" width="50" height="70" rx="4" fill="#fff" stroke="#BFE1F2" stroke-width="2"/>
+              <circle cx="75" cy="50" r="10" fill="#BFE1F2"/>
+              <path d="M55 75h40" stroke="#8ECAE6" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <div>
+              <p class="text-sm text-slate-600 leading-relaxed">所有导入的照片进入<strong>全部照片</strong>，可建立旅游主题文件夹，并一键切换<strong>明信片收纳册</strong>浏览模式。</p>
+            </div>
+          </div>
+
+          <!-- Two main actions -->
+          <div class="grid sm:grid-cols-2 gap-5 mb-8">
+            <button data-go="gallery" class="hero-card text-left p-6 rounded-2xl bg-white border border-slate-200/80 shadow-card group">
+              <div class="w-12 h-12 rounded-xl bg-brand-light flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E3A4C" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+              <h2 class="text-lg font-semibold text-brand-ink mb-1">图库</h2>
+              <p class="text-sm text-slate-500">查看全部照片，管理主题文件夹，切换文件夹 / 明信片阅览模式</p>
+              <span class="inline-flex items-center gap-1 mt-4 text-sm font-medium text-brand-ink">进入图库 →</span>
+            </button>
+            <button data-go="album" class="hero-card text-left p-6 rounded-2xl bg-white border border-slate-200/80 shadow-card group">
+              <div class="w-12 h-12 rounded-xl bg-brand-light flex items-center justify-center mb-4 group-hover:scale-105 transition">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1E3A4C" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+              </div>
+              <h2 class="text-lg font-semibold text-brand-ink mb-1">电子相册</h2>
+              <p class="text-sm text-slate-500">手账式排版编辑，贴纸素材装饰，随时预览拟真翻页效果</p>
+              <span class="inline-flex items-center gap-1 mt-4 text-sm font-medium text-brand-ink">开始制作 →</span>
+            </button>
+          </div>
+
+          <!-- Stats chart -->
+          <div class="grid lg:grid-cols-3 gap-5">
+            <div class="lg:col-span-2 p-5 rounded-2xl bg-white border border-slate-200/80 shadow-soft">
+              <h3 class="text-sm font-semibold text-brand-ink mb-4">近 7 日创作活动</h3>
+              <canvas id="activityChart" height="120"></canvas>
+            </div>
+            <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-soft space-y-4">
+              <h3 class="text-sm font-semibold text-brand-ink">数据概览</h3>
+              <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                <span class="text-sm text-slate-500">全部照片</span>
+                <span id="statPhotos" class="text-lg font-semibold text-brand-ink">0</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-100">
+                <span class="text-sm text-slate-500">主题文件夹</span>
+                <span id="statFolders" class="text-lg font-semibold text-brand-ink">2</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-sm text-slate-500">电子相册</span>
+                <span id="statAlbums" class="text-lg font-semibold text-brand-ink">1</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- WORKS -->
+        <section id="view-works" class="view fade-in max-w-5xl mx-auto">
+          <h1 class="text-2xl font-semibold text-brand-ink mb-6">我的作品</h1>
+          <div class="grid md:grid-cols-3 gap-4 mb-8">
+            <button data-go="gallery" class="p-5 rounded-xl bg-white border border-slate-200/80 hover:border-brand transition text-left">
+              <div class="text-2xl font-bold text-brand-ink" id="worksPhotoCount">0</div>
+              <div class="text-sm text-slate-500 mt-1">全部照片</div>
+            </button>
+            <button id="goFolders" class="p-5 rounded-xl bg-white border border-slate-200/80 hover:border-brand transition text-left">
+              <div class="text-2xl font-bold text-brand-ink">2</div>
+              <div class="text-sm text-slate-500 mt-1">主题文件夹</div>
+            </button>
+            <button data-go="album" class="p-5 rounded-xl bg-white border border-slate-200/80 hover:border-brand transition text-left">
+              <div class="text-2xl font-bold text-brand-ink">1</div>
+              <div class="text-sm text-slate-500 mt-1">电子相册草稿</div>
+            </button>
+          </div>
+          <h2 class="text-sm font-semibold text-slate-600 mb-3">最近主题文件夹</h2>
+          <div class="grid sm:grid-cols-2 gap-4" id="worksFolderList"></div>
+        </section>
+
+        <!-- GALLERY -->
+        <section id="view-gallery" class="view fade-in">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 class="text-2xl font-semibold text-brand-ink">图库</h1>
+              <p class="text-sm text-slate-500 mt-0.5" id="gallerySubtitle">全部照片 · 本地上传</p>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <div id="galleryTabs" class="flex bg-slate-100 rounded-lg p-1 text-sm">
+                <button data-gallery-tab="all" class="gallery-tab px-3 py-1.5 rounded-md font-medium bg-white shadow-sm text-brand-ink">全部照片</button>
+                <button data-gallery-tab="folders" class="gallery-tab px-3 py-1.5 rounded-md font-medium text-slate-500">主题文件夹</button>
+              </div>
+              <div id="viewModeToggle" class="flex bg-slate-100 rounded-lg p-1 text-sm">
+                <button data-view="grid" class="view-mode px-2.5 py-1.5 rounded-md bg-white shadow-sm" title="网格">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+                </button>
+                <button data-view="list" class="view-mode px-2.5 py-1.5 rounded-md text-slate-400" title="列表">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="14" height="2" rx="1"/></svg>
+                </button>
+              </div>
+              <div id="folderModeToggle" class="hidden flex bg-brand-light rounded-lg p-1 text-sm border border-brand/40">
+                <button data-folder-mode="folder" class="folder-mode px-3 py-1.5 rounded-md font-medium bg-white shadow-sm text-brand-ink">文件夹</button>
+                <button data-folder-mode="postcard" class="folder-mode px-3 py-1.5 rounded-md font-medium text-slate-500">明信片册</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Folder detail bar -->
+          <div id="folderDetailBar" class="hidden mb-4 p-4 rounded-xl bg-brand-light/50 border border-brand/30 flex items-center justify-between">
+            <button id="backToFolders" class="text-sm text-brand-ink hover:underline flex items-center gap-1">← 返回文件夹列表</button>
+            <span id="currentFolderName" class="font-semibold text-brand-ink"></span>
+          </div>
+
+          <div id="galleryAll" class="gallery-panel">
+            <div id="photoGrid" class="photo-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3"></div>
+            <div id="photoList" class="hidden space-y-2"></div>
+            <div id="emptyGallery" class="hidden py-16 text-center">
+              <svg class="mx-auto w-24 h-24 mb-4 opacity-60" viewBox="0 0 100 100"><rect x="15" y="25" width="70" height="50" rx="6" fill="#E8F6FC" stroke="#BFE1F2" stroke-width="2"/><circle cx="35" cy="45" r="8" fill="#BFE1F2"/><path d="M20 65l20-15 15 10 25-20" stroke="#8ECAE6" stroke-width="2" fill="none"/></svg>
+              <p class="text-slate-500 text-sm">还没有照片，点击右上角「上传照片」开始</p>
+            </div>
+          </div>
+
+          <div id="galleryFolders" class="gallery-panel hidden">
+            <div id="folderGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <div id="galleryPostcard" class="hidden">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-card p-6 md:p-8">
+              <div class="flex justify-between items-center mb-6">
+                <button id="postcardPrev" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm">← 上一页</button>
+                <span id="postcardPageInfo" class="text-sm text-slate-500">第 1 页</span>
+                <button id="postcardNext" class="px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 text-sm">下一页 →</button>
+              </div>
+              <div id="postcardSpread" class="grid md:grid-cols-2 gap-6 md:gap-8"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALBUM -->
+        <section id="view-album" class="view fade-in">
+          <div id="albumListView">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h1 class="text-2xl font-semibold text-brand-ink">电子相册</h1>
+                <p class="text-sm text-slate-500 mt-0.5">手账式排版 · 随时预览拟真翻页</p>
+              </div>
+              <button id="createAlbumBtn" class="px-4 py-2 text-sm font-medium bg-brand hover:bg-brand-dark text-brand-ink rounded-lg shadow-soft">+ 新建电子相册</button>
+            </div>
+            <div id="albumCards" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <div id="albumEditorView" class="hidden">
+            <div class="flex items-center justify-between mb-4">
+              <button id="backToAlbumList" class="text-sm text-slate-500 hover:text-brand-ink">← 返回列表</button>
+              <div class="flex gap-2">
+                <button id="previewAlbumBtn" class="px-4 py-2 text-sm font-medium border border-brand text-brand-ink rounded-lg hover:bg-brand-light">预览</button>
+                <span class="px-3 py-2 text-xs text-slate-400 bg-slate-50 rounded-lg">自动保存中…</span>
+              </div>
+            </div>
+            <div class="flex gap-4 h-[calc(100vh-12rem)] min-h-[480px]">
+              <!-- Toolbar -->
+              <div class="w-12 shrink-0 flex flex-col gap-2 p-2 bg-white rounded-xl border border-slate-200">
+                <button class="tool-btn p-2 rounded-lg hover:bg-brand-light" title="选择">↖</button>
+                <button class="tool-btn p-2 rounded-lg hover:bg-brand-light" title="文本">T</button>
+                <button class="tool-btn p-2 rounded-lg hover:bg-brand-light" title="贴纸">☆</button>
+                <button class="tool-btn p-2 rounded-lg hover:bg-brand-light" title="图片">🖼</button>
+              </div>
+              <!-- Canvas -->
+              <div class="flex-1 bg-white rounded-2xl border border-slate-200 shadow-soft relative overflow-hidden">
+                <div id="editorCanvas" class="absolute inset-4 rounded-xl border-2 border-dashed border-brand/40 bg-gradient-to-br from-brand-light/20 to-white flex items-center justify-center">
+                  <div class="text-center p-8">
+                    <svg class="mx-auto w-20 h-20 mb-3 opacity-70" viewBox="0 0 80 80"><rect x="8" y="12" width="64" height="56" rx="4" fill="#E8F6FC" stroke="#BFE1F2"/><text x="40" y="46" text-anchor="middle" fill="#8ECAE6" font-size="10">画布</text></svg>
+                    <p class="text-sm text-slate-500">拖拽照片与素材至画布<br/>支持缩放、裁剪与富文本</p>
+                  </div>
+                </div>
+              </div>
+              <!-- Pages -->
+              <div class="w-24 shrink-0 space-y-2 overflow-auto">
+                <div class="page-thumb h-28 rounded-lg border-2 border-brand bg-brand-light/30 flex items-center justify-center text-xs font-medium text-brand-ink">P1</div>
+                <div class="page-thumb h-28 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center text-xs text-slate-400">+ 页</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview modal -->
+          <div id="previewModal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 text-center">
+              <h3 class="text-lg font-semibold text-brand-ink mb-2">拟真翻页预览</h3>
+              <p class="text-sm text-slate-500 mb-6">模拟实体相册双页展开效果（原型示意）</p>
+              <div class="flex gap-4 justify-center mb-6">
+                <div class="w-40 h-56 rounded-lg bg-brand-light border border-brand shadow-lg transform -rotate-2"></div>
+                <div class="w-40 h-56 rounded-lg bg-white border border-slate-200 shadow-lg transform rotate-1"></div>
+              </div>
+              <button id="closePreview" class="px-5 py-2 bg-brand text-brand-ink rounded-lg text-sm font-medium">返回编辑</button>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // ─── State ───────────────────────────────────────────────
+    const STORAGE_KEY = 'theme_album_photos_v1';
+    let photos = [];
+    let galleryTab = 'all';
+    let viewMode = 'grid';
+    let currentFolderId = null;
+    let folderDisplayMode = 'folder';
+    let postcardPage = 0;
+
+    const folders = [
+      { id: 'f1', title: '2025 京都之旅', photoIds: [], cover: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&q=80', count: 12 },
+      { id: 'f2', title: '夏日海边', photoIds: [], cover: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&q=80', count: 8 },
+    ];
+
+    const albums = [
+      { id: 'a1', title: '京都 Zine 手账', pages: 6, updated: '2025-08-12', status: 'draft' },
+    ];
+
+    const samplePhotos = [
+      { id: 's1', url: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&q=80', name: '京都塔.jpg', takenDate: '2025-03-15', takenTime: '14:32', location: '京都, 日本', importedDate: '2025-08-10' },
+      { id: 's2', url: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&q=80', name: '伏见稻荷.jpg', takenDate: '2025-03-16', takenTime: '09:15', location: '伏见稻荷大社', importedDate: '2025-08-10' },
+      { id: 's3', url: 'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=600&q=80', name: '街景.jpg', takenDate: '2025-03-16', takenTime: '18:40', location: '祇园', importedDate: '2025-08-11' },
+      { id: 's4', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=600&q=80', name: '海滩.jpg', takenDate: '2025-07-20', takenTime: '17:00', location: '三亚', importedDate: '2025-08-12' },
+    ];
+
+    const SAMPLE_PHOTO_URLS = {
+      s1: 'https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=600&q=80',
+      s2: 'https://images.unsplash.com/photo-1528164344705-47542687000d?w=600&q=80',
+    };
+
+    function migrateBrokenSampleUrls(list) {
+      let changed = false;
+      const migrated = list.map((photo) => {
+        const nextUrl = SAMPLE_PHOTO_URLS[photo.id];
+        if (!nextUrl || photo.url === nextUrl) return photo;
+        if (
+          photo.url.includes('photo-1493976040374') ||
+          photo.url.includes('photo-1545569341-9f8ffb085801')
+        ) {
+          changed = true;
+          return { ...photo, url: nextUrl };
+        }
+        return photo;
+      });
+      return { migrated, changed };
+    }
+
+    // ─── Init ────────────────────────────────────────────────
+    function loadPhotos() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        photos = saved ? JSON.parse(saved) : [...samplePhotos];
+      } catch { photos = [...samplePhotos]; }
+      const { migrated, changed } = migrateBrokenSampleUrls(photos);
+      photos = migrated;
+      if (changed) savePhotos();
+      updateStats();
+    }
+
+    function savePhotos() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(photos));
+      updateStats();
+    }
+
+    function updateStats() {
+      document.getElementById('statPhotos').textContent = photos.length;
+      document.getElementById('worksPhotoCount').textContent = photos.length;
+      document.getElementById('statAlbums').textContent = albums.length;
+    }
+
+    // ─── Navigation ──────────────────────────────────────────
+    const views = { home: 'view-home', works: 'view-works', gallery: 'view-gallery', album: 'view-album' };
+
+    function navigate(view, opts = {}) {
+      Object.values(views).forEach(id => document.getElementById(id).classList.remove('active'));
+      document.getElementById(views[view]).classList.add('active');
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.toggle('active', el.dataset.nav === view);
+      });
+      if (view === 'gallery') {
+        if (opts.tab) galleryTab = opts.tab;
+        if (opts.folderId) { currentFolderId = opts.folderId; galleryTab = 'folders'; }
+        renderGallery();
+      }
+      if (view === 'album' && opts.editor) showAlbumEditor();
+      else if (view === 'album') showAlbumList();
+    }
+
+    document.querySelectorAll('[data-nav]').forEach(btn => {
+      btn.addEventListener('click', () => navigate(btn.dataset.nav));
+    });
+
+    document.querySelectorAll('[data-go]').forEach(btn => {
+      btn.addEventListener('click', () => navigate(btn.dataset.go));
+    });
+
+    document.getElementById('goFolders').addEventListener('click', () => navigate('gallery', { tab: 'folders' }));
+
+    // ─── Gallery ─────────────────────────────────────────────
+    document.querySelectorAll('.gallery-tab').forEach(btn => {
+      btn.addEventListener('click', () => {
+        galleryTab = btn.dataset.galleryTab;
+        currentFolderId = null;
+        folderDisplayMode = 'folder';
+        renderGallery();
+      });
+    });
+
+    document.querySelectorAll('.view-mode').forEach(btn => {
+      btn.addEventListener('click', () => {
+        viewMode = btn.dataset.view;
+        document.querySelectorAll('.view-mode').forEach(b => {
+          b.classList.toggle('bg-white', b.dataset.view === viewMode);
+          b.classList.toggle('shadow-sm', b.dataset.view === viewMode);
+          b.classList.toggle('text-slate-400', b.dataset.view !== viewMode);
+        });
+        renderGallery();
+      });
+    });
+
+    document.querySelectorAll('.folder-mode').forEach(btn => {
+      btn.addEventListener('click', () => {
+        folderDisplayMode = btn.dataset.folderMode;
+        document.querySelectorAll('.folder-mode').forEach(b => {
+          const on = b.dataset.folderMode === folderDisplayMode;
+          b.classList.toggle('bg-white', on);
+          b.classList.toggle('shadow-sm', on);
+          b.classList.toggle('text-brand-ink', on);
+          b.classList.toggle('text-slate-500', !on);
+        });
+        renderGallery();
+      });
+    });
+
+    document.getElementById('backToFolders').addEventListener('click', () => {
+      currentFolderId = null;
+      folderDisplayMode = 'folder';
+      renderGallery();
+    });
+
+    function getFolderPhotos(fid) {
+      const folder = folders.find(f => f.id === fid);
+      if (!folder) return photos.slice(0, folder?.count || 4);
+      return photos.slice(0, Math.min(folder.count, photos.length)) || samplePhotos.slice(0, 4);
+    }
+
+    function renderGallery() {
+      const tabs = document.getElementById('galleryTabs');
+      const modeToggle = document.getElementById('viewModeToggle');
+      const folderModeToggle = document.getElementById('folderModeToggle');
+      const detailBar = document.getElementById('folderDetailBar');
+      const allPanel = document.getElementById('galleryAll');
+      const foldersPanel = document.getElementById('galleryFolders');
+      const postcardPanel = document.getElementById('galleryPostcard');
+
+      document.querySelectorAll('.gallery-tab').forEach(b => {
+        const on = b.dataset.galleryTab === galleryTab && !currentFolderId;
+        b.classList.toggle('bg-white', on);
+        b.classList.toggle('shadow-sm', on);
+        b.classList.toggle('text-brand-ink', on);
+        b.classList.toggle('text-slate-500', !on);
+      });
+
+      if (currentFolderId) {
+        tabs.classList.add('hidden');
+        detailBar.classList.remove('hidden');
+        folderModeToggle.classList.remove('hidden');
+        const folder = folders.find(f => f.id === currentFolderId);
+        document.getElementById('currentFolderName').textContent = folder?.title || '';
+
+        if (folderDisplayMode === 'postcard') {
+          allPanel.classList.add('hidden');
+          foldersPanel.classList.add('hidden');
+          postcardPanel.classList.remove('hidden');
+          modeToggle.classList.add('hidden');
+          renderPostcard();
+        } else {
+          postcardPanel.classList.add('hidden');
+          allPanel.classList.remove('hidden');
+          foldersPanel.classList.add('hidden');
+          modeToggle.classList.remove('hidden');
+          renderPhotos(getFolderPhotos(currentFolderId));
+        }
+        document.getElementById('gallerySubtitle').textContent = folder?.title + ' · 主题文件夹';
+        return;
+      }
+
+      tabs.classList.remove('hidden');
+      detailBar.classList.add('hidden');
+      folderModeToggle.classList.add('hidden');
+      postcardPanel.classList.add('hidden');
+      modeToggle.classList.remove('hidden');
+
+      if (galleryTab === 'all') {
+        allPanel.classList.remove('hidden');
+        foldersPanel.classList.add('hidden');
+        document.getElementById('gallerySubtitle').textContent = '全部照片 · 本地上传';
+        renderPhotos(photos);
+      } else {
+        allPanel.classList.add('hidden');
+        foldersPanel.classList.remove('hidden');
+        document.getElementById('gallerySubtitle').textContent = '主题文件夹';
+        renderFolderGrid();
+      }
+    }
+
+    function renderPhotos(list) {
+      const grid = document.getElementById('photoGrid');
+      const listEl = document.getElementById('photoList');
+      const empty = document.getElementById('emptyGallery');
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+      const filtered = list.filter(p =>
+        !q || p.name?.toLowerCase().includes(q) || p.location?.toLowerCase().includes(q)
+      );
+
+      if (!filtered.length) {
+        grid.innerHTML = '';
+        listEl.innerHTML = '';
+        empty.classList.remove('hidden');
+        grid.classList.toggle('hidden', viewMode === 'list');
+        listEl.classList.toggle('hidden', viewMode === 'grid');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      if (viewMode === 'grid') {
+        grid.classList.remove('hidden');
+        listEl.classList.add('hidden');
+        grid.innerHTML = filtered.map(p => `
+          <div class="group relative aspect-square rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shadow-soft">
+            <img src="${p.url}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" loading="lazy"/>
+            <div class="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition">
+              <p class="text-white text-xs truncate">${p.name}</p>
+            </div>
+          </div>`).join('');
+      } else {
+        listEl.classList.remove('hidden');
+        grid.classList.add('hidden');
+        listEl.innerHTML = filtered.map(p => `
+          <div class="flex items-center gap-4 p-3 rounded-xl bg-white border border-slate-200/80 hover:border-brand/50 transition">
+            <img src="${p.url}" class="w-14 h-14 rounded-lg object-cover shrink-0" alt=""/>
+            <div class="min-w-0 flex-1">
+              <div class="font-medium text-sm truncate">${p.name}</div>
+              <div class="text-xs text-slate-400 mt-0.5">${p.takenDate} ${p.takenTime} · ${p.location}</div>
+            </div>
+            <div class="text-xs text-slate-400 shrink-0">导入 ${p.importedDate}</div>
+          </div>`).join('');
+      }
+    }
+
+    function renderFolderGrid() {
+      document.getElementById('folderGrid').innerHTML = folders.map(f => `
+        <button data-folder="${f.id}" class="text-left rounded-2xl overflow-hidden bg-white border border-slate-200/80 hover:border-brand shadow-soft hover:shadow-card transition group">
+          <div class="aspect-[16/10] overflow-hidden bg-brand-light">
+            <img src="${f.cover}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" alt=""/>
+          </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-brand-ink">${f.title}</h3>
+            <p class="text-xs text-slate-400 mt-1">${f.count} 张照片</p>
+          </div>
+        </button>`).join('');
+
+      document.querySelectorAll('[data-folder]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentFolderId = btn.dataset.folder;
+          postcardPage = 0;
+          renderGallery();
+        });
+      });
+    }
+
+    function renderPostcard() {
+      const fps = getFolderPhotos(currentFolderId);
+      const perPage = 2;
+      const totalPages = Math.max(1, Math.ceil(fps.length / perPage));
+      postcardPage = Math.min(postcardPage, totalPages - 1);
+      const slice = fps.slice(postcardPage * perPage, postcardPage * perPage + perPage);
+
+      document.getElementById('postcardPageInfo').textContent = `第 ${postcardPage + 1} / ${totalPages} 页`;
+      document.getElementById('postcardSpread').innerHTML = slice.map(p => `
+        <div class="space-y-2">
+          <div class="text-xs text-slate-500 space-y-0.5">
+            <div>${p.takenDate} · ${p.takenTime}</div>
+            <div>${p.location}</div>
+          </div>
+          <div class="postcard-slot rounded-lg overflow-hidden border border-slate-200 bg-slate-50 shadow-inner">
+            <img src="${p.url}" class="w-full h-full object-cover" alt=""/>
+          </div>
+          <div class="text-[11px] text-slate-400">导入 ${p.importedDate}</div>
+        </div>`).join('') + (slice.length === 1 ? '<div class="hidden md:block"></div>' : '');
+
+      document.getElementById('postcardPrev').onclick = () => { if (postcardPage > 0) { postcardPage--; renderPostcard(); } };
+      document.getElementById('postcardNext').onclick = () => { if (postcardPage < totalPages - 1) { postcardPage++; renderPostcard(); } };
+    }
+
+    function renderWorksFolders() {
+      document.getElementById('worksFolderList').innerHTML = folders.map(f => `
+        <button data-open-folder="${f.id}" class="flex gap-3 p-3 rounded-xl bg-white border border-slate-200/80 hover:border-brand text-left transition">
+          <img src="${f.cover}" class="w-16 h-16 rounded-lg object-cover shrink-0"/>
+          <div><div class="font-medium text-sm">${f.title}</div><div class="text-xs text-slate-400">${f.count} 张</div></div>
+        </button>`).join('');
+      document.querySelectorAll('[data-open-folder]').forEach(b => {
+        b.addEventListener('click', () => navigate('gallery', { folderId: b.dataset.openFolder }));
+      });
+    }
+
+    // ─── Album ───────────────────────────────────────────────
+    function renderAlbums() {
+      document.getElementById('albumCards').innerHTML = albums.map(a => `
+        <button data-edit-album="${a.id}" class="text-left p-5 rounded-2xl bg-white border border-slate-200/80 hover:border-brand shadow-soft hover:shadow-card transition">
+          <div class="aspect-[4/3] rounded-xl bg-gradient-to-br from-brand-light to-white border border-brand/30 mb-4 flex items-center justify-center">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><rect x="8" y="6" width="32" height="36" rx="2" stroke="#8ECAE6" stroke-width="1.5"/><line x1="14" y1="14" x2="34" y2="14" stroke="#BFE1F2"/><line x1="14" y1="20" x2="28" y2="20" stroke="#BFE1F2"/></svg>
+          </div>
+          <h3 class="font-semibold text-brand-ink">${a.title}</h3>
+          <p class="text-xs text-slate-400 mt-1">${a.pages} 页 · 草稿 · 更新于 ${a.updated}</p>
+        </button>`).join('') + `
+        <button id="createAlbumCard" class="p-5 rounded-2xl border-2 border-dashed border-brand/50 hover:bg-brand-light/30 transition flex flex-col items-center justify-center min-h-[200px] text-brand-ink">
+          <span class="text-2xl mb-2">+</span><span class="text-sm font-medium">新建电子相册</span>
+        </button>`;
+
+      document.querySelectorAll('[data-edit-album]').forEach(b => {
+        b.addEventListener('click', () => showAlbumEditor());
+      });
+      document.getElementById('createAlbumCard')?.addEventListener('click', () => showAlbumEditor());
+    }
+
+    function showAlbumList() {
+      document.getElementById('albumListView').classList.remove('hidden');
+      document.getElementById('albumEditorView').classList.add('hidden');
+      renderAlbums();
+    }
+
+    function showAlbumEditor() {
+      document.getElementById('albumListView').classList.add('hidden');
+      document.getElementById('albumEditorView').classList.remove('hidden');
+    }
+
+    document.getElementById('createAlbumBtn').addEventListener('click', showAlbumEditor);
+    document.getElementById('backToAlbumList').addEventListener('click', showAlbumList);
+    document.getElementById('previewAlbumBtn').addEventListener('click', () => {
+      document.getElementById('previewModal').classList.remove('hidden');
+    });
+    document.getElementById('closePreview').addEventListener('click', () => {
+      document.getElementById('previewModal').classList.add('hidden');
+    });
+
+    // ─── Upload ──────────────────────────────────────────────
+    document.getElementById('uploadBtn').addEventListener('click', () => document.getElementById('fileInput').click());
+    document.getElementById('fileInput').addEventListener('change', e => {
+      const files = [...e.target.files];
+      const now = new Date();
+      const importedDate = now.toISOString().slice(0, 10);
+      let loaded = 0;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          photos.unshift({
+            id: 'u' + Date.now() + Math.random().toString(36).slice(2),
+            url: ev.target.result,
+            name: file.name,
+            takenDate: importedDate,
+            takenTime: now.toTimeString().slice(0, 5),
+            location: '未知地点',
+            importedDate,
+          });
+          loaded++;
+          if (loaded === files.length) {
+            savePhotos();
+            if (document.getElementById('view-gallery').classList.contains('active')) renderGallery();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      e.target.value = '';
+    });
+
+    // ─── Search ──────────────────────────────────────────────
+    document.getElementById('searchInput').addEventListener('input', () => {
+      if (document.getElementById('view-gallery').classList.contains('active')) renderGallery();
+    });
+
+    // ─── Chart ───────────────────────────────────────────────
+    function initChart() {
+      const ctx = document.getElementById('activityChart');
+      if (!ctx) return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+          datasets: [
+            { label: '上传照片', data: [2, 5, 3, 8, 4, 6, 3], backgroundColor: '#BFE1F2', borderRadius: 6 },
+            { label: '编辑相册', data: [0, 1, 2, 1, 3, 2, 1], backgroundColor: '#8ECAE6', borderRadius: 6 },
+          ],
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position: 'bottom', labels: { font: { family: 'Inter' }, boxWidth: 12 } } },
+          scales: {
+            y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { stepSize: 2 } },
+            x: { grid: { display: false } },
+          },
+        },
+      });
+    }
+
+    // ─── Boot ────────────────────────────────────────────────
+    loadPhotos();
+    renderWorksFolders();
+    renderAlbums();
+    initChart();
+    navigate('home');
+  </script>
+</body>
+</html>

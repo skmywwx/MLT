@@ -1,0 +1,24 @@
+{
+  "name": "workspace",
+  "version": "1.0.0",
+  "description": "模力通以及相关内容",
+  "main": "index.js",
+  "scripts": {
+    "sync-prd": "node scripts/sync-prd-html.mjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skmywwx/MLT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/skmywwx/MLT/issues"
+  },
+  "homepage": "https://github.com/skmywwx/MLT#readme",
+  "devDependencies": {
+    "marked": "^18.0.9"
+  }
+}
