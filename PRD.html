@@ -587,8 +587,8 @@
 <td><strong>2 张</strong>横向（landscape）明信片位</td>
 </tr>
 <tr>
-<td>元数据布局（自上而下）</td>
-<td>① 照片区域 ② 其<strong>上方</strong>：<code>拍摄日期</code> <code>拍摄时间</code> <code>拍摄地点</code> ③ 其<strong>下方</strong>（位于拍摄地点与时间之后）：<code>导入年月日</code>（如 <code>2025-08-14</code>）</td>
+<td>元数据布局</td>
+<td><strong>照片上方</strong>：<code>拍摄日期</code> → <code>拍摄时间</code> → <code>拍摄地点</code>（自上而下）；<strong>照片下方</strong>：<code>导入年月日</code>（如 <code>2025-08-14</code>，位于拍摄地点与时间信息的下方）</td>
 </tr>
 <tr>
 <td>拍摄元数据</td>
@@ -596,7 +596,7 @@
 </tr>
 <tr>
 <td>导入时间</td>
-<td>取 <code>imported_at</code> 的年月日部分；<strong>每张导入照片均记录</strong>，仅在明信片收纳册视图按上述位置展示</td>
+<td>取 <code>imported_at</code> 的年月日；<strong>每张导入照片均记录</strong>；仅在明信片收纳册视图的照片下方展示</td>
 </tr>
 <tr>
 <td>翻页交互</td>
@@ -1354,7 +1354,7 @@
 </tr>
 <tr>
 <td>导入时间展示</td>
-<td>明信片收纳册中，导入年月日固定显示在拍摄地点与时间<strong>下方</strong>；文件夹模式可在详情中展示完整 <code>imported_at</code></td>
+<td>明信片收纳册中，导入年月日固定显示在<strong>照片下方</strong>（拍摄日期/时间/地点在照片上方）；文件夹模式可在详情中展示完整 <code>imported_at</code></td>
 </tr>
 <tr>
 <td>GPS 逆地理编码失败</td>
@@ -1687,7 +1687,7 @@
 </tr>
 <tr>
 <td>元数据展示</td>
-<td>拍摄日期/时间/地点在照片上方；<strong>导入年月日在拍摄地点与时间下方</strong></td>
+<td>照片上方：拍摄日期/时间/地点；照片下方：导入年月日</td>
 <td>同上；导入日期字号可略小、颜色略浅以区分层级</td>
 </tr>
 <tr>
